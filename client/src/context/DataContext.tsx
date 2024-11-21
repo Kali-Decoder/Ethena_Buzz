@@ -31,6 +31,8 @@ interface DataContextProps {
   userBetsData: [] | undefined;
   loading: boolean;
   setResultScore: (poolId: number, score: number) => Promise<void>;
+  btcUsdPrice: number;
+  ethUsdPrice: number;
 }
 
 interface DataContextProviderProps {
@@ -53,6 +55,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     chain?.id
   );
   const [loading,setLoading] = useState(false);
+  const [btcUsdPrice,setBtcUsdPrice] = useState(0);
+  const [ethUsdPrice,setEthUsdPrice] = useState(0);
 
   useEffect(() => {
     setActiveChainId(chain?.id);
@@ -215,12 +219,15 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       console.log("oracleContract",oracleContract);
       console.log(signer);
       if(oracleContract){
-        let data1 = await oracleContract.read("ETH/USD");
-        // let data2 = await oracleContract.read("BTC/USD");
-        // let data3 = await oracleContract.read("BNB/USD");
-        console.log("Oracle data",+data1.toString());
-        // console.log("Oracle data",+data2.toString());
-        // console.log("Oracle data",+data3.toString());
+        let data1 = await oracleContract.read("BTC/USD");
+        let data2 = await oracleContract.read("ETH/USD");
+    
+        console.log("Oracle data",(+data1.toString()/(10**18)).toFixed(2));
+        console.log("Oracle data",(+data2.toString()/10**18).toFixed(2));
+
+        setBtcUsdPrice((+data1.toString()/(10**18)).toFixed(2));
+        setEthUsdPrice((+data2.toString()/(10**18)).toFixed(2));
+       
       }
     } catch (error) {
       console.log("Error in getting oracle data",error);
@@ -313,7 +320,9 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         totalPools,
         userBetsData,
         loading,
-        setResultScore
+        setResultScore,
+        btcUsdPrice,
+        ethUsdPrice,
       }}
     >
       {children}
