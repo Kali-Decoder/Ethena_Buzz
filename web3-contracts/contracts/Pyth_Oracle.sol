@@ -14,14 +14,12 @@ contract Buzzify_Oracle_Pyth {
         priceFeeds["BNB/USD"] = _bnbUsdPriceId;
     }
 
-    function read(string memory priceFeedName) public payable returns (uint) {
+    function read(string memory priceFeedName) public view returns (uint) {
         bytes32 priceFeedId = priceFeeds[priceFeedName];
         require(priceFeedId != bytes32(0), "Price feed not found");
         PythStructs.Price memory price = pyth.getPriceNoOlderThan(priceFeedId, 60);
-
         uint price18Decimals = (uint(uint64(price.price)) * (10 ** 18)) / 
             (10 ** uint8(uint32(-1 * price.expo)));
-
         return price18Decimals;
     }
 
