@@ -5,7 +5,9 @@
  <br/> <br/>
 # BuzziFy
 
-### BuzziFy is a platform designed for avid reel viewers, offering them the opportunity to place bets on the engagement of content creators. If the engagement of a content creator increases within a specified time frame, users can earn rewards based on their predictions.
+### Prediction markets like Polymarket have skyrocketed in usage this year thanks to politics and sports betting. But what if there was a prediction market focused on social media and the internet arena?
+
+### We are building a platform over to facilitate you to bet on your favorite content creator and its growth. With our unique score calculation, you can predict what score he gains - this unique score will provide a more decentralized and trusted environment for the users to bet. By just predicting what score the creator gets you can bet your amount and earn your share from the pool amount if you strike it correctly.**
 
 ## Key Features
 ### Here are the BuzzyFI features in point form:
@@ -14,7 +16,7 @@
 - **Upload Custom Reels:** Share and monetize your own custom-created reels.
 - **Invest in Favorite Creators' Reels:** Place an investment amount on your favorite content creators' reels for a specific tenure.
 - **Withdraw Rewards:** Redeem your earnings once the investment tenure is complete.
-- **Earn Reels-Fi Tokens:** Gain Reels-Fi tokens through a "Refer and Earn" program.
+- **Earn BuzziFy Tokens:** Gain BuzziFy tokens through a "Refer and Earn" program.
 
 ## Technical Architecture
 <img width="1214" alt="Screenshot 2024-08-07 at 10 07 16 AM" src="https://quickest-reaction-568.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F12ef41c4-7fad-45c1-9929-2146ee112899%2Fa205bfa7-9207-459f-9792-966cc5e6d325%2FScreenshot_2024-09-26_162333.png?table=block&id=67b94f75-748f-4d7d-8219-41f47fdd1415&spaceId=12ef41c4-7fad-45c1-9929-2146ee112899&width=1420&userId=&cache=v2">
@@ -26,9 +28,11 @@
 - Next.js
 - Typescript
 - Tailwind CSS
-- Move Language
 - Solidity
-- Petra Wallet SDK
+- Ethena Network 
+- Layer Zero OFT 
+- Pyth Contract 
+
 
 ## Challenges and Solution
 - Inadequate Rewards for User Engagement
