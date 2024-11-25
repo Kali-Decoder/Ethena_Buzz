@@ -23,8 +23,8 @@ const DashboardPage = () => {
   }, [address]);
 
   const handleResultScore = async () => {
-    let id = 5;
-    let score = 50;
+    let id = 1;
+    let score = 80000;
     await setResultScore(id, score);
   };
 
