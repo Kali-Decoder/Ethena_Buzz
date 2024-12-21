@@ -134,11 +134,27 @@ const bleTestnetNetwork = {
   },
 };
 
-export const chainArray = [taikoHeklaTestnet,rootstockTestnet,bleTestnetNetwork];
+
+const KopliTestnet = {
+  id: 5318008,
+  name: "Reactive Kopli",
+  iconUrl: "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=022", // Placeholder icon URL for ETH
+  nativeCurrency: { name: "Reactive Kopli", symbol: "REACT", decimals: 18 },
+  rpcUrls: {
+    default: { http: ["https://kopli-rpc.rkt.ink"] },
+  },
+  blockExplorers: {
+    default: { name: "Reactive Kopli Explorer", url: "https://kopli.reactscan.net" },
+  },
+};
+
+
+export const chainArray = [taikoHeklaTestnet,rootstockTestnet,bleTestnetNetwork,KopliTestnet];
 export const transportsObject = {
   [taikoHeklaTestnet.id]: http(),
   [rootstockTestnet.id]: http(),
   [bleTestnetNetwork.id]: http(),
+  [KopliTestnet.id]: http(),
   // [baseSepolia.id]: http(),
   // [flowTestnetNetwork.id]: http(),
   // [celoAlfajores.id]: http(),

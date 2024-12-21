@@ -197,7 +197,13 @@ export const Addresses = {
     name: "BLE Testnet",
     tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
     mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  }
+  },
+  "5318008": {
+    name: "Reactive Kopli Testnet",
+    tokenAddress: "0x09788a0B60eCCd3FE8B951e181B2391e177dFdab",
+    mainContractAddress: "0xe8e68427f4E52C90cc05E1A6D86e26842a0da8d1",
+  },
+
 };
 
 export const tokenAbi = [
