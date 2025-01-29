@@ -33,6 +33,12 @@ interface DataContextProps {
   setResultScore: (poolId: number, score: number) => Promise<void>;
   btcUsdPrice: number;
   ethUsdPrice: number;
+  isOpen : boolean;
+  openSideBar: () => void;
+  closeSideBar: () => void;
+  activePoolId : number; 
+  setActivePoolId: (id: number) => void;
+  formatTimestamp : (timestamp:number) => string;
 }
 
 interface DataContextProviderProps {
@@ -50,13 +56,21 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   const [tokenBalance, setTokenBalance] = useState<BigNumber | undefined>();
   const { address, chain } = useAccount();
   const [totalPools, setTotalPools] = useState<{}>({});
-  const [userBetsData,setUserBetsData] = useState(null);
+  const [userBetsData, setUserBetsData] = useState(null);
   const [activeChain, setActiveChainId] = useState<number | undefined>(
     chain?.id
   );
-  const [loading,setLoading] = useState(false);
-  const [btcUsdPrice,setBtcUsdPrice] = useState(0);
-  const [ethUsdPrice,setEthUsdPrice] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [btcUsdPrice, setBtcUsdPrice] = useState(0);
+  const [ethUsdPrice, setEthUsdPrice] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [activePoolId,setActivePoolId] = useState(0);
+  const openSideBar = () => {
+    setIsOpen(!isOpen);
+  };
+  const closeSideBar = () => {
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     setActiveChainId(chain?.id);
@@ -83,7 +97,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
 
   const getTokenBalance = async () => {
     try {
-      console.log("Getting token balance",Addresses[activeChain]?.tokenAddress);
+      console.log("Getting token balance", Addresses[activeChain]?.tokenAddress);
       const tokenContract = await getContractInstance(Addresses[activeChain]?.tokenAddress, tokenAbi);
       if (tokenContract) {
         console.log("Token contract", tokenContract);
@@ -102,7 +116,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
 
   const createPool = async () => {
     console.log("Creating pool");
-    let name ="Donald Trumph";
+    let name = "Donald Trumph";
     let desc = "Donald Trumph is the 45th president of the United States";
     let id = toast.loading("Creating pool...");
     try {
@@ -111,16 +125,16 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         mainContractABI
       );
       if (mainContract) {
-        const tx = await mainContract.createPool(name,desc);
+        const tx = await mainContract.createPool(name, desc);
         await tx.wait();
         await getPoolsDetails();
-        toast.success("Pool created successfully",{id});
+        toast.success("Pool created successfully", { id });
       }
 
       return;
     } catch (error) {
       console.log("Error in creating pool");
-      toast.error("Error in creating pool",{id});
+      toast.error("Error in creating pool", { id });
       return;
     }
   };
@@ -168,10 +182,10 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   };
 
   const claimBet = async (poolId: number) => {
-    console.log("Claiming bet",poolId);
+    console.log("Claiming bet", poolId);
     let id = await toast.loading("Claiming bet...");
     try {
-      console.log("Claiming bet",Addresses[activeChain]?.mainContractAddress);
+      console.log("Claiming bet", Addresses[activeChain]?.mainContractAddress);
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
@@ -201,36 +215,36 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       if (mainContract) {
         const tx = await mainContract.setResult(poolId, finalScore);
         await tx.wait();
-        toast.success("Result set successfully",{id});
+        toast.success("Result set successfully", { id });
         await getPoolsDetails();
       }
       return;
     } catch (error) {
       console.log("Error in setting result");
       toast.error("Error in setting result",
-      {id});
+        { id });
       return;
     }
   };
 
-  const getOracleData =async ()=>{
+  const getOracleData = async () => {
     try {
-      let oracleContract = await getContractInstance(oracleAddress,oracleAbi);
-      console.log("oracleContract",oracleContract);
+      let oracleContract = await getContractInstance(oracleAddress, oracleAbi);
+      console.log("oracleContract", oracleContract);
       console.log(signer);
-      if(oracleContract){
+      if (oracleContract) {
         let data1 = await oracleContract.read("BTC/USD");
         let data2 = await oracleContract.read("ETH/USD");
-    
-        console.log("Oracle data",(+data1.toString()/(10**18)).toFixed(2));
-        console.log("Oracle data",(+data2.toString()/10**18).toFixed(2));
 
-        setBtcUsdPrice((+data1.toString()/(10**18)).toFixed(2));
-        setEthUsdPrice((+data2.toString()/(10**18)).toFixed(2));
-       
+        console.log("Oracle data", (+data1.toString() / (10 ** 18)).toFixed(2));
+        console.log("Oracle data", (+data2.toString() / 10 ** 18).toFixed(2));
+
+        setBtcUsdPrice((+data1.toString() / (10 ** 18)).toFixed(2));
+        setEthUsdPrice((+data2.toString() / (10 ** 18)).toFixed(2));
+
       }
     } catch (error) {
-      console.log("Error in getting oracle data",error);
+      console.log("Error in getting oracle data", error);
     }
   }
 
@@ -249,8 +263,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       );
       console.log("mainContract", mainContract);
       let maxPoolId = await mainContract?.getPoolId();
-      console.log("maxPoolId", maxPoolId);  
-      let userBets=[] as any;
+      console.log("maxPoolId", maxPoolId);
+      let userBets = [] as any;
       if (mainContract) {
         for (let i = 0; i < maxPoolId; i++) {
           const pool = await mainContract.pools(i);
@@ -279,7 +293,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
               targetScore: +bets[y].targetScore.toString(),
               claimedAmount: +bets[y].claimedAmount.toString(),
               claimed: bets[y].claimed,
-              status:pool.poolEnded,
+              status: pool.poolEnded,
             };
             if (bets[y].user == address) {
               userBets.push(betObj);
@@ -307,6 +321,16 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     getOracleData();
   }, [signer]);
 
+
+  function formatTimestamp(timestamp:number) {
+    const date = new Date(timestamp * 1000); // Convert to milliseconds
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });
+  }
+
   return (
     <DataContext.Provider
       value={{
@@ -323,6 +347,12 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         setResultScore,
         btcUsdPrice,
         ethUsdPrice,
+        isOpen,
+        openSideBar,
+        closeSideBar,
+        activePoolId,
+        setActivePoolId,
+        formatTimestamp
       }}
     >
       {children}

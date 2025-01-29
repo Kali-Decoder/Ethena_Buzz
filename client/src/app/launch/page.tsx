@@ -2,7 +2,9 @@
 import React from "react";
 import PostComponent from "./_components/post_component";
 import postData from "./post_data.json";
-const ExplorePage: React.FC = () => {
+import RightSidebar from "./_components/sidebar";
+const LaunchPage: React.FC = () => {
+
     return (
 
         <main className="twitter">
@@ -285,9 +287,11 @@ const ExplorePage: React.FC = () => {
                     </div>
 
                 </div> */}
+
+                <RightSidebar/>
         </main>
 
     );
 };
 
-export default ExplorePage;
+export default LaunchPage;

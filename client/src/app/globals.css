@@ -1008,3 +1008,34 @@
   color: #6e767d;
   text-decoration: none;
 }
+
+.sidebar {
+  position: fixed;
+  right: -800px;
+  background-color: #0e1434;
+  top: 0;
+  width: 400px;
+  height: 100%;
+  transition: transform 0.5s ease-in-out;
+  z-index: 1000;
+}
+
+.sidebar.open {
+  transform: translateX(-800px);
+}
+
+.sidebar-content {
+  padding: 20px;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+}
+

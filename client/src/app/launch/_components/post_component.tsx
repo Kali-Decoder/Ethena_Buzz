@@ -1,8 +1,13 @@
+import { useDataContext } from "@/context/DataContext";
 import React from "react";
 
 const PostComponent: React.FC = ({item}) => {
+    const {openSideBar,setActivePoolId} = useDataContext();
     return <>
-        <div className="twitter-post">
+        <div className="twitter-post" onClick={()=>{
+            setActivePoolId(item?.id);
+            openSideBar();
+        }}>
             <div className="twitter-post__retweeted">
                 <svg
                     viewBox="0 0 24 24"
