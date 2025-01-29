@@ -832,7 +832,6 @@
   margin-right: 12px;
 }
 .twitter-post__retweeted > span {
-  color: #6e767d;
   font-size: 13px;
   font-weight: 700;
 }
@@ -844,7 +843,7 @@
   padding-bottom: 12px;
 }
 .twitter-post__bottom .name {
-  font-weight: 700;
+  font-weight: 400;
   color: #d9d9d9;
 }
 .twitter-post__bottom .user,
@@ -881,48 +880,26 @@
   transition: 0.2s;
   cursor: pointer;
 }
-.twitter-post__interactions li.comments:hover {
-  transition: 0.2s;
-}
-.twitter-post__interactions li.comments:hover svg {
-  background-color: rgba(29, 161, 242, 0.1);
-  fill: #1da1f2;
-  transition: 0.2s;
-}
-.twitter-post__interactions li.comments:hover span {
-  color: #1da1f2;
-}
-.twitter-post__interactions li.retweets:hover {
-  transition: 0.2s;
-}
-.twitter-post__interactions li.retweets:hover svg {
-  background-color: rgba(23, 191, 99, 0.1);
-  fill: #17bf63;
-  transition: 0.2s;
-}
-.twitter-post__interactions li.retweets:hover span {
+
+
+
+.twitter-post__interactions li.comments  span {
   color: #17bf63;
 }
-.twitter-post__interactions li.likes:hover {
-  transition: 0.2s;
+
+
+
+.twitter-post__interactions li.retweets span {
+  color: #1da1f2;
 }
-.twitter-post__interactions li.likes:hover svg {
-  background-color: rgba(224, 36, 94, 0.1);
-  fill: #e0245e;
-  transition: 0.2s;
-}
-.twitter-post__interactions li.likes:hover span {
+
+
+.twitter-post__interactions li.likes span {
   color: #e0245e;
 }
-.twitter-post__interactions li.share:hover {
-  transition: 0.2s;
-}
-.twitter-post__interactions li.share:hover svg {
-  background-color: rgba(29, 161, 242, 0.1);
-  fill: #1da1f2;
-  transition: 0.2s;
-}
-.twitter-post__interactions li.share:hover span {
+
+
+.twitter-post__interactions li.share span {
   color: #1da1f2;
 }
 .twitter-post__interactions li svg {
