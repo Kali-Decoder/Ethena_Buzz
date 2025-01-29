@@ -1,4 +1,5 @@
 import Button from "@/components/Resusables/Button";
+import Link from "next/link";
 import { Element, Link as LinkScroll } from "react-scroll";
 
 const Hero = () => {
@@ -14,13 +15,13 @@ const Hero = () => {
               BuzziFy
             </h1>
             <p className="max-w-440 mb-14 body-1 max-md:mb-10">
-            Predict, Play, and Earn – Get Closer, Win Bigger! 🎯
-            Buzzify rewards precision, not perfection – where every guess turns into a game of gains!
+              Predict, Play, and Earn – Get Closer, Win Bigger! 🎯 Buzzify
+              rewards precision, not perfection – where every guess turns into a
+              game of gains!
             </p>
-            {/* <LinkScroll to="features" offset={-100} spy smooth> */}
-            <Button icon="/images/zap.svg">Try it now</Button>
-
-            {/* </LinkScroll> */}
+            <Button icon="/images/zap.svg">
+              <Link href="/launch">Try it now</Link>
+            </Button>
           </div>
 
           <div className="absolute -top-32 left-[calc(50%-340px)] w-[1230px] pointer-events-none hero-img_res">
