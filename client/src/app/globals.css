@@ -518,12 +518,12 @@
 }
 .twitter__middle {
   width: 100%;
-  max-width: 600px;
+  max-width: 1050px;
   display: flex;
   flex-basis: auto;
   flex-direction: column;
   flex-shrink: 0;
-  border-right: 1px solid #2f3336;
+  
 }
 .twitter__right {
   width: 350px;
@@ -769,13 +769,10 @@
   height: 12px;
   border-bottom: 1px solid #2f3336;
 }
-.twitter-feed {
-  display: flex;
-  flex-direction: column;
-}
+
 .twitter-post {
   padding: 0 16px;
-  border-bottom: 1px solid #2f3336;
+  border: 1px solid #2f3336;
   position: relative;
   cursor: pointer;
   overflow: hidden;
