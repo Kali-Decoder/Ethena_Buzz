@@ -10,7 +10,7 @@ import { wagmiConfig } from "@/utils/wallet-utils";
 import { ChainProvider } from "@/context/ChainContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-
+import { useParams, useRouter, usePathname } from "next/navigation";
 const queryClient = new QueryClient();
 
 export default function RootLayout({
@@ -18,6 +18,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname()
   return (
     <html lang="en">
       <body>
@@ -34,7 +35,7 @@ export default function RootLayout({
               })}
             >
               <ChainProvider>
-                <Header />
+                {pathname === "/launch" ? null : <Header />}
                 <DataContextProvider>{children}</DataContextProvider>
               </ChainProvider>
             </RainbowKitProvider>
