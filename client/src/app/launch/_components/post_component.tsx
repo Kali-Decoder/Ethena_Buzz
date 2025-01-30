@@ -18,7 +18,7 @@ interface Post {
   poolEnded: boolean;
 }
 const PostComponent = ({ item }: { item: Post }) => {
-  const { openSideBar, setActivePoolId, formatTimestamp } = useDataContext();
+  const { openSideBar, setActivePoolId, formatTimestamp,totalPools } = useDataContext();
   return (
     <>
       <div

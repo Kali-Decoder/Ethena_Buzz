@@ -502,12 +502,8 @@
   z-index: 1000; /* or any value higher than your navbar */
 }
 
-
-
-
 .twitter {
   display: flex;
-  align-items: flex-start;
   justify-content: center;
 }
 .twitter__left {
@@ -631,6 +627,8 @@
   bottom: 10px;
   left: 0;
   width: 95%;
+
+  border: 1px solid #2f3336;
 }
 .twitter-logged:hover {
   background-color: rgba(29, 161, 242, 0.1);
@@ -1123,4 +1121,54 @@
   text-align: center;
   text-transform: uppercase;
   display: inline-block;
+}
+
+
+
+
+.card {
+  position: relative;
+  height: 300px;
+  width: 200px;
+  background: linear-gradient(33deg, #6cacff 0%, #8debff 100%);
+  box-shadow: rgba(149, 157, 165, 0.5) 0px 8px 24px;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+}
+
+.card8 {
+  height: 200px;
+  width: 300px;
+  border-radius: 10px;
+  background: linear-gradient(33deg, #121317 0%, #323b42 100%);
+}
+.card8::before {
+  border-radius: 10px;
+  height: 100px;
+  width: 100px;
+  background: linear-gradient(33deg, #003e8f 0%, #00d5ff 100%);
+  margin-top: -4px;
+  margin-left: -4px;
+  border: 1px solid black;
+}
+.card8::after {
+  border-radius: 10px;
+  height: 100px;
+  width: 100px;
+  background: linear-gradient(33deg, #003e8f 0%, #00d5ff 100%);
+  margin-bottom: -4px;
+  margin-right: -4px;
+  border: 1px solid black;
 }
