@@ -133,6 +133,62 @@ const LaunchPage: React.FC = () => {
                   </div>
                 </>
               )}
+              {selected === "Create" && (
+                <>
+                  <div className="flex gap-x-4 text-black justify-center w-full">
+                    <p className="text-semibold text-xl">Create Poll</p>
+                  </div>
+                </>
+              )}
+              {selected === "Assets" && (
+                <>
+                  <div className="flex gap-x-4 text-black justify-center w-full">
+                    <p className="text-semibold text-xl">Assets</p>
+                  </div>
+                </>
+              )}
+
+              {selected === "Leaderboard" && (
+                <>
+                  <div className="flex gap-x-4 text-black justify-center items-center w-full">
+                    <button className=" text-black text-md p-2 border border-black rounded-40 px-6  focus:bg-black focus:text-white">
+                      ⚡️ Alpha
+                    </button>
+                    <button className=" text-black text-md p-2 border border-black rounded-40 px-6 focus:bg-black focus:text-white">
+                      ⚡️ Beta-Buzz
+                    </button>
+
+                    <button className=" text-black text-md p-2 border border-black rounded-40 px-6 focus:bg-black focus:text-white">
+                      💥 Mainnet
+                    </button>
+                  </div>
+                </>
+              )}
+              {selected === "My Votes" && (
+                <>
+                  <div className="flex gap-x-4 text-black justify-center items-center w-full">
+                    <button className=" text-black text-md p-2 border border-black rounded-40 px-10  focus:bg-black focus:text-white">
+                      ⚡️ Live Polls
+                    </button>
+                    <button className=" text-black text-md p-2 border border-black rounded-40 px-10 focus:bg-black focus:text-white">
+                      ⚡️ History
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {selected === "Rewards" && (
+                <>
+                  <div className="flex gap-x-4 text-black justify-center items-center w-full">
+                    <button className=" text-black text-md p-2 border border-black rounded-40 px-6  focus:bg-black focus:text-white">
+                      ⚡️ Ethena Campaign
+                    </button>
+                    <button className=" text-black text-md p-2 border border-black rounded-40 px-6 focus:bg-black focus:text-white">
+                      ⚡️ More Rewards
+                    </button>
+                  </div>
+                </>
+              )}
             </header>
 
             {/* Content Section*/}
