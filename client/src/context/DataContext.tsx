@@ -27,7 +27,7 @@ interface DataContextProps {
   ) => Promise<void>;
   claimBet: (poolId: number) => Promise<void>;
   getPoolsDetails: (poolId: number) => Promise<any>;
-  totalPools: {} | undefined;
+  totalPools: [] | undefined;
   userBetsData: [] | undefined;
   loading: boolean;
   setResultScore: (poolId: number, score: number) => Promise<void>;

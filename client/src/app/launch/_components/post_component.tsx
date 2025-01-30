@@ -17,15 +17,18 @@ interface Post {
   resultDeclareTime: number;
   poolEnded: boolean;
 }
-const PostComponent = ({ item }: { item: Post }) => {
-  const { setActivePoolId, formatTimestamp} =
-    useDataContext();
+const PostComponent = ({
+  item,
+  onSelect,
+}: {
+  item: Post;
+  onSelect: () => void;
+}) => {
+  const { setActivePoolId, formatTimestamp } = useDataContext();
   return (
     <>
       <div
-        onClick={() => {
-          setActivePoolId(+item?.id);
-        }}
+        onClick={onSelect}
         className="bg-[#F5F3EE] border-2 border-gray-300 rounded-lg shadow-md p-4 cursor-pointer flex flex-col gap-4"
       >
         <h2 className="font-bold text-lg text-black">{item?.description}</h2>
