@@ -11,9 +11,11 @@ import { IoCaretBackCircleSharp } from "react-icons/io5";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { CgDollar } from "react-icons/cg";
 import Slider from "react-input-slider";
+import { FaUserAlt } from "react-icons/fa";
+import { RiRadioButtonLine } from "react-icons/ri";
 const LaunchPage: React.FC = () => {
   const { address, chain } = useAccount();
-  const { totalPools } = useDataContext();
+  const { totalPools, tokenBalance, userBetsData, placeBet,formatTimestamp } = useDataContext();
 
   interface PoolData {
     id: any;
@@ -32,19 +34,32 @@ const LaunchPage: React.FC = () => {
   const [transformedPoolsData, setTransformedPoolsData] = useState<PoolData[]>(
     []
   );
+  const [isBetted, setIsBetted] = useState(false);
+  const [investment, setInvestment] = useState(0);
+  const [scorePrediction, setScorePrediction] = useState(0);
   const [selected, setSelected] = useState("Explore");
   const [selectedPost, setSelectedPost] = useState<PoolData | null>(null);
   const min = 10;
   const max = 100;
   const step = 2;
-  const [scorePrediction, setScorePrediction] = useState(0);
+
+  const handleSubmit = async () => {
+    console.log(
+      selectedPost?.id,
+      scorePrediction,
+      investment,
+    );
+    await placeBet(+selectedPost?.id,+investment.toString(),scorePrediction);
+  };
+
   useEffect(() => {
     if (totalPools?.length) {
       setTransformedPoolsData(
         totalPools.map((pool: any) => ({
           id: pool?.poolId,
           name: `#${String(pool?.poolId).padStart(2, "0")}`,
-          description: `Will ${pool?.poolName || "this event"} reach its predicted outcome?`,
+          question: pool?.question,
+          description: pool?.description,
           category: "Crypto",
           total_amount: pool?.total_amount || 0,
           total_bets: pool?.total_bets || 0,
@@ -57,6 +72,21 @@ const LaunchPage: React.FC = () => {
       );
     }
   }, [totalPools]);
+
+  const handleMax = () => {
+    setInvestment(tokenBalance);
+  };
+
+  useEffect(() => {
+    const val =
+      userBetsData?.length > 0 &&
+      userBetsData?.find((item) => item?.poolId == selectedPost?.id);
+    if (val) {
+      setIsBetted(true);
+    } else {
+      setIsBetted(false);
+    }
+  }, [userBetsData]);
 
   const sidebarItems = [
     "Explore",
@@ -80,7 +110,10 @@ const LaunchPage: React.FC = () => {
                 key={item}
                 label={item}
                 active={selected === item}
-                onClick={() =>{ setSelected(item); setSelectedPost(null);}}
+                onClick={() => {
+                  setSelected(item);
+                  setSelectedPost(null);
+                }}
               />
             ))}
           </nav>
@@ -149,7 +182,7 @@ const LaunchPage: React.FC = () => {
                     <IoCaretBackCircleSharp size={25} />
                   </button>
                   <p className="text-semibold text-xl font-bold">
-                    {selectedPost?.description}
+                    {selectedPost?.question}
                   </p>
                 </div>
               </>
@@ -248,8 +281,8 @@ const LaunchPage: React.FC = () => {
             {selectedPost && (
               <>
                 {selectedPost?.name ? (
-                  <div className="flex w-full items-center bg-white p-6 rounded text-black">
-                    <div className="w-1/2">
+                  <div className="flex w-full gap-x-8 bg-white p-6 rounded  border text-black">
+                    <div className="w-2/3 overflow-y-scroll scrollbar-thin">
                       {/* Header Section */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -265,24 +298,36 @@ const LaunchPage: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-1 text-gray-600">
                           <CgDollar size={18} />
-                          <span className="text-sm font-medium">$54.67</span>
-                          <FaRegCheckCircle
-                            size={16}
-                            className="text-red-400"
-                          />
-                          <span className="text-sm">Ended</span>
+                          <span className="text-sm font-medium">
+                            {selectedPost?.total_amount}
+                          </span>
+                          <FaUserAlt size={16} className="ml-2" />
+                          <span className="text-sm">
+                            {selectedPost?.total_bets}
+                          </span>
+                          <span className="flex items-center gap-1 ml-2">
+                            {selectedPost?.poolEnded ? (
+                              <>
+                                <RiRadioButtonLine className="text-red text-xs" />
+                                <span>ENDED</span>
+                              </>
+                            ) : (
+                              <>
+                                <RiRadioButtonLine className="text-green-500 text-xs" />
+                                <span>ONGOING</span>
+                              </>
+                            )}
+                          </span>
                         </div>
                       </div>
 
                       {/* Post Content */}
                       <div className="mt-3">
                         <h2 className="font-bold text-lg text-gray-900">
-                          {selectedPost?.description}
+                          {selectedPost?.question}
                         </h2>
                         <p className="text-gray-700 text-sm mt-1">
-                          Kendrick Lamar is set to headline the Super Bowl LIX
-                          halftime show in 2025, following his iconic 2022
-                          performance. Will his upcoming show outshine the last?
+                          {selectedPost?.description}
                         </p>
                       </div>
 
@@ -301,74 +346,85 @@ const LaunchPage: React.FC = () => {
                         />
                       </div>
                     </div>
+                    <div className="bg-[#F5F3ED] w-1/3 rounded py-3 px-2 h-1/2 mt-3">
+                      <h2 className="text-sm font-semibold mb-0 px-4 text-black">
+                        Place Your Bet
+                      </h2>
+                      <div className="rounded-lg p-4">
+                        {/* From Input */}
 
-
-                    <div className="bg-[#F5F3ED] w-full rounded p-4 mt-3">
-                        <h2 className="text-sm font-semibold mb-0 px-4 text-black">
-                          Place Your Bet
-                        </h2>
-                        <div className="rounded-lg p-4">
-                          {/* From Input */}
-
-                          <div className=" flex px-4 flex-col-reverse bg-white rounded-lg p-4 items-start gap-2">
-                            <Slider
-                              axis="x"
-                              x={scorePrediction}
-                              onChange={({ x }) => setScorePrediction(x)}
-                              xmin={+min.toString()}
-                              xmax={+max.toString()}
-                              xstep={+step.toString()}
-                              styles={{
-                                track: {
-                                  backgroundColor: "black",
-                                  width: "100%",
-                                  height: "4px",
-                                },
-                                active: {
-                                  backgroundColor: "#B8D778",
-                                },
-                                thumb: {
-                                  width: 15,
-                                  height: 15,
-                                  backgroundColor: "white",
-                                },
-                              }}
-                            />
-                            <p className="mt-2 text-center  font-semibold text-2xl text-p1">
-                              {scorePrediction}
-                            </p>
-                          </div>
-                          <div className="mb-4 mt-4">
-                            <div className="flex items-center bg-white rounded-lg p-3">
-                              <input
-                                type="number"
-                                value={0}
-                                onChange={() => {}}
-                                className="w-full bg-transparent text-black outline-none text-sm"
-                                placeholder="0.00"
-                              />
-                              <button className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium px-2 py-1 rounded transition-colors">
-                                MAX
-                              </button>
-                              <span className="text-black ml-2">BUZZ</span>
-                            </div>
-
-                            <div className="flex justify-between text-sm mt-2">
-                              <span className="text-black"></span>
-                              <span className="text-black text-xs">
-                                Balance: 400 BUZZ
-                              </span>
-                            </div>
-                          </div>
-                          {/* Action Button */}
-                          <button
-                            className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
-        transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            Place Bet
-                          </button>
+                        <div className=" flex px-4 flex-col-reverse bg-white rounded-lg p-4 items-start gap-2">
+                          <Slider
+                            axis="x"
+                            x={scorePrediction}
+                            onChange={({ x }) => setScorePrediction(x)}
+                            xmin={+min.toString()}
+                            xmax={+max.toString()}
+                            xstep={+step.toString()}
+                            styles={{
+                              track: {
+                                backgroundColor: "black",
+                                width: "100%",
+                                height: "4px",
+                              },
+                              active: {
+                                backgroundColor: "#B8D778",
+                              },
+                              thumb: {
+                                width: 15,
+                                height: 15,
+                                backgroundColor: "white",
+                              },
+                            }}
+                          />
+                          <p className="mtext-center  font-semibold text-xl text-p1">
+                            {scorePrediction}
+                          </p>
                         </div>
+                        <div className="mb-4 mt-4">
+                          <div className="flex items-center bg-white rounded-lg p-3">
+                            <input
+                              type="number"
+                       
+                              value={investment}
+                              onChange={(e) => setInvestment(e.target.value)}
+                              className="w-full bg-transparent text-black outline-none text-sm"
+                              placeholder="0.00"
+                            />
+                            <button onClick={handleMax} className="text-xs hover:text-blue-400 font-medium px-2 py-1 rounded transition-colors">
+                              MAX
+                            </button>
+                            <span className="text-black ml-2 text-xs">
+                              BUZZ
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between flex-col text-xs mt-2">
+                            <span className="text-black"></span>
+                            <span className="text-black text-[10px]">
+                              Balance: {tokenBalance ? tokenBalance : 0} BUZZ
+                            </span>
+                            <span className="text-red text-[10px]">
+                              PoolEnded : {formatTimestamp(selectedPost?.endTime)}
+                            </span>
+                          </div>
+                        </div>
+                        {/* Action Button */}
+                        {isBetted ?<button
+                          disabled
+                          className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
+        transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                        >
+                          Already Place Bet
+                        </button> :<button
+                          onClick={handleSubmit}
+                          className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
+        transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                        >
+                          Place Bet
+                        </button>}
                       </div>
+                    </div>
                   </div>
                 ) : (
                   <LoadingBar />

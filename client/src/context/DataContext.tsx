@@ -19,7 +19,7 @@ interface DataContextProps {
     contractAbi: any
   ) => Promise<Contract | undefined>;
   getTokenBalance: () => Promise<BigNumber | undefined>;
-  createPool: () => Promise<void>;
+  createPool: (name: string, desc: string, endtime: number) => Promise<void>;
   placeBet: (
     poolId: number,
     amount: BigNumber,
@@ -114,10 +114,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   };
 
 
-  const createPool = async () => {
+  const createPool = async (name:string,desc:string,endtime:number) => {
     console.log("Creating pool");
-    let name = "Donald Trumph";
-    let desc = "Donald Trumph is the 45th president of the United States";
     let id = toast.loading("Creating pool...");
     try {
       const mainContract = await getContractInstance(
@@ -125,12 +123,11 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         mainContractABI
       );
       if (mainContract) {
-        const tx = await mainContract.createPool(name, desc);
+        const tx = await mainContract.createPool(name, desc,endtime);
         await tx.wait();
         await getPoolsDetails();
         toast.success("Pool created successfully", { id });
       }
-
       return;
     } catch (error) {
       console.log("Error in creating pool");
@@ -270,6 +267,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           const pool = await mainContract.pools(i);
           let poolObj = {
             poolId: i,
+            question: pool.question,
+            description: pool.description,
             total_amount: +pool.total_amount
               .div(BigNumber.from(10).pow(18))
               .toString(),

@@ -8,6 +8,7 @@ interface Post {
   id: number;
   name: string;
   description: string;
+  question: string;
   category: string;
   total_amount: number;
   total_bets: number;
@@ -24,21 +25,19 @@ const PostComponent = ({
   item: Post;
   onSelect: () => void;
 }) => {
-  const { setActivePoolId, formatTimestamp } = useDataContext();
+  const {formatTimestamp} = useDataContext();
   return (
     <>
       <div
         onClick={onSelect}
         className="bg-[#F5F3EE] border-2 border-gray-300 rounded-lg shadow-md p-4 cursor-pointer flex flex-col gap-4"
       >
-        <h2 className="font-bold text-lg text-black">{item?.description}</h2>
-        <p className="text-sm text-gray-700">
-          MELANIA launched at $6B market cap, overshadowing TRUMP, which plunged
-          38%. With 90% of MELANIA’s supply in one wallet, can it sustain its
-          hype?
+        <h2 className="font-bold text-md text-black">{item?.question}</h2>
+        <p className="text-xs text-gray-700">
+         {item?.description.slice(0, 100)}...
         </p>
 
-        <div className="text-blue-500 text-sm font-semibold space-x-2 uppercase">
+        <div className="text-blue-500 text-xs font-semibold space-x-2 uppercase">
           <span># {item?.category}</span>
         </div>
 
@@ -50,7 +49,7 @@ const PostComponent = ({
             />
             <span className="font-semibold">{item?.name}</span>
           </div>
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-3 text-xs">
             <span>💰 ${item?.total_amount}</span>
             <span>⏱️ {formatTimestamp(item?.startTime)}</span>
             <span>👥 {item?.total_bets}</span>
