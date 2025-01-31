@@ -50,7 +50,7 @@ const PostComponent = ({
             />
             <span className="font-semibold">{item?.name}</span>
           </div>
-          <div className="flex items-center gap-3 text-md">
+          <div className="flex items-center gap-3 text-sm">
             <span>💰 ${item?.total_amount}</span>
             <span>⏱️ {formatTimestamp(item?.startTime)}</span>
             <span>👥 {item?.total_bets}</span>

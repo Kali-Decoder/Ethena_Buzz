@@ -15,6 +15,21 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      keyframes: {
+        moving: {
+          '0%': { transform: 'translateX(-100%)' },
+          '50%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+        rotation: {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+      },
+      animation: {
+        'moving-bar': 'moving 1.5s ease-in-out infinite',
+        rotation: 'rotation 1s linear infinite',
+      },
       colors: {
         'primary-500': '#877EFF',
         'primary-600': '#5D5FEF',
@@ -105,15 +120,7 @@ const config: Config = {
         256: "0 0 256px",
         100: "0 0 100%",
       },
-      animation: {
-        rotation: 'rotation 1s linear infinite',
-      },
-      keyframes: {
-        rotation: {
-          '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' },
-        },
-      }
+      
     },
   }
 };

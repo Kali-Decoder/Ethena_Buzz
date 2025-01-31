@@ -3,11 +3,18 @@ import React, { useEffect, useState } from "react";
 import PostComponent from "./_components/post_component";
 import { useAccount } from "wagmi";
 import { useDataContext } from "@/context/DataContext";
-
+import { LuArrowUpDown } from "react-icons/lu";
+import { MdOutlineSettings } from "react-icons/md";
+import { FaFaceSmileWink } from "react-icons/fa6";
+import LoadingBar from "@/components/LoadingBar";
+import { IoCaretBackCircleSharp } from "react-icons/io5";
+import { FaRegCheckCircle } from "react-icons/fa";
+import { CgDollar } from "react-icons/cg";
+import Slider from "react-input-slider";
 const LaunchPage: React.FC = () => {
   const { address, chain } = useAccount();
   const { totalPools } = useDataContext();
-  
+
   interface PoolData {
     id: any;
     name: string;
@@ -22,16 +29,21 @@ const LaunchPage: React.FC = () => {
     poolEnded: boolean;
   }
 
-  const [transformedPoolsData, setTransformedPoolsData] = useState<PoolData[]>([]);
+  const [transformedPoolsData, setTransformedPoolsData] = useState<PoolData[]>(
+    []
+  );
   const [selected, setSelected] = useState("Explore");
   const [selectedPost, setSelectedPost] = useState<PoolData | null>(null);
-
+  const min = 10;
+  const max = 100;
+  const step = 2;
+  const [scorePrediction, setScorePrediction] = useState(0);
   useEffect(() => {
     if (totalPools?.length) {
       setTransformedPoolsData(
         totalPools.map((pool: any) => ({
           id: pool?.poolId,
-          name: `#${String(pool?.poolId).padStart(5, "0")}`,
+          name: `#${String(pool?.poolId).padStart(2, "0")}`,
           description: `Will ${pool?.poolName || "this event"} reach its predicted outcome?`,
           category: "Crypto",
           total_amount: pool?.total_amount || 0,
@@ -46,29 +58,51 @@ const LaunchPage: React.FC = () => {
     }
   }, [totalPools]);
 
-  const sidebarItems = ["Explore", "Create", "My Votes", "Assets", "Leaderboard", "Rewards"];
+  const sidebarItems = [
+    "Explore",
+    "Create",
+    "My Votes",
+    "Assets",
+    "Leaderboard",
+    "Rewards",
+    "Exchange",
+  ];
 
   return (
-    <div className="flex items-center justify-center h-[100vh] bg-transparent">
+    <div className="flex items-center justify-center h-[100vh] bg-transparent orbitron-launch">
       <div className="w-[85%] h-[90%] border-4 shadow-lg rounded-lg flex overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 bg-s3 shadow-lg p-4 flex flex-col">
-          <h1 className="text-lg font-bold text-black">BUZZIFY</h1>
+          <h1 className="text-2xl font-bold text-white"> 💰 BUZZIFY 💸</h1>
           <nav className="flex flex-col mt-6 space-y-3">
             {sidebarItems.map((item) => (
-              <SidebarItem key={item} label={item} active={selected === item} onClick={() => setSelected(item)} />
+              <SidebarItem
+                key={item}
+                label={item}
+                active={selected === item}
+                onClick={() =>{ setSelected(item); setSelectedPost(null);}}
+              />
             ))}
           </nav>
           {/* User Profile */}
           <div className="mt-auto flex items-center p-3 border-t">
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-md">
-              😊
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-md">
+              <FaFaceSmileWink size={20} />
             </div>
             <div className="ml-3">
-              <p className="text-sm font-semibold text-black">
-                {address ? `${address.slice(0, 8)}...${address.slice(-5)}` : "Guest"}
+              <p className="text-sm font-semibold text-white">
+                {address
+                  ? `${address.slice(0, 8)}...${address.slice(-5)}`
+                  : "Guest"}
               </p>
-              <p className="text-xs text-gray-500">{chain?.name || "Ethereum"}</p>
+              <p className="text-xs text-gray-500">
+                {chain?.name || "Ethereum"}
+              </p>
+            </div>
+            <div className="ml-3">
+              <button onClick={() => setSelected("Settings")}>
+                <MdOutlineSettings size={25} />
+              </button>
             </div>
           </div>
         </aside>
@@ -77,27 +111,343 @@ const LaunchPage: React.FC = () => {
         <div className="flex-1 flex flex-col">
           {/* Header */}
           <header className="flex items-center bg-p3 opacity-90 shadow-lg px-4 py-3 justify-center">
-            <p className="text-semibold text-xl">{selected}</p>
+            {selected === "Explore" && !selectedPost && (
+              <>
+                <div className="flex gap-x-4 text-black">
+                  <button className=" text-black font-bold text-md p-2 border border-black  rounded-40  focus:bg-black focus:text-white">
+                    ⚡️ All
+                  </button>
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+                    ⚡️ Featured
+                  </button>
+
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+                    💥 New
+                  </button>
+
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+                    ⏱️ Ending Soon
+                  </button>
+
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+                    ⏱️ Ending Soon
+                  </button>
+
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+                    ⏱️ Ending Soon
+                  </button>
+                </div>
+              </>
+            )}
+            {selected === "Explore" && selectedPost && (
+              <>
+                <div className="flex gap-x-4 text-black w-full items-center">
+                  <button
+                    className="mt-4 text-black mb-4"
+                    onClick={() => setSelectedPost(null)}
+                  >
+                    <IoCaretBackCircleSharp size={25} />
+                  </button>
+                  <p className="text-semibold text-xl font-bold">
+                    {selectedPost?.description}
+                  </p>
+                </div>
+              </>
+            )}
+            {selected === "Create" && (
+              <>
+                <div className="flex gap-x-4 text-black justify-center w-full">
+                  <p className="text-semibold text-xl font-bold">Create Poll</p>
+                </div>
+              </>
+            )}
+            {selected === "Settings" && (
+              <>
+                <div className="flex gap-x-4 text-black justify-center w-full">
+                  <p className="text-semibold text-xl font-bold">Settings</p>
+                </div>
+              </>
+            )}
+            {selected === "Exchange" && (
+              <>
+                <div className="flex gap-x-4 text-black justify-center w-full">
+                  <p className="text-semibold text-xl font-bold">
+                    Exchange Your Rewars
+                  </p>
+                </div>
+              </>
+            )}
+            {selected === "Assets" && (
+              <>
+                <div className="flex gap-x-4 text-black justify-center w-full">
+                  <p className="text-semibold text-xl font-bold">Assets</p>
+                </div>
+              </>
+            )}
+            {selected === "Leaderboard" && (
+              <>
+                <div className="flex gap-x-4 text-black justify-center items-center w-full">
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6  focus:bg-black focus:text-white">
+                    ⚡️ Alpha
+                  </button>
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6 focus:bg-black focus:text-white">
+                    ⚡️ Beta-Buzz
+                  </button>
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6 focus:bg-black focus:text-white">
+                    💥 Mainnet
+                  </button>
+                </div>
+              </>
+            )}{" "}
+            {selected === "My Votes" && (
+              <>
+                <div className="flex gap-x-4 text-black justify-center items-center w-full">
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-10  focus:bg-black focus:text-white">
+                    ⚡️ Live Polls
+                  </button>
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-10 focus:bg-black focus:text-white">
+                    ⚡️ History
+                  </button>
+                </div>
+              </>
+            )}
+            {selected === "Rewards" && (
+              <>
+                <div className="flex gap-x-4 text-black justify-center items-center w-full">
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6  focus:bg-black focus:text-white">
+                    ⚡️ Ethena Campaign
+                  </button>
+                  <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6 focus:bg-black focus:text-white">
+                    ⚡️ More Rewards
+                  </button>
+                </div>
+              </>
+            )}
           </header>
 
           {/* Content Section */}
           <div className="p-6 bg-white shadow-lg h-full overflow-y-scroll scrollbar-thin">
             {selected === "Explore" && !selectedPost && (
-              <div className="grid grid-cols-2 gap-4">
-                {transformedPoolsData.map((item, i) => (
-                  <PostComponent item={item} key={i} onSelect={() => setSelectedPost(item)} />
-                ))}
-              </div>
+              <>
+                {transformedPoolsData.length ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {transformedPoolsData.map((item, i) => (
+                      <PostComponent
+                        item={item}
+                        key={i}
+                        onSelect={() => setSelectedPost(item)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <LoadingBar />
+                )}
+              </>
             )}
+            {selected === "Settings" && <SettingsCard />}
             {selectedPost && (
-              <div className="p-6 bg-white shadow-lg">
-                <h2 className="text-2xl font-bold">{selectedPost.name}</h2>
-                <p className="mt-2">{selectedPost.description}</p>
-                <p className="mt-2">Category: {selectedPost.category}</p>
-                <button className="mt-4 p-2 bg-gray-200 text-black rounded" onClick={() => setSelectedPost(null)}>Back to Explore</button>
-              </div>
+              <>
+                {selectedPost?.name ? (
+                  <div className="flex w-full items-center bg-white p-6 rounded text-black">
+                    <div className="w-1/2">
+                      {/* Header Section */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="https://pbs.twimg.com/profile_images/1884937424364851200/VSrPwZa4_400x400.jpg"
+                            alt="User Avatar"
+                            className="w-10 h-10 rounded-full"
+                          />
+                          <span className="font-semibold text-gray-900">
+                            {selectedPost?.name}
+                          </span>
+                          <span className="text-blue-500">💎</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-600">
+                          <CgDollar size={18} />
+                          <span className="text-sm font-medium">$54.67</span>
+                          <FaRegCheckCircle
+                            size={16}
+                            className="text-red-400"
+                          />
+                          <span className="text-sm">Ended</span>
+                        </div>
+                      </div>
+
+                      {/* Post Content */}
+                      <div className="mt-3">
+                        <h2 className="font-bold text-lg text-gray-900">
+                          {selectedPost?.description}
+                        </h2>
+                        <p className="text-gray-700 text-sm mt-1">
+                          Kendrick Lamar is set to headline the Super Bowl LIX
+                          halftime show in 2025, following his iconic 2022
+                          performance. Will his upcoming show outshine the last?
+                        </p>
+                      </div>
+
+                      {/* Hashtags */}
+                      <div className="mt-2 text-blue-500 text-sm font-medium">
+                        <span>#Sports</span> <span>#Celebrities</span>{" "}
+                        <span>#Pop Culture</span>
+                      </div>
+
+                      {/* Image */}
+                      <div className="mt-3">
+                        <img
+                          src="https://images.pond5.com/green-line-graph-white-background-footage-083223115_iconl.jpeg"
+                          alt="Kendrick Lamar Performance"
+                          className="w-full rounded-lg object-cover"
+                        />
+                      </div>
+                    </div>
+
+
+                    <div className="bg-[#F5F3ED] w-full rounded p-4 mt-3">
+                        <h2 className="text-sm font-semibold mb-0 px-4 text-black">
+                          Place Your Bet
+                        </h2>
+                        <div className="rounded-lg p-4">
+                          {/* From Input */}
+
+                          <div className=" flex px-4 flex-col-reverse bg-white rounded-lg p-4 items-start gap-2">
+                            <Slider
+                              axis="x"
+                              x={scorePrediction}
+                              onChange={({ x }) => setScorePrediction(x)}
+                              xmin={+min.toString()}
+                              xmax={+max.toString()}
+                              xstep={+step.toString()}
+                              styles={{
+                                track: {
+                                  backgroundColor: "black",
+                                  width: "100%",
+                                  height: "4px",
+                                },
+                                active: {
+                                  backgroundColor: "#B8D778",
+                                },
+                                thumb: {
+                                  width: 15,
+                                  height: 15,
+                                  backgroundColor: "white",
+                                },
+                              }}
+                            />
+                            <p className="mt-2 text-center  font-semibold text-2xl text-p1">
+                              {scorePrediction}
+                            </p>
+                          </div>
+                          <div className="mb-4 mt-4">
+                            <div className="flex items-center bg-white rounded-lg p-3">
+                              <input
+                                type="number"
+                                value={0}
+                                onChange={() => {}}
+                                className="w-full bg-transparent text-black outline-none text-sm"
+                                placeholder="0.00"
+                              />
+                              <button className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium px-2 py-1 rounded transition-colors">
+                                MAX
+                              </button>
+                              <span className="text-black ml-2">BUZZ</span>
+                            </div>
+
+                            <div className="flex justify-between text-sm mt-2">
+                              <span className="text-black"></span>
+                              <span className="text-black text-xs">
+                                Balance: 400 BUZZ
+                              </span>
+                            </div>
+                          </div>
+                          {/* Action Button */}
+                          <button
+                            className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
+        transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Place Bet
+                          </button>
+                        </div>
+                      </div>
+                  </div>
+                ) : (
+                  <LoadingBar />
+                )}
+              </>
             )}
             {selected === "Rewards" && <RewardsSection />}
+
+            {selected === "Assets" && (
+              <>
+                <div className="flex justify-center items-center flex-col">
+                  <BalanceScore />
+                </div>
+              </>
+            )}
+            {selected === "Exchange" && (
+              <>
+                <div className="flex justify-center items-center flex-col">
+                  <div className="bg-[#F5F3ED] w-1/2 border rounded-lg p-4">
+                    <h2 className="text-sm font-semibold mb-4 text-black">
+                      Quick Actions
+                    </h2>
+                    <div className="bg-[var(--card2)] rounded-lg p-4">
+                      {/* From Input */}
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-black">From</span>
+                          <span className="text-black">Balance: 400</span>
+                        </div>
+                        <div className="flex items-center bg-white rounded-lg p-3">
+                          <input
+                            type="number"
+                            value={0}
+                            onChange={() => {}}
+                            className="w-full bg-transparent text-black outline-none text-sm"
+                            placeholder="0.00"
+                          />
+                          <button className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium px-2 py-1 rounded transition-colors">
+                            MAX
+                          </button>
+                          <span className="text-black ml-2">sUSDC</span>
+                        </div>
+                      </div>
+
+                      {/* Swap Button */}
+                      <button className="w-full flex justify-center p-2 text-black hover:text-[var(--primary)]">
+                        <LuArrowUpDown size={20} />
+                      </button>
+
+                      {/* To Input */}
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="text-black">To (Estimated)</span>
+                          <span className="text-black">Balance: 500</span>
+                        </div>
+                        <div className="flex items-center bg-white rounded-lg p-3">
+                          <input
+                            type="text"
+                            value={0}
+                            readOnly
+                            className="w-full bg-transparent text-black outline-none text-sm"
+                            placeholder="0.00"
+                          />
+                          <span className="text-black ml-2">BUZZ</span>
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <button
+                        className="w-full py-3 bg-blue-300 text-black rounded-lg font-medium hover:bg-[var(--primary-hover)] 
+        transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Swap
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -105,9 +455,16 @@ const LaunchPage: React.FC = () => {
   );
 };
 
-const SidebarItem: React.FC<{ label: string; active?: boolean; onClick?: () => void }> = ({ label, active, onClick }) => (
-  <button onClick={onClick} className={`flex items-center p-2 rounded-lg ${active ? "bg-gray-200 text-black" : "hover:bg-gray-200 hover:text-black"}`}>
-    <span className="ml-3 font-semibold">{label}</span>
+const SidebarItem: React.FC<{
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}> = ({ label, active, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center p-2 rounded-lg ${active ? "bg-gray-200 text-black" : "hover:bg-gray-200 hover:text-black"}`}
+  >
+    <span className="ml-3 font-semibold">➡ {label}</span>
   </button>
 );
 
@@ -115,14 +472,21 @@ const RewardsSection: React.FC = () => (
   <div>
     <h1 className="text-xl font-bold text-black">Rewards</h1>
     <div className="mt-4 space-y-4">
-      {["Total Rewards", "Total Rewards Claimed", "Total Rewards Available"].map((item, i) => (
+      {[
+        "Total Rewards",
+        "Total Rewards Claimed",
+        "Total Rewards Available",
+      ].map((item, i) => (
         <RewardItem key={i} label={item} description="0.00" />
       ))}
     </div>
   </div>
 );
 
-const RewardItem: React.FC<{ label: string; description?: string }> = ({ label, description }) => (
+const RewardItem: React.FC<{ label: string; description?: string }> = ({
+  label,
+  description,
+}) => (
   <div className="flex items-start space-x-3">
     <span className="text-xl">🎁</span>
     <div>
@@ -131,5 +495,144 @@ const RewardItem: React.FC<{ label: string; description?: string }> = ({ label, 
     </div>
   </div>
 );
+
+const BalanceScore: React.FC = () => {
+  return (
+    <>
+      <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
+        <div className="w-full max-w-xl">
+          <h2 className="text-lg font-semibold mb-4 ">Balance</h2>
+          <div className="bg-amber-50 p-4 rounded-xl mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center">
+                <img
+                  src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
+                  alt="BNB"
+                  className="w-6 h-6 mr-2"
+                />
+                <span>ETH</span>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold">0 ETH</p>
+                <p className="text-sm text-gray-500">0.00 USD</p>
+              </div>
+            </div>
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex items-center">
+                <img
+                  src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
+                  alt="MNT"
+                  className="w-6 h-6 mr-2"
+                />
+                <span>ETHENA</span>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold">0 sUSDE</p>
+                <p className="text-sm text-gray-500">0.00 USD</p>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <img
+                  src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
+                  alt="ETH"
+                  className="w-6 h-6 mr-2"
+                />
+                <span>USDC</span>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold">0 USDC</p>
+                <p className="text-sm text-gray-500">0.00 USD</p>
+              </div>
+            </div>
+          </div>
+          <button className="w-full py-2 text-blue-600 font-semibold underline mb-8">
+            Cash out my balance →
+          </button>
+
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">My Score</h2>
+            <button className="text-sm text-blue-600">History</button>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-xl mb-2 flex justify-between items-center">
+            <div className="flex items-center">
+              <img
+                src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
+                alt="abCHIPS"
+                className="w-6 h-6 mr-2"
+              />
+              <span>BuzzChips</span>
+            </div>
+            <span className="font-semibold">140.0000</span>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-xl mb-2 flex justify-between items-center">
+            <div className="flex items-center">
+              <img
+                src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
+                alt="Alpha"
+                className="w-6 h-6 mr-2"
+              />
+              <span>Alpha</span>
+            </div>
+            <span className="font-semibold">0.0000</span>
+          </div>
+
+          <div className="bg-gray-100 p-4 rounded-xl flex justify-between items-center">
+            <div className="flex items-center">
+              <img
+                src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
+                alt="Beta"
+                className="w-6 h-6 mr-2"
+              />
+              <span>Beta</span>
+            </div>
+            <span className="font-semibold">0.0000</span>
+          </div>
+
+          <p className="text-center text-sm text-gray-500 mt-6">
+            Missing some rewards?{" "}
+            <a href="#" className="text-blue-600 font-semibold">
+              Click to claim them!
+            </a>
+          </p>
+        </div>
+      </div>
+    </>
+  );
+};
+
+function SettingsCard() {
+  return (
+    <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
+      <div className="w-1/2 p-5 bg-[#F5F3ED] rounded">
+        <h2 className="text-lg font-semibold text-gray-700 mb-2">
+          Twitter Account
+        </h2>
+        <button className="w-full flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
+          <span>Link</span>
+          <span className="text-xl">𝕏</span> {/* X logo */}
+          <span>Account</span>
+        </button>
+
+        <hr className="my-4 border-gray-400" />
+
+        <h2 className="text-lg font-semibold text-gray-700 mb-2">Email</h2>
+        <button className="w-full border border-black text-black font-medium py-2 rounded-md hover:bg-gray-100">
+          Verify Email
+        </button>
+
+        <hr className="my-4 border-gray-400" />
+
+        <div className="flex justify-end">
+          <button className="flex items-center gap-2 text-black font-medium hover:underline">
+            <span>↪</span> Log Out
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default LaunchPage;
