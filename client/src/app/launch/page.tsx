@@ -86,7 +86,7 @@ const LaunchPage: React.FC = () => {
   });
   const [isSwapped, setIsSwapped] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
-  const [actionButtonText, setActionButtonText] = useState("Buy");
+  const [actionButtonText, setActionButtonText] = useState("Exchange");
   const [isTransacting, setIsTransacting] = useState(false);
 
   const handleSubmit = async () => {
@@ -122,11 +122,18 @@ const LaunchPage: React.FC = () => {
       toast.error("Missing required information");
       return;
     }
+
+    console.log("fromToken", fromToken); 
+    console.log("toToken", toToken); 
     setIsTransacting(true);
     if (fromToken.symbol === "USDe") {
+      console.log("converting USDe to Buzz");
       await convertUSDetoBuzz(fromToken.amount);
+      setIsTransacting(false);
     } else {
+      console.log("converting Buzz to USDe");
       await convertBuzztoUSDe(fromToken.amount);
+      setIsTransacting(false);
     }
   }, [address, fromToken.amount]);
 

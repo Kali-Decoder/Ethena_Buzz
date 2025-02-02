@@ -159,7 +159,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.usdeAddress,
         tokenAbi
       );
-      console.log("tokenContract", tokenContract);
+     
       if (tokenContract) {
         const allowance = await tokenContract.allowance(
           address,
@@ -174,13 +174,13 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         }
       }
       if (conversionContract) {
-        await conversionContract.convertUSDtoBUZZ(amount);
+        await conversionContract.convertUSDetoBuzz(amount);
         await getTokenBalance();
         toast.success("USDe converted to BUZZ successfully", { id });
         return;
       }
     } catch (error) {
-      console.log("Error in converting USDe to BUZZ");
+    console.log("Error in converting USDe to BUZZ", error);
       toast.error("Error in converting USDe to BUZZ", { id });
     }
   }
@@ -199,7 +199,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.tokenAddress,
         tokenAbi
       );
-      console.log("tokenContract", tokenContract);
+   
       if (tokenContract) {
         const allowance = await tokenContract.allowance(
           address,
@@ -214,12 +214,13 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         }
       }
       if (conversionContract) {
-        await conversionContract.convertBUZZtoUSD(amount);
-        await getTokenBalance();
+        await conversionContract.convertBuzztoUSDe(amount);
         toast.success("BUZZ converted to USDe successfully", { id });
+        await getTokenBalance();
         return;
       }
     } catch (error) {
+      console.log("Error in converting BUZZ to USDe", error);
       toast.error("Error in converting BUZZ to USDe", { id });
     }
   }
