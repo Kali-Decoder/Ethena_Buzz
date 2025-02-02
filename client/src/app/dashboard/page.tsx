@@ -5,7 +5,7 @@ import { useAccount } from "wagmi";
 const DashboardPage = () => {
   const { address } = useAccount();
   const {
-    tokenBalance?.buzzBalance,
+    tokenBalance,
     createPool,
     userBetsData,
     setResultScore,
