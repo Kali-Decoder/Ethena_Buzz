@@ -12,6 +12,7 @@ import {
   ExchangeComponent,
   ExploreBody,
   SelectedPost,
+  CreateTokenBody,
 } from "./_components/sidebar-body-components";
 import {
   RewardHeader,
@@ -96,23 +97,23 @@ const LaunchPage: React.FC = () => {
   const handleSwap = () => {
     setFromToken((prev) => ({
       symbol: prev.symbol === "USDe" ? "BUZZ" : "USDe",
-      amount:0
+      amount: 0,
     }));
     setToToken((prev) => ({
       symbol: prev.symbol === "BUZZ" ? "USDe" : "BUZZ",
-      amount:0
+      amount: 0,
     }));
 
-    if(fromToken.symbol === "USDe") {
+    if (fromToken.symbol === "USDe") {
       setMaxTokenBalances({
         fromBalance: tokenBalance.buzzBalance,
         toBalance: tokenBalance.usdeBalance,
-      })
-    }else{
+      });
+    } else {
       setMaxTokenBalances({
         fromBalance: tokenBalance.usdeBalance,
         toBalance: tokenBalance.buzzBalance,
-      })
+      });
     }
   };
 
@@ -195,10 +196,10 @@ const LaunchPage: React.FC = () => {
   }, [userBetsData]);
 
   return (
-    <div className="flex items-center justify-center h-[100vh] bg-transparent orbitron-launch">
-      <div className="w-[85%] h-[90%] border-4 shadow-lg rounded-lg flex overflow-hidden">
+    <div className="flex items-center justify-center h-[100vh] bg-change-primary-bg orbitron-launch">
+      <div className="w-[85%] h-[90%] shadow-lg rounded-lg flex overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 bg-s3 shadow-lg p-4 flex flex-col">
+        <aside className="w-64 bg-change-secondary-bg shadow-lg p-4 flex flex-col">
           <h1 className="text-2xl font-bold text-white"> 💰 BUZZIFY 💸</h1>
           <nav className="flex flex-col mt-6 space-y-3">
             {sidebarItems.map((item) => (
@@ -239,7 +240,7 @@ const LaunchPage: React.FC = () => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
           {/* Header */}
-          <header className="flex items-center bg-p3 opacity-90 shadow-lg px-4 py-3 justify-center">
+          <header className="flex items-center bg-change-secondary-bg  opacity-90 shadow-lg px-4 py-3 justify-center">
             {selected === "Explore" && !selectedPost && (
               <>
                 <ExploreHeader />
@@ -291,7 +292,7 @@ const LaunchPage: React.FC = () => {
           </header>
 
           {/* Content Section */}
-          <div className="p-6 bg-white shadow-lg h-full overflow-y-scroll scrollbar-thin">
+          <div className="p-6 bg-change-secondary-bg shadow-lg h-full overflow-y-scroll scrollbar-thin">
             {selected === "Explore" && !selectedPost && (
               <>
                 <ExploreBody
@@ -345,6 +346,7 @@ const LaunchPage: React.FC = () => {
               </>
             )}
             {selected === "Leaderboard" && <LeaderBoardCard />}
+            {selected === "Create" && <CreateTokenBody />}
           </div>
         </div>
       </div>

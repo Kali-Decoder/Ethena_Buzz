@@ -7,6 +7,7 @@ import { useDataContext } from "@/context/DataContext";
 import Slider from "react-input-slider";
 import { LuArrowUpDown } from "react-icons/lu";
 import Link from "next/link";
+import { IoInformationCircleOutline } from "react-icons/io5";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -27,17 +28,23 @@ interface ExchangeComponentProps {
   handleAction: () => void;
   maxTokenBalances: any;
 }
+interface CreateTokenBodyProps {
+  setShowSocialLinks: (showSocialLinks: boolean) => void;
+  showSocialLinks: boolean;
+  socialLinks: string;
+  setSocialLinks: (socialLinks: string) => void;
+}
 const RewardsSection: React.FC<RewardsSectionProps> = ({
   onClick,
   nftMintedAllReady,
 }) => (
-  <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
+  <div className="flex w-full flex-col items-center bg-change-secondary-bg  p-6 rounded text-white">
     <div className="w-1/2 p-2 rounded flex flex-col">
       <ol className="relative border-s border-gray-500 dark:border-gray-700">
         <li className="mb-10 ms-4">
-          <div className="absolute w-3 h-3 bg-gray-600 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+          <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
 
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
             {nftMintedAllReady ? "Your NFT is minted" : "Mint Your NFT"}
           </h3>
           {nftMintedAllReady ? (
@@ -59,9 +66,9 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
           )}
         </li>
         <li className="mb-10 ms-4">
-          <div className="absolute w-3 h-3 bg-gray-600 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+          <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
 
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
             Make one prediction claim 100 BUZZ Tokens
           </h3>
           <button className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
@@ -70,8 +77,8 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
           </button>
         </li>
         <li className="ms-4">
-          <div className="absolute w-3 h-3 bg-gray-600 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+          <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
             Create one prediction claim 100 BUZZ Tokens
           </h3>
           <button className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
@@ -87,10 +94,10 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
 const BalanceScore: React.FC = () => {
   return (
     <>
-      <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
+      <div className="flex w-full flex-col items-center bg-change-secondary-bg  p-6 rounded text-white">
         <div className="w-full max-w-xl">
           <h2 className="text-lg font-semibold mb-4 ">Balance</h2>
-          <div className="bg-amber-50 p-4 rounded-xl mb-6">
+          <div className="bg-amber-50 p-4 rounded-md mb-6 text-black">
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center">
                 <img
@@ -105,7 +112,7 @@ const BalanceScore: React.FC = () => {
                 <p className="text-sm text-gray-500">0.00 USD</p>
               </div>
             </div>
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-2 ">
               <div className="flex items-center">
                 <img
                   src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
@@ -143,7 +150,7 @@ const BalanceScore: React.FC = () => {
             <button className="text-sm text-blue-600">History</button>
           </div>
 
-          <div className="bg-gray-100 p-4 rounded-xl mb-2 flex justify-between items-center">
+          <div className="bg-gray-100 p-4 text-black rounded-md mb-2 flex justify-between items-center">
             <div className="flex items-center">
               <img
                 src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
@@ -155,7 +162,7 @@ const BalanceScore: React.FC = () => {
             <span className="font-semibold">140.0000</span>
           </div>
 
-          <div className="bg-gray-100 p-4 rounded-xl mb-2 flex justify-between items-center">
+          <div className="bg-gray-100 p-4 text-black rounded-md mb-2 flex justify-between items-center">
             <div className="flex items-center">
               <img
                 src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
@@ -167,7 +174,7 @@ const BalanceScore: React.FC = () => {
             <span className="font-semibold">0.0000</span>
           </div>
 
-          <div className="bg-gray-100 p-4 rounded-xl flex justify-between items-center">
+          <div className="bg-gray-100 p-4 text-black rounded-md flex justify-between items-center">
             <div className="flex items-center">
               <img
                 src="https://s2.coinmarketcap.com/static/img/coins/64x64/30171.png"
@@ -193,7 +200,7 @@ const BalanceScore: React.FC = () => {
 
 const LeaderBoardCard: React.FC = () => {
   return (
-    <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
+    <div className="flex w-full flex-col items-center bg-change-secondary-bg p-6 rounded text-black">
       <div className="leaderboard-main">
         <div id="leaderboard">
           <div className="leaderboard-ribbon"></div>
@@ -282,56 +289,56 @@ function ExchangeComponent({
 }: ExchangeComponentProps) {
   return (
     <div className="flex justify-center items-center flex-col">
-      <div className="bg-[#F5F3ED] w-1/2 border rounded-lg p-4">
-        <h2 className="text-sm font-semibold mb-4 text-black">Quick Actions</h2>
-        <div className="bg-[var(--card2)] rounded-lg p-4">
+      <div className="bg-change-trinary-bg w-1/2 rounded-lg p-4 py-8 mt-10">
+        <h2 className="text-sm font-semibold mb-4 text-white">Quick Actions</h2>
+        <div className="rounded-lg p-4">
           {/* From Input */}
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-2">
-              <span className="text-black">From</span>
-              <span className="text-black">
+              <span className="text-white">From</span>
+              <span className="text-white">
                 Balance: {maxTokenBalances?.fromBalance} {fromToken.symbol}
               </span>
             </div>
-            <div className="flex items-center bg-white rounded-lg p-3">
+            <div className="flex items-center bg-change-secondary-bg  rounded-md p-3">
               <input
                 type="number"
                 value={fromToken.amount}
                 onChange={handleFromAmountChange}
-                className="w-full bg-transparent text-black outline-none text-sm"
+                className="w-full bg-transparent text-white outline-none text-sm"
                 placeholder="0.00"
                 disabled={isTransacting}
               />
               <button className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium px-2 py-1 rounded transition-colors">
                 MAX
               </button>
-              <span className="text-black ml-2">{fromToken.symbol}</span>
+              <span className="text-white ml-2">{fromToken.symbol}</span>
             </div>
           </div>
 
           <button
             onClick={handleSwap}
-            className="w-full flex justify-center p-2 text-black hover:text-[var(--primary)]"
+            className="w-full flex justify-center p-2 text-white hover:text-[var(--primary)]"
           >
             <LuArrowUpDown size={20} />
           </button>
 
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-2">
-              <span className="text-black">To (Estimated)</span>
-              <span className="text-black">
+              <span className="text-white">To (Estimated)</span>
+              <span className="text-white">
                 Balance: {maxTokenBalances?.toBalance} {toToken.symbol}
               </span>
             </div>
-            <div className="flex items-center bg-white rounded-lg p-3">
+            <div className="flex items-center bg-change-secondary-bg rounded-lg p-3">
               <input
                 type="text"
                 value={isCalculating ? "Calculating..." : toToken.amount}
                 readOnly
-                className="w-full bg-transparent text-black outline-none text-sm"
+                className="w-full bg-transparent text-white outline-none text-sm"
                 placeholder="0.00"
               />
-              <span className="text-black ml-2">{toToken.symbol}</span>
+              <span className="text-white ml-2">{toToken.symbol}</span>
             </div>
           </div>
 
@@ -339,8 +346,8 @@ function ExchangeComponent({
           <button
             onClick={handleAction}
             disabled={!fromToken.amount || isCalculating || isTransacting}
-            className="w-full py-3 bg-blue-300 text-black rounded-lg font-medium hover:bg-[var(--primary-hover)] 
-transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-change-secondary-bg mt-4 text-white rounded-lg font-medium 
+transition-colors "
           >
             {isTransacting ? "Processing..." : actionButtonText}
           </button>
@@ -396,7 +403,7 @@ function SelectedPost({
   return (
     <>
       {selectedPost?.name ? (
-        <div className="flex w-full gap-x-8 bg-white p-6 rounded  border text-black">
+        <div className="flex w-full gap-x-8 bg-change-secondary-bg  p-6 rounded text-white">
           <div className="w-2/3 overflow-y-scroll scrollbar-thin">
             {/* Header Section */}
             <div className="flex items-center justify-between">
@@ -406,12 +413,12 @@ function SelectedPost({
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />
-                <span className="font-semibold text-gray-900">
+                <span className="font-semibold text-gray-200">
                   {selectedPost?.name}
                 </span>
                 <span className="text-blue-500">💎</span>
               </div>
-              <div className="flex items-center gap-1 text-gray-600">
+              <div className="flex items-center gap-1 text-gray-200">
                 <CgDollar size={18} />
                 <span className="text-sm font-medium">
                   {selectedPost?.total_amount}
@@ -436,10 +443,10 @@ function SelectedPost({
 
             {/* Post Content */}
             <div className="mt-3">
-              <h2 className="font-bold text-lg text-gray-900">
+              <h2 className="font-bold text-lg text-white">
                 {selectedPost?.question}
               </h2>
-              <p className="text-gray-700 text-sm mt-1">
+              <p className="text-gray-300 text-sm mt-1">
                 {selectedPost?.description}
               </p>
             </div>
@@ -552,6 +559,63 @@ function SelectedPost({
   );
 }
 
+function CreateTokenBody() {
+  return (
+    <div className="flex justify-center items-center flex-col">
+      <div className="max-w-xl w-full bg-change-trinary-bg  text-white p-6 rounded-md mt-8">
+        <h2 className="text-2xl font-semibold text-center mb-4">
+          Create New Poll
+        </h2>
+
+        {/* Deployment Info */}
+        <button className="flex items-center text-gray-200 text-sm mx-auto mb-4">
+          <IoInformationCircleOutline className="mr-1 text-lg" />
+          Deployment Cost Info
+        </button>
+
+        {/* Form Fields */}
+        <div className="space-y-4">
+          {/* Token Name & Symbol */}
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="text"
+              placeholder="Enter Pool Name"
+              className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="date"
+              placeholder="Put Your Deadline Here"
+              className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <textarea
+            placeholder="Put Your Question Here"
+            className="w-full p-3 h-20 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+          {/* Token Description */}
+          <textarea
+            placeholder="Give Some Context Around Your Question"
+            className="w-full p-3 h-20 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Enter social media links"
+              className="w-full mt-2 p-3 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Create Token Button */}
+          <button className="w-full py-3 bg-blue-400 text-gray-800 rounded-md">
+            Create Poll
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export {
   RewardsSection,
   BalanceScore,
@@ -560,4 +624,5 @@ export {
   ExchangeComponent,
   ExploreBody,
   SelectedPost,
+  CreateTokenBody,
 };

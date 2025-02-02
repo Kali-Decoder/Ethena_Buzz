@@ -30,7 +30,7 @@ const PostComponent = ({
     <>
       <div
         onClick={onSelect}
-        className="bg-[#F5F3EE] border-2 border-gray-300 rounded-lg shadow-md p-4 cursor-pointer flex flex-col gap-4"
+        className="bg-white border-2 border-gray-300 rounded-md shadow-md p-4 cursor-pointer flex flex-col gap-4"
       >
         <h2 className="font-bold text-md text-black">{item?.question}</h2>
         <p className="text-xs text-gray-700">

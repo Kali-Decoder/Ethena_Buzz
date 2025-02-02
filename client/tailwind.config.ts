@@ -31,6 +31,9 @@ const config: Config = {
         rotation: 'rotation 1s linear infinite',
       },
       colors: {
+        'change-primary-bg': '#111010',
+        'change-secondary-bg': '#222222',
+        'change-trinary-bg': '#1B1B1A',
         'primary-500': '#877EFF',
         'primary-600': '#5D5FEF',
         'secondary-500': '#FFB620',

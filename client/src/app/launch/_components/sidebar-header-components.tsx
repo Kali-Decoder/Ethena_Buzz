@@ -2,11 +2,11 @@ import { IoCaretBackCircleSharp } from "react-icons/io5";
 
 function RewardHeader(props: any) {
   return (
-    <div className="flex gap-x-4 text-black justify-center items-center w-full">
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6  focus:bg-black focus:text-white">
+    <div className="flex gap-x-4 text-white justify-center items-center w-full">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-6  focus:bg-black focus:text-white">
         ⚡️ Ethena Campaign
       </button>
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6 focus:bg-black focus:text-white">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-6 focus:bg-black focus:text-white">
         ⚡️ More Rewards
       </button>
     </div>
@@ -16,37 +16,30 @@ function RewardHeader(props: any) {
 function ExploreHeader(props: any) {
   return (
     <div className="flex gap-x-4 text-black">
-      <button className=" text-black font-bold text-md p-2 border border-black  rounded-40  focus:bg-black focus:text-white">
+      <button className=" text-white font-bold text-md p-2 border border-white  rounded-40  focus:bg-black focus:text-white">
         ⚡️ All
       </button>
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
         ⚡️ Featured
       </button>
 
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
         💥 New
       </button>
 
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
         ⏱️ Ending Soon
       </button>
 
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
-        ⏱️ Ending Soon
-      </button>
-
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 focus:bg-black focus:text-white">
-        ⏱️ Ending Soon
-      </button>
     </div>
   );
 }
 
 function SelectedPostHeader({ selectedPost, setSelectedPost }: any) {
   return (
-    <div className="flex gap-x-4 text-black w-full items-center">
+    <div className="flex gap-x-4 text-white w-full items-center">
       <button
-        className="mt-4 text-black mb-4"
+        className="mt-4 text-white mb-4"
         onClick={() => setSelectedPost(null)}
       >
         <IoCaretBackCircleSharp size={25} />
@@ -60,7 +53,7 @@ function SelectedPostHeader({ selectedPost, setSelectedPost }: any) {
 
 function CreatePollHeader() {
   return (
-    <div className="flex gap-x-4 text-black justify-center w-full">
+    <div className="flex gap-x-4 text-white justify-center w-full">
       <p className="text-semibold text-xl font-bold">Create Poll</p>
     </div>
   );
@@ -68,7 +61,7 @@ function CreatePollHeader() {
 
 function SettingsHeader() {
   return (
-    <div className="flex gap-x-4 text-black justify-center w-full">
+    <div className="flex gap-x-4 text-white justify-center w-full">
       <p className="text-semibold text-xl font-bold">Settings</p>
     </div>
   );
@@ -76,7 +69,7 @@ function SettingsHeader() {
 
 function ExchangeHeader() {
   return (
-    <div className="flex gap-x-4 text-black justify-center w-full">
+    <div className="flex gap-x-4 text-white justify-center w-full">
       <p className="text-semibold text-xl font-bold">Exchange Your Rewards</p>
     </div>
   );
@@ -84,7 +77,7 @@ function ExchangeHeader() {
 
 function AssetsHeader() {
   return (
-    <div className="flex gap-x-4 text-black justify-center w-full">
+    <div className="flex gap-x-4 text-white justify-center w-full">
       <p className="text-semibold text-xl font-bold">Assets</p>
     </div>
   );
@@ -92,14 +85,14 @@ function AssetsHeader() {
 
 function LeaderboardHeader() {
   return (
-    <div className="flex gap-x-4 text-black justify-center items-center w-full">
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6  focus:bg-black focus:text-white">
+    <div className="flex gap-x-4 text-white justify-center items-center w-full">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-6  focus:bg-black focus:text-white">
         ⚡️ Alpha
       </button>
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6 focus:bg-black focus:text-white">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-6 focus:bg-black focus:text-white">
         ⚡️ Beta-Buzz
       </button>
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-6 focus:bg-black focus:text-white">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-6 focus:bg-black focus:text-white">
         💥 Mainnet
       </button>
     </div>
@@ -108,11 +101,11 @@ function LeaderboardHeader() {
 
 function MyVotesHeader() {
   return (
-    <div className="flex gap-x-4 text-black justify-center items-center w-full">
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-10  focus:bg-black focus:text-white">
+    <div className="flex gap-x-4 text-white justify-center items-center w-full">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-10  focus:bg-black focus:text-white">
         ⚡️ Live Polls
       </button>
-      <button className=" text-black text-md p-2 border border-black font-bold rounded-40 px-10 focus:bg-black focus:text-white">
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-10 focus:bg-black focus:text-white">
         ⚡️ History
       </button>
     </div>
