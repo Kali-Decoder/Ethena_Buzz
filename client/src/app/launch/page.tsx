@@ -12,7 +12,7 @@ import {
   ExchangeComponent,
   ExploreBody,
   SelectedPost,
-  CreateTokenBody,
+  CreatePollBody,
 } from "./_components/sidebar-body-components";
 import {
   RewardHeader,
@@ -346,7 +346,7 @@ const LaunchPage: React.FC = () => {
               </>
             )}
             {selected === "Leaderboard" && <LeaderBoardCard />}
-            {selected === "Create" && <CreateTokenBody />}
+            {selected === "Create" && <CreatePollBody />}
           </div>
         </div>
       </div>

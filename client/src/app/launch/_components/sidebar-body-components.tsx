@@ -8,6 +8,7 @@ import Slider from "react-input-slider";
 import { LuArrowUpDown } from "react-icons/lu";
 import Link from "next/link";
 import { IoInformationCircleOutline } from "react-icons/io5";
+import { useState } from "react";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -141,13 +142,13 @@ const BalanceScore: React.FC = () => {
               </div>
             </div>
           </div>
-          <button className="w-full py-2 text-blue-600 font-semibold underline mb-8">
+          <button className="w-full py-2 text-[#4A82ED] font-semibold underline mb-8">
             Cash out my balance →
           </button>
 
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">My Score</h2>
-            <button className="text-sm text-blue-600">History</button>
+            <button className="text-sm text-[#4A82ED]">History</button>
           </div>
 
           <div className="bg-gray-100 p-4 text-black rounded-md mb-2 flex justify-between items-center">
@@ -188,7 +189,7 @@ const BalanceScore: React.FC = () => {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Missing some rewards?{" "}
-            <a href="#" className="text-blue-600 font-semibold">
+            <a href="#" className="text-[#4A82ED] font-semibold">
               Click to claim them!
             </a>
           </p>
@@ -246,8 +247,8 @@ const LeaderBoardCard: React.FC = () => {
 
 function SettingsCard() {
   return (
-    <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
-      <div className="w-1/2 p-5 bg-[#F5F3ED] rounded">
+    <div className="flex w-full flex-col items-center bg-change-secondary-bg  p-6 rounded text-black">
+      <div className="w-1/2 p-5 bg-[#F5F3ED]">
         <h2 className="text-lg font-semibold text-gray-700 mb-2">
           Twitter Account
         </h2>
@@ -354,7 +355,7 @@ transition-colors "
         </div>
       </div>
 
-      <button className="w-full py-2 text-blue-600 font-semibold underline mt-4">
+      <button className="w-full py-2 text-[#4A82ED] font-semibold underline mt-4">
         <Link href="https://faucet.ethena.fi/" target="_blank">
           {" "}
           Need USDe Faucet ? →
@@ -559,7 +560,29 @@ function SelectedPost({
   );
 }
 
-function CreateTokenBody() {
+function CreatePollBody() {
+  const [pollData, setPollData] = useState({
+    pollName: "",
+    deadline: "",
+    question: "",
+    context: "",
+    link: "",
+  });
+
+  let {createPool} = useDataContext();
+
+  const handlePollDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const { name, value } = e.target;
+    setPollData((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleCreatePoll = async () => {
+    let { pollName, deadline, question, context, link } = pollData;
+    const dead = Math.floor(new Date(deadline).getTime() / 1000);
+    const currentTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
+    const timeRemaining = dead - currentTimestamp;
+    await createPool(question,context,timeRemaining);
+  };
   return (
     <div className="flex justify-center items-center flex-col">
       <div className="max-w-xl w-full bg-change-trinary-bg  text-white p-6 rounded-md mt-8">
@@ -579,35 +602,56 @@ function CreateTokenBody() {
           <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
+              name="pollName"
+              value={pollData.pollName}
+              onChange={handlePollDataChange}
               placeholder="Enter Pool Name"
               className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
-              type="date"
-              placeholder="Put Your Deadline Here"
-              className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="datetime-local"
+              name="deadline"
+              value={pollData.deadline}
+              onChange={handlePollDataChange}
+              className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <textarea
             placeholder="Put Your Question Here"
+            name="question"
+            value={pollData.question}
+            onChange={(e) =>
+              setPollData({ ...pollData, question: e.target.value })
+            }
             className="w-full p-3 h-20 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           ></textarea>
           {/* Token Description */}
           <textarea
+            name="context"
+            value={pollData.context}
+            onChange={(e) =>
+              setPollData({ ...pollData, context: e.target.value })
+            }
             placeholder="Give Some Context Around Your Question"
             className="w-full p-3 h-20 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           ></textarea>
 
           <div>
             <input
-              type="text"
+              type="url"
+              name="link"
+              value={pollData.link}
+              onChange={handlePollDataChange}
               placeholder="Enter social media links"
               className="w-full mt-2 p-3 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* Create Token Button */}
-          <button className="w-full py-3 bg-blue-400 text-gray-800 rounded-md">
+          <button
+            onClick={handleCreatePoll}
+            className="w-full py-3 bg-blue-400 text-gray-800 rounded-md"
+          >
             Create Poll
           </button>
         </div>
@@ -624,5 +668,5 @@ export {
   ExchangeComponent,
   ExploreBody,
   SelectedPost,
-  CreateTokenBody,
+  CreatePollBody,
 };
