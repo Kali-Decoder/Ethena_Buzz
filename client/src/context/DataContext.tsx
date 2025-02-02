@@ -10,11 +10,15 @@ import {
   oracleAddress,
   Addresses,
   nftContractAbi,
+  conversionContractAbi,
 } from "@/constant/index";
 
 // Context types
 interface DataContextProps {
-  tokenBalance: BigNumber | undefined;
+  tokenBalance: {
+    usdeBalance: number;
+    buzzBalance: number;
+  };
   getContractInstance: (
     contractAddress: string,
     contractAbi: any
@@ -41,7 +45,8 @@ interface DataContextProps {
   setActivePoolId: (id: number) => void;
   formatTimestamp: (timestamp: number) => string;
   mintNft: () => Promise<void>;
-  nftMintedAllReady : boolean;
+  nftMintedAllReady: boolean;
+  getSingleTokenBalance: (tokenAddress: string) => Promise<number>;
 }
 
 interface DataContextProviderProps {
@@ -58,7 +63,10 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
 }) => {
   const NFT_URI =
     "https://gateway.pinata.cloud/ipfs/bafkreifsghmurcvqcer5axfj4jaryfa42gxmqgqv3pkjl56g2k6bcigq4u/";
-  const [tokenBalance, setTokenBalance] = useState<BigNumber | undefined>();
+  const [tokenBalance, setTokenBalance] = useState<BigNumber | undefined>({
+    usdeBalance: 0,
+    buzzBalance: 0,
+  });
   const { address, chain } = useAccount();
   const [totalPools, setTotalPools] = useState<{}>({});
   const [userBetsData, setUserBetsData] = useState(null);
@@ -103,19 +111,19 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
 
   const getTokenBalance = async () => {
     try {
-      console.log(
-        "Getting token balance",
-        Addresses[activeChain]?.tokenAddress
-      );
       const tokenContract = await getContractInstance(
-        Addresses[activeChain]?.tokenAddress,
-        tokenAbi
+        Addresses[activeChain]?.conversionAddress,
+        conversionContractAbi
       );
       if (tokenContract) {
         console.log("Token contract", tokenContract);
-        let balance = await tokenContract.balanceOf(address);
-        balance = +balance.div(BigNumber.from(10).pow(18)).toString();
-        setTokenBalance(balance);
+        let balance = await tokenContract.getUserBalances();
+
+        console.log("Token balance", balance);
+        setTokenBalance({
+          usdeBalance: +balance[0].div(BigNumber.from(10).pow(18)).toString(),
+          buzzBalance: +balance[1].div(BigNumber.from(10).pow(18)).toString(),
+        });
         console.log("Token balance", balance);
         return balance;
       }
@@ -124,6 +132,19 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       return BigNumber.from(0);
     }
   };
+
+  const getSingleTokenBalance = async (tokenAddress: string) => {
+    try {
+      const tokenContract = await getContractInstance(tokenAddress, tokenAbi);
+      if (tokenContract) {
+        let balance = await tokenContract.balanceOf(address);
+        return +balance.div(BigNumber.from(10).pow(18)).toString();
+      }
+    } catch (error) {
+      console.log("Error in getting token balance");
+      return BigNumber.from(0);
+    }
+  }
 
   const mintNft = async () => {
     let id = toast.loading("Minting NFT...");
@@ -135,17 +156,17 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       if (nftContract) {
         let balance = await nftContract.balanceOf(address);
         if (balance.toNumber() >= 1) {
-          toast.error("You already have an NFT",{id});
+          toast.error("You already have an NFT", { id });
           return;
         }
         const tx = await nftContract.mintNFT(address, NFT_URI);
         await tx.wait();
-        toast.success("NFT minted successfully",{id});
+        toast.success("NFT minted successfully", { id });
         await isNftMinted();
       }
       return;
     } catch (error) {
-      toast.error("Error in minting NFT",{id});
+      toast.error("Error in minting NFT", { id });
       return;
     }
   };
@@ -368,7 +389,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     } catch (error) {
       console.log("Error in getting nft minted");
     }
-  }
+  };
   useEffect(() => {
     if (!signer) return;
     getTokenBalance();
@@ -409,7 +430,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         setActivePoolId,
         formatTimestamp,
         mintNft,
-        nftMintedAllReady
+        nftMintedAllReady,
+        getSingleTokenBalance
       }}
     >
       {children}

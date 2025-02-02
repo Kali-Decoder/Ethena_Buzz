@@ -18,20 +18,19 @@ contract Conversion {
         _;
     }
 
-    // 1:10
-    // for 1 USDe you will get 10 buzz
-    // Both Token are of 18 decimals not calculation needed
-
     function convertUSDetoBuzz(uint256 _amount) public {
         USDe.transferFrom(msg.sender, address(this), _amount);
         uint256 buzzAmount = _amount * 10;
         buzz.transfer(msg.sender, buzzAmount);
     }
-
     function convertBuzztoUSDe(uint256 _amount) public {
         buzz.transferFrom(msg.sender, address(this), _amount);
         uint256 USDeAmount = _amount / 10;
         USDe.transfer(msg.sender, USDeAmount);
+    }
+
+    function getUserBalances() public view returns (uint256, uint256) {
+        return (USDe.balanceOf(address(this)), buzz.balanceOf(msg.sender));
     }
 
     function withdrawFunds(address _token, uint256 _amount) public onlyOwner {

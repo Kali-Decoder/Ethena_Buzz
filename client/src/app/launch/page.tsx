@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PostComponent from "./_components/post_component";
 import { useAccount } from "wagmi";
 import { useDataContext } from "@/context/DataContext";
@@ -21,7 +21,7 @@ const LaunchPage: React.FC = () => {
     placeBet,
     formatTimestamp,
     mintNft,
-    nftMintedAllReady,
+    nftMintedAllReady
   } = useDataContext();
 
   interface PoolData {
@@ -50,10 +50,37 @@ const LaunchPage: React.FC = () => {
   const max = 100;
   const step = 2;
 
+  const [fromToken, setFromToken] = useState({ symbol: 'BUZZ', amount: 0 });
+  const [toToken, setToToken] = useState({ symbol: 'USDe', amount: 0 });
+  const [isSwapped, setIsSwapped] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [ethBalance, setEthBalance] = useState('0.000');
+  // const [tokenBalance, setTokenBalance] = useState('0.000');
+  const [actionButtonText, setActionButtonText] = useState('Buy');
+  const [isTransacting, setIsTransacting] = useState(false);
+
+
   const handleSubmit = async () => {
     console.log(selectedPost?.id, scorePrediction, investment);
     await placeBet(+selectedPost?.id, +investment.toString(), scorePrediction);
   };
+
+  const handleSwap = () => {
+    setFromToken((prev) => ({
+      symbol: prev.symbol === 'USDe' ? 'BUZZ' : 'USDe',
+      amount: prev.symbol === 'USDe' ? tokenBalance?.buzzBalance : tokenBalance?.usdeBalance
+    }));
+    setToToken((prev) => ({
+      symbol: prev.symbol === 'BUZZ' ? 'USDe' : 'BUZZ',
+      amount: prev.symbol === 'BUZZ' ? tokenBalance?.usdeBalance : tokenBalance?.buzzBalance
+    }));
+  };
+
+  const handleFromAmountChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFromToken((prev) => ({ ...prev, amount: +e.target.value }));
+    setIsCalculating(true);
+  }, []);
+
 
   const mintYourNft = async () => {
     await mintNft();
@@ -81,7 +108,7 @@ const LaunchPage: React.FC = () => {
   }, [totalPools]);
 
   const handleMax = () => {
-    setInvestment(tokenBalance);
+    setInvestment(tokenBalance?.buzzBalance);
   };
 
   useEffect(() => {
@@ -411,7 +438,7 @@ const LaunchPage: React.FC = () => {
                           <div className="flex justify-between flex-col text-xs mt-2">
                             <span className="text-black"></span>
                             <span className="text-black text-[10px]">
-                              Balance: {tokenBalance ? tokenBalance : 0} BUZZ
+                              Balance: {tokenBalance?.buzzBalance ? tokenBalance?.buzzBalance : 0} BUZZ
                             </span>
                             <span className="text-red text-[10px]">
                               PoolEnded :{" "}
@@ -471,52 +498,53 @@ const LaunchPage: React.FC = () => {
                       <div className="mb-4">
                         <div className="flex justify-between text-sm mb-2">
                           <span className="text-black">From</span>
-                          <span className="text-black">Balance: 400</span>
+                          <span className="text-black">Balance: {fromToken?.amount}</span>
                         </div>
                         <div className="flex items-center bg-white rounded-lg p-3">
                           <input
-                            type="number"
-                            value={0}
-                            onChange={() => {}}
+                               type="number"
+                               value={fromToken.amount}
+                               onChange={handleFromAmountChange}
                             className="w-full bg-transparent text-black outline-none text-sm"
                             placeholder="0.00"
+                      disabled={isTransacting}
                           />
-                          <button className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium px-2 py-1 rounded transition-colors">
+                          <button  className="text-xs text-[var(--primary)] hover:text-[var(--primary-hover)] font-medium px-2 py-1 rounded transition-colors">
                             MAX
                           </button>
-                          <span className="text-black ml-2">sUSDC</span>
+                          <span className="text-black ml-2">{fromToken.symbol}</span>
                         </div>
                       </div>
 
-                      {/* Swap Button */}
-                      <button className="w-full flex justify-center p-2 text-black hover:text-[var(--primary)]">
+                      <button onClick={handleSwap} className="w-full flex justify-center p-2 text-black hover:text-[var(--primary)]">
                         <LuArrowUpDown size={20} />
                       </button>
 
-                      {/* To Input */}
                       <div className="mb-4">
                         <div className="flex justify-between text-sm mb-2">
                           <span className="text-black">To (Estimated)</span>
-                          <span className="text-black">Balance: 500</span>
+                          <span className="text-black">Balance: {toToken?.amount}</span>
                         </div>
                         <div className="flex items-center bg-white rounded-lg p-3">
                           <input
-                            type="text"
-                            value={0}
-                            readOnly
+                           type="text"
+                           value={isCalculating ? 'Calculating...' : toToken.amount}
+                           readOnly
                             className="w-full bg-transparent text-black outline-none text-sm"
                             placeholder="0.00"
                           />
-                          <span className="text-black ml-2">BUZZ</span>
+                          <span className="text-black ml-2">{toToken.symbol}</span>
                         </div>
                       </div>
 
                       {/* Action Button */}
                       <button
+                        // onClick={handleAction}
+                        // disabled={!fromToken.amount || isCalculating || isTransacting}
                         className="w-full py-3 bg-blue-300 text-black rounded-lg font-medium hover:bg-[var(--primary-hover)] 
         transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Swap
+                          {isTransacting ? 'Processing...' : actionButtonText}
                       </button>
                     </div>
                   </div>

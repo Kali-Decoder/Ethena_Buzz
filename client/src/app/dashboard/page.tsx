@@ -5,8 +5,7 @@ import { useAccount } from "wagmi";
 const DashboardPage = () => {
   const { address } = useAccount();
   const {
-    tokenBalance,
-    connectPool,
+    tokenBalance?.buzzBalance,
     createPool,
     userBetsData,
     setResultScore,
@@ -59,7 +58,7 @@ const DashboardPage = () => {
                       Account balance:
                     </div>
                     <div className="text-3xl text-white">
-                      {tokenBalance ? tokenBalance : 0} BUZZ
+                      {tokenBalance?.buzzBalance ? tokenBalance?.buzzBalance : 0} BUZZ
                     </div>
                   </div>
                   <button className="w-8 h-8 ml-4 text-gray-400 shadow dark:text-gray-400 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-700">

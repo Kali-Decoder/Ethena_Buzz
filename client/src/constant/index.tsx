@@ -122,89 +122,134 @@ export const oracleAbi = [
 ];
 export const oracleAddress = "0xA0D0e6c4277a869cD3c8C3FEc7D00F0bd8E109e8";
 export const Addresses = {
-  "31": {
-    name: "Rootstock Testnet",
-    tokenAddress: "0xD86398419C65030BAB58Cf5f027Da0dD73244f88",
-    mainContractAddress: "0xe8E68427F4E52C90Cc05E1A6d86E26842A0DA8d1",
-  },
-  "5115": {
-    name: "Citrea Testnet",
-    tokenAddress: "0x09788a0B60eCCd3FE8B951e181B2391e177dFdab",
-    mainContractAddress: "0xe8e68427f4E52C90cc05E1A6D86e26842a0da8d1",
-  },
-  "545": {
-    name: "Flow Testnet",
-    tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
-    mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  },
-  "534351": {
-    name: "Scroll Sepolia",
-    tokenAddress: "0x8fc89849cdd463c9d75a9973c9683064faa887e4",
-    mainContractAddress: "0x371907da46f9771189c068864115a4e84a227469",
-  },
-  "21097": {
-    name: "Inco Network",
-    tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
-    mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  },
-  "84532": {
-    name: "Base Sepolia",
-    tokenAddress: "0x3d1ef994ccfba38a7cea5f8ea5ab02e259e7e0ca",
-    mainContractAddress: "0x82d9173b1c4e26f6dd5c16fa2a75c26acec2d19c",
-  },
-  "48899": {
-    name: "Zircuit Testnet",
-    tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
-    mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  },
-  "2810": {
-    name: "Morph Holesky",
-    tokenAddress: "0xBCab4ba549886e6BEF67d9f3d381a2710316F8CA",
-    mainContractAddress: "0x3295DE22A696a32026b1F106899f483FfEA8F5d9",
-  },
-  "44787": {
-    name: "Celo Testnet",
-    tokenAddress: "0xbC3E6978e86cBE779E820784ff703bC0851CdFF1",
-    mainContractAddress: "0xB6E01FE5184Bd310802B33461660BD12dF0b20F2",
-  },
-  "88882": {
-    name: "Chilliz Testnet",
-    tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
-    mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  },
-  "5003": {
-    name: "Mantle Testnet",
-    tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
-    mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  },
-  "245022926": {
-    name: "NEON Testnet",
-    tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
-    mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  },
-  "200002": {
-    name: "Rome Testnet",
-    tokenAddress: "0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87",
-    mainContractAddress: "0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12",
-  },
-  "167009": {
-    name: "Taiko Hekla",
-    tokenAddress: "0xe6d602de78a7a46f072b117a99b7e45640ab5e7c",
-    mainContractAddress: "0x394b899AAb17EfCF200AA3F9ce12F6fDf740E6Aa",
-  },
   "52085143":{
     name: "BLE Testnet",
     tokenAddress: "0x4d3cF8661B9B66e0D05d717Db7BF41a0c6767Fcd",
     mainContractAddress: "0xdeBCD0975753BFE290CE7ca42ffB5CE7917463F2",
-    nftContractAddress:"0x9457124Db1aDAe247A450eb5aBE1b63d5a3656f1"
+    nftContractAddress:"0x9457124Db1aDAe247A450eb5aBE1b63d5a3656f1",
+    usdeAddress:"0x426E7d03f9803Dd11cb8616C65b99a3c0AfeA6dE",
+    conversionAddress:"0x3258D8aDe2E6b9cc2FcC63fFc2F8cAd2D4AbAfA2",
   },
-  "5318008": {
-    name: "Reactive Kopli Testnet",
-    tokenAddress: "0x09788a0B60eCCd3FE8B951e181B2391e177dFdab",
-    mainContractAddress: "0xe8e68427f4E52C90cc05E1A6D86e26842a0da8d1",
-  },
-
 };
+export const conversionContractAbi =[
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_USDe",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_buzz",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "USDe",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "buzz",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "convertBuzztoUSDe",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "convertUSDetoBuzz",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getUserBalances",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_token",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawFunds",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
 
 export const nftContractAbi = [
 	{
@@ -2092,282 +2137,7 @@ export const superfluidABI = [
     type: "function",
   },
 ];
-export const superfluidAddress = "0x5AB8bc4DF926903334789EF126563e07560ff779";
-export const superfluidPoolAddress =
-  "0x85b817A9aDB057D99664bf93e936747B756488F2";
-export const superTokenAddress = "0x143ea239159155B408e71CDbE836e8CFD6766732";
-export const superfluidGDAForwarderAddress =
-  "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08";
-export const superfluidGDAForwarderAbi = [
-  {
-    inputs: [
-      { internalType: "contract ISuperfluid", name: "host", type: "address" },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-      { internalType: "address", name: "memberAddress", type: "address" },
-      { internalType: "bytes", name: "userData", type: "bytes" },
-    ],
-    name: "claimAll",
-    outputs: [{ internalType: "bool", name: "success", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-      { internalType: "bytes", name: "userData", type: "bytes" },
-    ],
-    name: "connectPool",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "admin", type: "address" },
-      {
-        components: [
-          {
-            internalType: "bool",
-            name: "transferabilityForUnitsOwner",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "distributionFromAnyAddress",
-            type: "bool",
-          },
-        ],
-        internalType: "struct PoolConfig",
-        name: "config",
-        type: "tuple",
-      },
-    ],
-    name: "createPool",
-    outputs: [
-      { internalType: "bool", name: "success", type: "bool" },
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-      { internalType: "bytes", name: "userData", type: "bytes" },
-    ],
-    name: "disconnectPool",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "from", type: "address" },
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-      { internalType: "uint256", name: "requestedAmount", type: "uint256" },
-      { internalType: "bytes", name: "userData", type: "bytes" },
-    ],
-    name: "distribute",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "from", type: "address" },
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-      { internalType: "int96", name: "requestedFlowRate", type: "int96" },
-      { internalType: "bytes", name: "userData", type: "bytes" },
-    ],
-    name: "distributeFlow",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "from", type: "address" },
-      { internalType: "contract ISuperfluidPool", name: "to", type: "address" },
-      { internalType: "uint256", name: "requestedAmount", type: "uint256" },
-    ],
-    name: "estimateDistributionActualAmount",
-    outputs: [
-      { internalType: "uint256", name: "actualAmount", type: "uint256" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "from", type: "address" },
-      { internalType: "contract ISuperfluidPool", name: "to", type: "address" },
-      { internalType: "int96", name: "requestedFlowRate", type: "int96" },
-    ],
-    name: "estimateFlowDistributionActualFlowRate",
-    outputs: [
-      { internalType: "int96", name: "actualFlowRate", type: "int96" },
-      {
-        internalType: "int96",
-        name: "totalDistributionFlowRate",
-        type: "int96",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "from", type: "address" },
-      { internalType: "contract ISuperfluidPool", name: "to", type: "address" },
-    ],
-    name: "getFlowDistributionFlowRate",
-    outputs: [{ internalType: "int96", name: "", type: "int96" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "account", type: "address" },
-    ],
-    name: "getNetFlow",
-    outputs: [{ internalType: "int96", name: "", type: "int96" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-    ],
-    name: "getPoolAdjustmentFlowInfo",
-    outputs: [
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "bytes32", name: "", type: "bytes32" },
-      { internalType: "int96", name: "", type: "int96" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "address", name: "pool", type: "address" }],
-    name: "getPoolAdjustmentFlowRate",
-    outputs: [{ internalType: "int96", name: "", type: "int96" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-      { internalType: "address", name: "member", type: "address" },
-    ],
-    name: "isMemberConnected",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidToken",
-        name: "token",
-        type: "address",
-      },
-      { internalType: "address", name: "account", type: "address" },
-    ],
-    name: "isPool",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract ISuperfluidPool",
-        name: "pool",
-        type: "address",
-      },
-      { internalType: "address", name: "memberAddress", type: "address" },
-      { internalType: "uint128", name: "newUnits", type: "uint128" },
-      { internalType: "bytes", name: "userData", type: "bytes" },
-    ],
-    name: "updateMemberUnits",
-    outputs: [{ internalType: "bool", name: "success", type: "bool" }],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-];
+
 export const features = [
   {
     id: "0",
