@@ -8,7 +8,6 @@ import { MdOutlineSettings } from "react-icons/md";
 import { FaFaceSmileWink } from "react-icons/fa6";
 import LoadingBar from "@/components/LoadingBar";
 import { IoCaretBackCircleSharp } from "react-icons/io5";
-import { FaRegCheckCircle } from "react-icons/fa";
 import { CgDollar } from "react-icons/cg";
 import Slider from "react-input-slider";
 import { FaUserAlt } from "react-icons/fa";
@@ -524,6 +523,7 @@ const LaunchPage: React.FC = () => {
                 </div>
               </>
             )}
+            {selected === "Leaderboard" && <LeaderBoardCard />}
           </div>
         </div>
       </div>
@@ -553,27 +553,54 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
   nftMintedAllReady,
 }) => (
   <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
-    <div className="w-1/2 p-5 bg-[#F5F3ED] rounded">
-      <h2 className="text-lg font-semibold text-gray-700 mb-2">
-        {nftMintedAllReady ? "Your NFT is minted" : "Mint Your NFT"}
-      </h2>
-      {nftMintedAllReady ? (
-        <div className="mt-3">
-          <img
-            src="https://gateway.pinata.cloud/ipfs/bafybeidubittp6kbuu2cc2yfnhrspqke23gec5jvczzjjs23dhtpvpj3tm/"
-            alt="Kendrick Lamar Performance"
-            className="w-full rounded-lg object-cover"
-          />
-        </div>
-      ) : (
-        <button
-          onClick={onClick}
-          className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md"
-        >
-          <span>Mint</span>
-          <span>Buzzify NFT</span>
-        </button>
-      )}
+    <div className="w-1/2 p-2 rounded flex flex-col">
+      <ol className="relative border-s border-gray-500 dark:border-gray-700">
+        <li className="mb-10 ms-4">
+          <div className="absolute w-3 h-3 bg-gray-600 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {nftMintedAllReady ? "Your NFT is minted" : "Mint Your NFT"}
+          </h3>
+          {nftMintedAllReady ? (
+            <div className="mt-3">
+              <img
+                src="https://gateway.pinata.cloud/ipfs/bafybeidubittp6kbuu2cc2yfnhrspqke23gec5jvczzjjs23dhtpvpj3tm/"
+                alt="Kendrick Lamar Performance"
+                className="w-full rounded-lg object-cover"
+              />
+            </div>
+          ) : (
+            <button
+              onClick={onClick}
+              className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md"
+            >
+              <span>Mint</span>
+              <span>Buzzify NFT</span>
+            </button>
+          )}
+        </li>
+        <li className="mb-10 ms-4">
+          <div className="absolute w-3 h-3 bg-gray-600 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Make one prediction claim 100 BUZZ Tokens
+          </h3>
+          <button className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
+            <span>Claim</span>
+            <span>100 BUZZ</span>
+          </button>
+        </li>
+        <li className="ms-4">
+          <div className="absolute w-3 h-3 bg-gray-600 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Create one prediction claim 100 BUZZ Tokens
+          </h3>
+          <button className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
+            <span>Claim</span>
+            <span>100 BUZZ</span>
+          </button>
+        </li>
+      </ol>
     </div>
   </div>
 );
@@ -682,6 +709,54 @@ const BalanceScore: React.FC = () => {
         </div>
       </div>
     </>
+  );
+};
+
+const LeaderBoardCard: React.FC = () => {
+  return (
+    <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
+      <div className="leaderboard-main">
+        <div id="leaderboard">
+          <div className="leaderboard-ribbon"></div>
+          <table className="text-xl">
+            <tr>
+              <td className="leaderboard-number">1</td>
+              <td className="leaderboard-name">Lee Taeyong</td>
+              <td className="leaderboard-points">
+                258.244{" "}
+                <img
+                  className="leaderboard-gold-medal"
+                  src="https://github.com/malunaridev/Challenges-iCodeThis/blob/master/4-leaderboard/assets/gold-medal.png?raw=true"
+                  alt="gold medal"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="leaderboard-number">2</td>
+              <td className="leaderboard-name">Mark Lee</td>
+              <td className="leaderboard-points">258.242 XP</td>
+            </tr>
+            <tr>
+              <td className="leaderboard-number">2</td>
+              <td className="leaderboard-name">Mark Lee</td>
+              <td className="leaderboard-points">258.242 XP</td>
+            </tr>
+            <tr>
+              <td className="leaderboard-number">2</td>
+              <td className="leaderboard-name">Mark Lee</td>
+              <td className="leaderboard-points">258.242 XP</td>
+            </tr>
+            <tr>
+              <td className="leaderboard-number">2</td>
+              <td className="leaderboard-name">Mark Lee</td>
+              <td className="leaderboard-points">258.242 XP</td>
+            </tr>
+          
+           
+          </table>
+        </div>
+      </div>
+    </div>
   );
 };
 
