@@ -15,7 +15,15 @@ import { FaUserAlt } from "react-icons/fa";
 import { RiRadioButtonLine } from "react-icons/ri";
 const LaunchPage: React.FC = () => {
   const { address, chain } = useAccount();
-  const { totalPools, tokenBalance, userBetsData, placeBet,formatTimestamp } = useDataContext();
+  const {
+    totalPools,
+    tokenBalance,
+    userBetsData,
+    placeBet,
+    formatTimestamp,
+    mintNft,
+    nftMintedAllReady,
+  } = useDataContext();
 
   interface PoolData {
     id: any;
@@ -44,12 +52,12 @@ const LaunchPage: React.FC = () => {
   const step = 2;
 
   const handleSubmit = async () => {
-    console.log(
-      selectedPost?.id,
-      scorePrediction,
-      investment,
-    );
-    await placeBet(+selectedPost?.id,+investment.toString(),scorePrediction);
+    console.log(selectedPost?.id, scorePrediction, investment);
+    await placeBet(+selectedPost?.id, +investment.toString(), scorePrediction);
+  };
+
+  const mintYourNft = async () => {
+    await mintNft();
   };
 
   useEffect(() => {
@@ -385,13 +393,15 @@ const LaunchPage: React.FC = () => {
                           <div className="flex items-center bg-white rounded-lg p-3">
                             <input
                               type="number"
-                       
                               value={investment}
                               onChange={(e) => setInvestment(e.target.value)}
                               className="w-full bg-transparent text-black outline-none text-sm"
                               placeholder="0.00"
                             />
-                            <button onClick={handleMax} className="text-xs hover:text-blue-400 font-medium px-2 py-1 rounded transition-colors">
+                            <button
+                              onClick={handleMax}
+                              className="text-xs hover:text-blue-400 font-medium px-2 py-1 rounded transition-colors"
+                            >
                               MAX
                             </button>
                             <span className="text-black ml-2 text-xs">
@@ -405,24 +415,29 @@ const LaunchPage: React.FC = () => {
                               Balance: {tokenBalance ? tokenBalance : 0} BUZZ
                             </span>
                             <span className="text-red text-[10px]">
-                              PoolEnded : {formatTimestamp(selectedPost?.endTime)}
+                              PoolEnded :{" "}
+                              {formatTimestamp(selectedPost?.endTime)}
                             </span>
                           </div>
                         </div>
                         {/* Action Button */}
-                        {isBetted ?<button
-                          disabled
-                          className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
+                        {isBetted ? (
+                          <button
+                            disabled
+                            className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
         transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
-                        >
-                          Already Place Bet
-                        </button> :<button
-                          onClick={handleSubmit}
-                          className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
+                          >
+                            Already Place Bet
+                          </button>
+                        ) : (
+                          <button
+                            onClick={handleSubmit}
+                            className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
         transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
-                        >
-                          Place Bet
-                        </button>}
+                          >
+                            Place Bet
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -431,7 +446,12 @@ const LaunchPage: React.FC = () => {
                 )}
               </>
             )}
-            {selected === "Rewards" && <RewardsSection />}
+            {selected === "Rewards" && (
+              <RewardsSection
+                onClick={mintYourNft}
+                nftMintedAllReady={nftMintedAllReady}
+              />
+            )}
 
             {selected === "Assets" && (
               <>
@@ -524,30 +544,36 @@ const SidebarItem: React.FC<{
   </button>
 );
 
-const RewardsSection: React.FC = () => (
-  <div>
-    <h1 className="text-xl font-bold text-black">Rewards</h1>
-    <div className="mt-4 space-y-4">
-      {[
-        "Total Rewards",
-        "Total Rewards Claimed",
-        "Total Rewards Available",
-      ].map((item, i) => (
-        <RewardItem key={i} label={item} description="0.00" />
-      ))}
-    </div>
-  </div>
-);
-
-const RewardItem: React.FC<{ label: string; description?: string }> = ({
-  label,
-  description,
+interface RewardsSectionProps {
+  onClick: () => void;
+  nftMintedAllReady: boolean;
+}
+const RewardsSection: React.FC<RewardsSectionProps> = ({
+  onClick,
+  nftMintedAllReady,
 }) => (
-  <div className="flex items-start space-x-3">
-    <span className="text-xl">🎁</span>
-    <div>
-      <p className="font-semibold">{label}</p>
-      {description && <p className="text-sm text-gray-500">{description}</p>}
+  <div className="flex w-full flex-col items-center bg-white p-6 rounded text-black">
+    <div className="w-1/2 p-5 bg-[#F5F3ED] rounded">
+      <h2 className="text-lg font-semibold text-gray-700 mb-2">
+        {nftMintedAllReady ? "Your NFT is minted" : "Mint Your NFT"}
+      </h2>
+      {nftMintedAllReady ? (
+        <div className="mt-3">
+          <img
+            src="https://gateway.pinata.cloud/ipfs/bafybeidubittp6kbuu2cc2yfnhrspqke23gec5jvczzjjs23dhtpvpj3tm/"
+            alt="Kendrick Lamar Performance"
+            className="w-full rounded-lg object-cover"
+          />
+        </div>
+      ) : (
+        <button
+          onClick={onClick}
+          className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md"
+        >
+          <span>Mint</span>
+          <span>Buzzify NFT</span>
+        </button>
+      )}
     </div>
   </div>
 );

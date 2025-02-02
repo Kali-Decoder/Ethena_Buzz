@@ -17,7 +17,7 @@ contract BuzziFi {
         bool claimed;
     }
     struct Pool {
-        string name;
+        string question;
         string description;
         uint256 total_amount;
         uint256 total_bets;
@@ -49,18 +49,19 @@ contract BuzziFi {
 
     function createPool(
         string calldata _poolName,
-        string calldata _poolDiscription
+        string calldata _poolDiscription,
+        uint256 _endTime
     ) external onlyOwner {
         // Create a new pool
-        pools[pool_id].name = _poolName;
+        pools[pool_id].question = _poolName;
         pools[pool_id].description = _poolDiscription;
         pools[pool_id].total_amount = 0;
         pools[pool_id].total_bets = 0;
         pools[pool_id].poolEnded = false;
         pools[pool_id].finalScore = 0;
         pools[pool_id].startTime = block.timestamp;
-        pools[pool_id].endTime = block.timestamp + 10 minutes;
-        pools[pool_id].resultDeclareTime = block.timestamp + 7 days;
+        pools[pool_id].endTime = block.timestamp + _endTime;
+        pools[pool_id].resultDeclareTime = block.timestamp + (_endTime + 30 minutes);
         unchecked {
             pool_id += 1;
         }
@@ -110,7 +111,7 @@ contract BuzziFi {
         onlyOwner
     {
         require(
-            block.timestamp >= pools[_pool_id].endTime,
+            block.timestamp >= pools[_pool_id].resultDeclareTime,
             "Betting period not over"
         );
         pools[_pool_id].poolEnded = true;

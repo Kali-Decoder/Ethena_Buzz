@@ -8,7 +8,8 @@ import {
   mainContractABI,
   oracleAbi,
   oracleAddress,
-  Addresses
+  Addresses,
+  nftContractAbi,
 } from "@/constant/index";
 
 // Context types
@@ -33,12 +34,14 @@ interface DataContextProps {
   setResultScore: (poolId: number, score: number) => Promise<void>;
   btcUsdPrice: number;
   ethUsdPrice: number;
-  isOpen : boolean;
+  isOpen: boolean;
   openSideBar: () => void;
   closeSideBar: () => void;
-  activePoolId : number; 
+  activePoolId: number;
   setActivePoolId: (id: number) => void;
-  formatTimestamp : (timestamp:number) => string;
+  formatTimestamp: (timestamp: number) => string;
+  mintNft: () => Promise<void>;
+  nftMintedAllReady : boolean;
 }
 
 interface DataContextProviderProps {
@@ -53,10 +56,13 @@ const DataContext = React.createContext<DataContextProps | undefined>(
 const DataContextProvider: React.FC<DataContextProviderProps> = ({
   children,
 }) => {
+  const NFT_URI =
+    "https://gateway.pinata.cloud/ipfs/bafkreifsghmurcvqcer5axfj4jaryfa42gxmqgqv3pkjl56g2k6bcigq4u/";
   const [tokenBalance, setTokenBalance] = useState<BigNumber | undefined>();
   const { address, chain } = useAccount();
   const [totalPools, setTotalPools] = useState<{}>({});
   const [userBetsData, setUserBetsData] = useState(null);
+  const [nftMintedAllReady, setNftMintedAllReady] = useState(false);
   const [activeChain, setActiveChainId] = useState<number | undefined>(
     chain?.id
   );
@@ -64,7 +70,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   const [btcUsdPrice, setBtcUsdPrice] = useState(0);
   const [ethUsdPrice, setEthUsdPrice] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [activePoolId,setActivePoolId] = useState(0);
+  const [activePoolId, setActivePoolId] = useState(0);
   const openSideBar = () => {
     setIsOpen(!isOpen);
   };
@@ -97,8 +103,14 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
 
   const getTokenBalance = async () => {
     try {
-      console.log("Getting token balance", Addresses[activeChain]?.tokenAddress);
-      const tokenContract = await getContractInstance(Addresses[activeChain]?.tokenAddress, tokenAbi);
+      console.log(
+        "Getting token balance",
+        Addresses[activeChain]?.tokenAddress
+      );
+      const tokenContract = await getContractInstance(
+        Addresses[activeChain]?.tokenAddress,
+        tokenAbi
+      );
       if (tokenContract) {
         console.log("Token contract", tokenContract);
         let balance = await tokenContract.balanceOf(address);
@@ -113,8 +125,32 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  const mintNft = async () => {
+    let id = toast.loading("Minting NFT...");
+    try {
+      const nftContract = await getContractInstance(
+        Addresses[activeChain]?.nftContractAddress,
+        nftContractAbi
+      );
+      if (nftContract) {
+        let balance = await nftContract.balanceOf(address);
+        if (balance.toNumber() >= 1) {
+          toast.error("You already have an NFT",{id});
+          return;
+        }
+        const tx = await nftContract.mintNFT(address, NFT_URI);
+        await tx.wait();
+        toast.success("NFT minted successfully",{id});
+        await isNftMinted();
+      }
+      return;
+    } catch (error) {
+      toast.error("Error in minting NFT",{id});
+      return;
+    }
+  };
 
-  const createPool = async (name:string,desc:string,endtime:number) => {
+  const createPool = async (name: string, desc: string, endtime: number) => {
     console.log("Creating pool");
     let id = toast.loading("Creating pool...");
     try {
@@ -123,7 +159,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         mainContractABI
       );
       if (mainContract) {
-        const tx = await mainContract.createPool(name, desc,endtime);
+        const tx = await mainContract.createPool(name, desc, endtime);
         await tx.wait();
         await getPoolsDetails();
         toast.success("Pool created successfully", { id });
@@ -148,7 +184,10 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         mainContractABI
       );
       amount = ethers.utils.parseEther(amount.toString());
-      const tokenContract = await getContractInstance(Addresses[activeChain]?.tokenAddress, tokenAbi);
+      const tokenContract = await getContractInstance(
+        Addresses[activeChain]?.tokenAddress,
+        tokenAbi
+      );
       console.log("tokenContract", tokenContract);
       if (tokenContract) {
         const allowance = await tokenContract.allowance(
@@ -156,7 +195,10 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           Addresses[activeChain]?.mainContractAddress
         );
         if (allowance.lt(amount)) {
-          const tx = await tokenContract.approve(Addresses[activeChain]?.mainContractAddress, amount);
+          const tx = await tokenContract.approve(
+            Addresses[activeChain]?.mainContractAddress,
+            amount
+          );
           await tx.wait();
         }
       }
@@ -218,8 +260,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       return;
     } catch (error) {
       console.log("Error in setting result");
-      toast.error("Error in setting result",
-        { id });
+      toast.error("Error in setting result", { id });
       return;
     }
   };
@@ -233,18 +274,16 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         let data1 = await oracleContract.read("BTC/USD");
         let data2 = await oracleContract.read("ETH/USD");
 
-        console.log("Oracle data", (+data1.toString() / (10 ** 18)).toFixed(2));
+        console.log("Oracle data", (+data1.toString() / 10 ** 18).toFixed(2));
         console.log("Oracle data", (+data2.toString() / 10 ** 18).toFixed(2));
 
-        setBtcUsdPrice((+data1.toString() / (10 ** 18)).toFixed(2));
-        setEthUsdPrice((+data2.toString() / (10 ** 18)).toFixed(2));
-
+        setBtcUsdPrice((+data1.toString() / 10 ** 18).toFixed(2));
+        setEthUsdPrice((+data2.toString() / 10 ** 18).toFixed(2));
       }
     } catch (error) {
       console.log("Error in getting oracle data", error);
     }
-  }
-
+  };
 
   const getPoolsDetails = async () => {
     let poolDetails = {
@@ -313,15 +352,32 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       return poolDetails;
     }
   };
+
+  const isNftMinted = async () => {
+    try {
+      const nftContract = await getContractInstance(
+        Addresses[activeChain]?.nftContractAddress,
+        nftContractAbi
+      );
+      if (nftContract) {
+        let balance = await nftContract.balanceOf(address);
+        if (balance.toNumber() >= 1) {
+          setNftMintedAllReady(true);
+        }
+      }
+    } catch (error) {
+      console.log("Error in getting nft minted");
+    }
+  }
   useEffect(() => {
     if (!signer) return;
     getTokenBalance();
     getPoolsDetails();
     getOracleData();
+    isNftMinted();
   }, [signer]);
 
-
-  function formatTimestamp(timestamp:number) {
+  function formatTimestamp(timestamp: number) {
     const date = new Date(timestamp * 1000); // Convert to milliseconds
     return date.toLocaleDateString("en-US", {
       month: "short",
@@ -351,7 +407,9 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         closeSideBar,
         activePoolId,
         setActivePoolId,
-        formatTimestamp
+        formatTimestamp,
+        mintNft,
+        nftMintedAllReady
       }}
     >
       {children}
