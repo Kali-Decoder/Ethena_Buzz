@@ -175,6 +175,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       }
       if (conversionContract) {
         await conversionContract.convertUSDtoBUZZ(amount);
+        await getTokenBalance();
         toast.success("USDe converted to BUZZ successfully", { id });
         return;
       }
@@ -214,6 +215,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       }
       if (conversionContract) {
         await conversionContract.convertBUZZtoUSD(amount);
+        await getTokenBalance();
         toast.success("BUZZ converted to USDe successfully", { id });
         return;
       }
