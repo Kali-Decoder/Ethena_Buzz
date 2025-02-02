@@ -24,6 +24,32 @@ import {
   LeaderboardHeader,
   MyVotesHeader,
 } from "./_components/sidebar-header-components";
+import toast from "react-hot-toast";
+
+interface PoolData {
+  id: any;
+  name: string;
+  description: string;
+  category: string;
+  total_amount: any;
+  total_bets: any;
+  finalScore: any;
+  startTime: any;
+  endTime: any;
+  resultDeclareTime: any;
+  poolEnded: boolean;
+}
+
+const sidebarItems = [
+  "Explore",
+  "Create",
+  "My Votes",
+  "Assets",
+  "Leaderboard",
+  "Rewards",
+  "Exchange",
+];
+
 const LaunchPage: React.FC = () => {
   const { address, chain } = useAccount();
   const {
@@ -33,21 +59,9 @@ const LaunchPage: React.FC = () => {
     placeBet,
     mintNft,
     nftMintedAllReady,
+    convertUSDetoBuzz,
+    convertBuzztoUSDe,
   } = useDataContext();
-
-  interface PoolData {
-    id: any;
-    name: string;
-    description: string;
-    category: string;
-    total_amount: any;
-    total_bets: any;
-    finalScore: any;
-    startTime: any;
-    endTime: any;
-    resultDeclareTime: any;
-    poolEnded: boolean;
-  }
 
   const [transformedPoolsData, setTransformedPoolsData] = useState<PoolData[]>(
     []
@@ -58,12 +72,20 @@ const LaunchPage: React.FC = () => {
   const [selected, setSelected] = useState("Explore");
   const [selectedPost, setSelectedPost] = useState<PoolData | null>(null);
 
-  const [fromToken, setFromToken] = useState({ symbol: "BUZZ", amount: 0 });
-  const [toToken, setToToken] = useState({ symbol: "USDe", amount: 0 });
+  const [fromToken, setFromToken] = useState({
+    symbol: "USDe",
+    amount: tokenBalance.usdeBalance,
+  });
+  const [toToken, setToToken] = useState({
+    symbol: "BUZZ",
+    amount: tokenBalance.buzzBalance,
+  });
+  const [maxTokenBalances, setMaxTokenBalances] = useState({
+    fromBalance: tokenBalance.usdeBalance,
+    toBalance: tokenBalance.buzzBalance,
+  });
   const [isSwapped, setIsSwapped] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
-  const [ethBalance, setEthBalance] = useState("0.000");
-  // const [tokenBalance, setTokenBalance] = useState('0.000');
   const [actionButtonText, setActionButtonText] = useState("Buy");
   const [isTransacting, setIsTransacting] = useState(false);
 
@@ -75,27 +97,57 @@ const LaunchPage: React.FC = () => {
   const handleSwap = () => {
     setFromToken((prev) => ({
       symbol: prev.symbol === "USDe" ? "BUZZ" : "USDe",
-      amount:
-        prev.symbol === "USDe"
-          ? tokenBalance?.buzzBalance
-          : tokenBalance?.usdeBalance,
+      amount:0
     }));
     setToToken((prev) => ({
       symbol: prev.symbol === "BUZZ" ? "USDe" : "BUZZ",
-      amount:
-        prev.symbol === "BUZZ"
-          ? tokenBalance?.usdeBalance
-          : tokenBalance?.buzzBalance,
+      amount:0
     }));
+
+    if(fromToken.symbol === "USDe") {
+      setMaxTokenBalances({
+        fromBalance: tokenBalance.buzzBalance,
+        toBalance: tokenBalance.usdeBalance,
+      })
+    }else{
+      setMaxTokenBalances({
+        fromBalance: tokenBalance.usdeBalance,
+        toBalance: tokenBalance.buzzBalance,
+      })
+    }
   };
 
-  const handleFromAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAction = useCallback(async () => {
+    if (!address || !fromToken.amount) {
+      toast.error("Missing required information");
+      return;
+    }
+    setIsTransacting(true);
+    if (fromToken.symbol === "USDe") {
+      await convertUSDetoBuzz(fromToken.amount);
+    } else {
+      await convertBuzztoUSDe(fromToken.amount);
+    }
+  }, [address, fromToken.amount]);
+
+  const handleFromAmountChange = (e: any) => {
+    setIsCalculating(true);
+    if (fromToken.symbol === "USDe") {
       setFromToken((prev) => ({ ...prev, amount: +e.target.value }));
-      setIsCalculating(true);
-    },
-    []
-  );
+      setToToken((prev) => ({
+        ...prev,
+        amount: +e.target.value * 10,
+      }));
+      setIsCalculating(false);
+    } else {
+      setFromToken((prev) => ({ ...prev, amount: +e.target.value }));
+      setToToken((prev) => ({
+        ...prev,
+        amount: +e.target.value / 10,
+      }));
+      setIsCalculating(false);
+    }
+  };
 
   const mintYourNft = async () => {
     await mintNft();
@@ -136,16 +188,6 @@ const LaunchPage: React.FC = () => {
       setIsBetted(false);
     }
   }, [userBetsData]);
-
-  const sidebarItems = [
-    "Explore",
-    "Create",
-    "My Votes",
-    "Assets",
-    "Leaderboard",
-    "Rewards",
-    "Exchange",
-  ];
 
   return (
     <div className="flex items-center justify-center h-[100vh] bg-transparent orbitron-launch">
@@ -292,6 +334,8 @@ const LaunchPage: React.FC = () => {
                   isTransacting={isTransacting}
                   handleFromAmountChange={handleFromAmountChange}
                   handleSwap={handleSwap}
+                  handleAction={handleAction}
+                  maxTokenBalances={maxTokenBalances}
                 />
               </>
             )}

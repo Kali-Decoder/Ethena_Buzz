@@ -5,7 +5,7 @@ import { FaUserAlt } from "react-icons/fa";
 import { RiRadioButtonLine } from "react-icons/ri";
 import { useDataContext } from "@/context/DataContext";
 import Slider from "react-input-slider";
-import {LuArrowUpDown} from 'react-icons/lu'
+import { LuArrowUpDown } from "react-icons/lu";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -23,6 +23,8 @@ interface ExchangeComponentProps {
   isCalculating: boolean;
   isTransacting: boolean;
   actionButtonText: string;
+  handleAction: () => void;
+  maxTokenBalances: any
 }
 const RewardsSection: React.FC<RewardsSectionProps> = ({
   onClick,
@@ -274,6 +276,8 @@ function ExchangeComponent({
   isCalculating,
   isTransacting,
   actionButtonText,
+  handleAction,
+  maxTokenBalances
 }: ExchangeComponentProps) {
   return (
     <div className="flex justify-center items-center flex-col">
@@ -284,7 +288,9 @@ function ExchangeComponent({
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-2">
               <span className="text-black">From</span>
-              <span className="text-black">Balance: {fromToken?.amount}</span>
+              <span className="text-black">
+                Balance: {maxTokenBalances?.fromBalance} {fromToken.symbol}
+              </span>
             </div>
             <div className="flex items-center bg-white rounded-lg p-3">
               <input
@@ -312,7 +318,9 @@ function ExchangeComponent({
           <div className="mb-4">
             <div className="flex justify-between text-sm mb-2">
               <span className="text-black">To (Estimated)</span>
-              <span className="text-black">Balance: {toToken?.amount}</span>
+              <span className="text-black">
+                Balance: {maxTokenBalances?.toBalance} {toToken.symbol}
+              </span>
             </div>
             <div className="flex items-center bg-white rounded-lg p-3">
               <input
@@ -328,8 +336,8 @@ function ExchangeComponent({
 
           {/* Action Button */}
           <button
-            // onClick={handleAction}
-            // disabled={!fromToken.amount || isCalculating || isTransacting}
+            onClick={handleAction}
+            disabled={!fromToken.amount || isCalculating || isTransacting}
             className="w-full py-3 bg-blue-300 text-black rounded-lg font-medium hover:bg-[var(--primary-hover)] 
 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >

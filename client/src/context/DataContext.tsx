@@ -47,6 +47,8 @@ interface DataContextProps {
   mintNft: () => Promise<void>;
   nftMintedAllReady: boolean;
   getSingleTokenBalance: (tokenAddress: string) => Promise<number>;
+  convertUSDetoBuzz: (amount: number) => Promise<void>;
+  convertBuzztoUSDe: (amount: number) => Promise<void>;
 }
 
 interface DataContextProviderProps {
@@ -118,8 +120,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       if (tokenContract) {
         console.log("Token contract", tokenContract);
         let balance = await tokenContract.getUserBalances();
-
-        console.log("Token balance", balance);
         setTokenBalance({
           usdeBalance: +balance[0].div(BigNumber.from(10).pow(18)).toString(),
           buzzBalance: +balance[1].div(BigNumber.from(10).pow(18)).toString(),
@@ -143,6 +143,82 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     } catch (error) {
       console.log("Error in getting token balance");
       return BigNumber.from(0);
+    }
+  }
+
+  const convertUSDetoBuzz = async (amount: any) => {
+    let id = toast.loading("Converting USDe to BUZZ...");
+    try {
+      amount = ethers.utils.parseEther(amount.toString());
+      const conversionContract = await getContractInstance(
+        Addresses[activeChain]?.conversionAddress,
+        conversionContractAbi
+      );
+
+      const tokenContract = await getContractInstance(
+        Addresses[activeChain]?.usdeAddress,
+        tokenAbi
+      );
+      console.log("tokenContract", tokenContract);
+      if (tokenContract) {
+        const allowance = await tokenContract.allowance(
+          address,
+          Addresses[activeChain]?.conversionAddress
+        );
+        if (allowance.lt(amount)) {
+          const tx = await tokenContract.approve(
+            Addresses[activeChain]?.conversionAddress,
+            amount
+          );
+          await tx.wait();
+        }
+      }
+      if (conversionContract) {
+        await conversionContract.convertUSDtoBUZZ(amount);
+        toast.success("USDe converted to BUZZ successfully", { id });
+        return;
+      }
+    } catch (error) {
+      console.log("Error in converting USDe to BUZZ");
+      toast.error("Error in converting USDe to BUZZ", { id });
+    }
+  }
+
+
+  const convertBuzztoUSDe = async (amount:any) => {
+    let id = toast.loading("Converting BUZZ to USDe...");
+    try {
+      amount = ethers.utils.parseEther(amount.toString());
+      const conversionContract = await getContractInstance(
+        Addresses[activeChain]?.conversionAddress,
+        conversionContractAbi
+      );
+
+      const tokenContract = await getContractInstance(
+        Addresses[activeChain]?.tokenAddress,
+        tokenAbi
+      );
+      console.log("tokenContract", tokenContract);
+      if (tokenContract) {
+        const allowance = await tokenContract.allowance(
+          address,
+          Addresses[activeChain]?.conversionAddress
+        );
+        if (allowance.lt(amount)) {
+          const tx = await tokenContract.approve(
+            Addresses[activeChain]?.conversionAddress,
+            amount
+          );
+          await tx.wait();
+        }
+      }
+      if (conversionContract) {
+        await conversionContract.convertBUZZtoUSD(amount);
+        toast.success("BUZZ converted to USDe successfully", { id });
+        return;
+      }
+    } catch (error) {
+      toast.error("Error in converting BUZZ to USDe", { id });
     }
   }
 
@@ -431,7 +507,9 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         formatTimestamp,
         mintNft,
         nftMintedAllReady,
-        getSingleTokenBalance
+        getSingleTokenBalance,
+        convertUSDetoBuzz,
+        convertBuzztoUSDe
       }}
     >
       {children}
