@@ -6,6 +6,7 @@ import { RiRadioButtonLine } from "react-icons/ri";
 import { useDataContext } from "@/context/DataContext";
 import Slider from "react-input-slider";
 import { LuArrowUpDown } from "react-icons/lu";
+import Link from "next/link";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -24,7 +25,7 @@ interface ExchangeComponentProps {
   isTransacting: boolean;
   actionButtonText: string;
   handleAction: () => void;
-  maxTokenBalances: any
+  maxTokenBalances: any;
 }
 const RewardsSection: React.FC<RewardsSectionProps> = ({
   onClick,
@@ -277,7 +278,7 @@ function ExchangeComponent({
   isTransacting,
   actionButtonText,
   handleAction,
-  maxTokenBalances
+  maxTokenBalances,
 }: ExchangeComponentProps) {
   return (
     <div className="flex justify-center items-center flex-col">
@@ -345,6 +346,13 @@ transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           </button>
         </div>
       </div>
+
+      <button className="w-full py-2 text-blue-600 font-semibold underline mt-4">
+        <Link href="https://faucet.ethena.fi/" target="_blank">
+          {" "}
+          Need USDe Faucet ? →
+        </Link>
+      </button>
     </div>
   );
 }
