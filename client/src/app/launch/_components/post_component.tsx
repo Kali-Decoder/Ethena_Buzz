@@ -30,10 +30,10 @@ const PostComponent = ({
     <>
       <div
         onClick={onSelect}
-        className="bg-white border-2 border-gray-300 rounded-md shadow-md p-4 cursor-pointer flex flex-col gap-4"
+        className="bg-change-primary-bg  rounded-md shadow-md p-4 cursor-pointer flex flex-col gap-4"
       >
-        <h2 className="font-bold text-md text-black">{item?.question}</h2>
-        <p className="text-xs text-gray-700">
+        <h2 className="font-bold text-md text-white">{item?.question}</h2>
+        <p className="text-xs text-gray-200">
          {item?.description.slice(0, 100)}...
         </p>
 
@@ -41,7 +41,7 @@ const PostComponent = ({
           <span># {item?.category}</span>
         </div>
 
-        <div className="flex items-center justify-between text-sm text-gray-800">
+        <div className="flex items-center justify-between text-sm text-gray-200">
           <div className="flex items-center gap-2">
             <img
               src="https://pbs.twimg.com/profile_images/1884937424364851200/VSrPwZa4_400x400.jpg"

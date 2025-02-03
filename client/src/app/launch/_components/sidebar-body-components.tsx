@@ -405,7 +405,7 @@ function SelectedPost({
     <>
       {selectedPost?.name ? (
         <div className="flex w-full gap-x-8 bg-change-secondary-bg  p-6 rounded text-white">
-          <div className="w-2/3 overflow-y-scroll scrollbar-thin">
+          <div className="w-[55%] overflow-y-scroll scrollbar-thin">
             {/* Header Section */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -463,71 +463,53 @@ function SelectedPost({
               <img
                 src="https://images.pond5.com/green-line-graph-white-background-footage-083223115_iconl.jpeg"
                 alt="Kendrick Lamar Performance"
-                className="w-full rounded-lg object-cover"
+                className="w-full rounded-sm object-cover"
               />
             </div>
           </div>
-          <div className="bg-[#F5F3ED] w-1/3 rounded py-3 px-2 h-1/2 mt-3">
-            <h2 className="text-sm font-semibold mb-0 px-4 text-black">
+          <div className="bg-change-trinary-bg w-[45%] rounded py-6 px-2 h-1/2 mt-3">
+            <h2 className="text-sm font-semibold mb-0 px-4 text-white">
               Place Your Bet
             </h2>
             <div className="rounded-lg p-4">
               {/* From Input */}
 
-              <div className=" flex px-4 flex-col-reverse bg-white rounded-lg p-4 items-start gap-2">
-                <Slider
-                  axis="x"
-                  x={scorePrediction}
-                  onChange={({ x }) => setScorePrediction(x)}
-                  xmin={+min.toString()}
-                  xmax={+max.toString()}
-                  xstep={+step.toString()}
-                  styles={{
-                    track: {
-                      backgroundColor: "black",
-                      width: "100%",
-                      height: "4px",
-                    },
-                    active: {
-                      backgroundColor: "#B8D778",
-                    },
-                    thumb: {
-                      width: 15,
-                      height: 15,
-                      backgroundColor: "white",
-                    },
-                  }}
+              <div className=" flex px-4 flex-col-reverse bg-change-secondary-bg rounded-sm p-4 items-start gap-2">
+                <label className="text-gray-200 text-xs">Score Prediction</label>
+                <input
+                  type="number"
+                  value={scorePrediction}
+                  onChange={(e) => setScorePrediction(e.target.value)}
+                  className="w-full bg-transparent text-white outline-none text-sm"
+                  placeholder="Guess the Number"
                 />
-                <p className="mtext-center  font-semibold text-xl text-p1">
-                  {scorePrediction}
-                </p>
               </div>
               <div className="mb-4 mt-4">
-                <div className="flex items-center bg-white rounded-lg p-3">
+                <div className="flex items-center bg-change-secondary-bg rounded-lg p-3">
                   <input
                     type="number"
                     value={investment}
                     onChange={(e) => setInvestment(e.target.value)}
-                    className="w-full bg-transparent text-black outline-none text-sm"
+                    className="w-full bg-transparent text-white outline-none text-sm"
                     placeholder="0.00"
                   />
                   <button
                     onClick={handleMax}
-                    className="text-xs hover:text-blue-400 font-medium px-2 py-1 rounded transition-colors"
+                    className="text-xs hover:text-blue-400 font-medium px-2 text-white py-1 rounded transition-colors"
                   >
                     MAX
                   </button>
-                  <span className="text-black ml-2 text-xs">BUZZ</span>
+                  <span className="text-white ml-2 text-xs">BUZZ</span>
                 </div>
 
-                <div className="flex justify-between flex-col text-xs mt-2">
-                  <span className="text-black"></span>
-                  <span className="text-black text-[10px]">
+                <div className="flex justify-between flex-col text-xs mt-4">
+                  <span className="text-white"></span>
+                  <span className="text-white text-[12px]">
                     Balance:{" "}
                     {tokenBalance?.buzzBalance ? tokenBalance?.buzzBalance : 0}{" "}
                     BUZZ
                   </span>
-                  <span className="text-red text-[10px]">
+                  <span className="text-red text-[12px] mt-2">
                     PoolEnded : {formatTimestamp(selectedPost?.endTime)}
                   </span>
                 </div>
@@ -569,7 +551,7 @@ function CreatePollBody() {
     link: "",
   });
 
-  let {createPool} = useDataContext();
+  let { createPool } = useDataContext();
 
   const handlePollDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -581,7 +563,7 @@ function CreatePollBody() {
     const dead = Math.floor(new Date(deadline).getTime() / 1000);
     const currentTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
     const timeRemaining = dead - currentTimestamp;
-    await createPool(question,context,timeRemaining);
+    await createPool(question, context, timeRemaining);
   };
   return (
     <div className="flex justify-center items-center flex-col">

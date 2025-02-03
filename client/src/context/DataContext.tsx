@@ -46,7 +46,6 @@ interface DataContextProps {
   formatTimestamp: (timestamp: number) => string;
   mintNft: () => Promise<void>;
   nftMintedAllReady: boolean;
-  getSingleTokenBalance: (tokenAddress: string) => Promise<number>;
   convertUSDetoBuzz: (amount: number) => Promise<void>;
   convertBuzztoUSDe: (amount: number) => Promise<void>;
 }
@@ -133,18 +132,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
-  const getSingleTokenBalance = async (tokenAddress: string) => {
-    try {
-      const tokenContract = await getContractInstance(tokenAddress, tokenAbi);
-      if (tokenContract) {
-        let balance = await tokenContract.balanceOf(address);
-        return +balance.div(BigNumber.from(10).pow(18)).toString();
-      }
-    } catch (error) {
-      console.log("Error in getting token balance");
-      return BigNumber.from(0);
-    }
-  }
+
 
   const convertUSDetoBuzz = async (amount: any) => {
     let id = toast.loading("Converting USDe to BUZZ...");
@@ -510,7 +498,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         formatTimestamp,
         mintNft,
         nftMintedAllReady,
-        getSingleTokenBalance,
         convertUSDetoBuzz,
         convertBuzztoUSDe
       }}
