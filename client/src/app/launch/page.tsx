@@ -13,6 +13,7 @@ import {
   ExploreBody,
   SelectedPost,
   CreatePollBody,
+  HistoryBody,
 } from "./_components/sidebar-body-components";
 import {
   RewardHeader,
@@ -24,6 +25,7 @@ import {
   AssetsHeader,
   LeaderboardHeader,
   MyVotesHeader,
+  HistoryHeader,
 } from "./_components/sidebar-header-components";
 import toast from "react-hot-toast";
 
@@ -44,7 +46,7 @@ interface PoolData {
 const sidebarItems = [
   "Explore",
   "Create",
-  "My Votes",
+  "History",
   "Assets",
   "Leaderboard",
   "Rewards",
@@ -254,6 +256,11 @@ const LaunchPage: React.FC = () => {
                 />
               </>
             )}
+            {selected === "History" && (
+              <>
+                <HistoryHeader />
+              </>
+            )}
             {selected === "Create" && (
               <>
                 <CreatePollHeader />
@@ -279,11 +286,6 @@ const LaunchPage: React.FC = () => {
                 <LeaderboardHeader />
               </>
             )}{" "}
-            {selected === "My Votes" && (
-              <>
-                <MyVotesHeader />
-              </>
-            )}
             {selected === "Rewards" && (
               <>
                 <RewardHeader />
@@ -326,7 +328,10 @@ const LaunchPage: React.FC = () => {
             {selected === "Assets" && (
               <>
                 <div className="flex justify-center items-center flex-col">
-                  <BalanceScore />
+                  <BalanceScore
+                    setSelected={setSelected}
+                    setSelectedPost={setSelectedPost}
+                  />
                 </div>
               </>
             )}
@@ -347,6 +352,12 @@ const LaunchPage: React.FC = () => {
             )}
             {selected === "Leaderboard" && <LeaderBoardCard />}
             {selected === "Create" && <CreatePollBody />}
+
+            {selected === "History" && (
+              <>
+                <HistoryBody />
+              </>
+            )}
           </div>
         </div>
       </div>

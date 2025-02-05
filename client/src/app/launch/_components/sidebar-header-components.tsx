@@ -99,15 +99,10 @@ function LeaderboardHeader() {
   );
 }
 
-function MyVotesHeader() {
+function HistoryHeader(){
   return (
-    <div className="flex gap-x-4 text-white justify-center items-center w-full">
-      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-10  focus:bg-black focus:text-white">
-        ⚡️ Live Polls
-      </button>
-      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 px-10 focus:bg-black focus:text-white">
-        ⚡️ History
-      </button>
+    <div className="flex gap-x-4 text-white justify-center w-full">
+      <p className="text-semibold text-xl font-bold">History</p>
     </div>
   );
 }
@@ -121,5 +116,6 @@ export {
   ExchangeHeader,
   AssetsHeader,
   LeaderboardHeader,
-  MyVotesHeader,
+
+  HistoryHeader
 };

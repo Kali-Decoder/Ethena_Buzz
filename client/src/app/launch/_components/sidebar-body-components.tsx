@@ -9,6 +9,8 @@ import { LuArrowUpDown } from "react-icons/lu";
 import Link from "next/link";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { useState } from "react";
+import { useAccount } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -92,7 +94,15 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
   </div>
 );
 
-const BalanceScore: React.FC = () => {
+interface BalanceScoreProps {
+  setSelected: (selected: string) => void;
+  setSelectedPost: (selectedPost: any) => void;
+}
+
+const BalanceScore: React.FC<BalanceScoreProps> = ({
+  setSelected,
+  setSelectedPost,
+}) => {
   return (
     <>
       <div className="flex w-full flex-col items-center bg-change-secondary-bg  p-6 rounded text-white">
@@ -148,7 +158,15 @@ const BalanceScore: React.FC = () => {
 
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">My Score</h2>
-            <button className="text-sm text-[#4A82ED]">History</button>
+            <button
+              onClick={() => {
+                setSelected("History");
+                setSelectedPost(null);
+              }}
+              className="text-sm text-[#4A82ED]"
+            >
+              History
+            </button>
           </div>
 
           <div className="bg-gray-100 p-4 text-black rounded-md mb-2 flex justify-between items-center">
@@ -398,9 +416,7 @@ function SelectedPost({
   handleMax,
 }: any) {
   const { formatTimestamp } = useDataContext();
-  const min = 10;
-  const max = 100;
-  const step = 2;
+
   return (
     <>
       {selectedPost?.name ? (
@@ -475,7 +491,9 @@ function SelectedPost({
               {/* From Input */}
 
               <div className=" flex px-4 flex-col-reverse bg-change-secondary-bg rounded-sm p-4 items-start gap-2">
-                <label className="text-gray-200 text-xs">Score Prediction</label>
+                <label className="text-gray-200 text-xs">
+                  Score Prediction
+                </label>
                 <input
                   type="number"
                   value={scorePrediction}
@@ -546,12 +564,72 @@ function CreatePollBody() {
   const [pollData, setPollData] = useState({
     pollName: "",
     deadline: "",
-    question: "",
-    context: "",
     link: "",
+    model: "",
+    keyword: "",
+    question: "",
+  });
+  const { address } = useAccount();
+  let { createPool } = useDataContext();
+
+  const [keywordState, setKeywordState] = useState({
+    "Fetching Data": false,
+    "Generating Numerical KeyWords": false,
+    Done: false,
   });
 
-  let { createPool } = useDataContext();
+  const [questionState, setQuestionState] = useState({
+    "Fetching Data": false,
+    "Generating Questions": false,
+    Done: false,
+  });
+
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+  const handleGenerateKeywords = async () => {
+    setKeywordState({
+      "Fetching Data": true,
+      "Generating Numerical KeyWords": false,
+      Done: false,
+    });
+    await delay(4000);
+    setKeywordState({
+      "Fetching Data": false,
+      "Generating Numerical KeyWords": true,
+      Done: false,
+    });
+    await delay(3000);
+    setKeywordState({
+      "Fetching Data": false,
+      "Generating Numerical KeyWords": false,
+      Done: true,
+    });
+
+
+
+    console.log(pollData);
+  };
+
+  const handleGenerateQuestions = async () => {
+    setQuestionState({
+      "Fetching Data": true,
+      "Generating Questions": false,
+      Done: false,
+    });
+    await delay(2000);
+    setQuestionState({
+      "Fetching Data": false,
+      "Generating Questions": true,
+      Done: false,
+    });
+    await delay(2000);
+    setQuestionState({
+      "Fetching Data": false,
+      "Generating Questions": false,
+      Done: true,
+    });
+
+
+  };
 
   const handlePollDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -559,15 +637,15 @@ function CreatePollBody() {
     setPollData((prev) => ({ ...prev, [name]: value }));
   };
   const handleCreatePoll = async () => {
-    let { pollName, deadline, question, context, link } = pollData;
+    let { pollName, deadline, question, link } = pollData;
     const dead = Math.floor(new Date(deadline).getTime() / 1000);
     const currentTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
     const timeRemaining = dead - currentTimestamp;
-    await createPool(question, context, timeRemaining);
+    await createPool(question, pollName, timeRemaining);
   };
   return (
     <div className="flex justify-center items-center flex-col">
-      <div className="max-w-xl w-full bg-change-trinary-bg  text-white p-6 rounded-md mt-8">
+      <div className="max-w-xl w-full bg-change-trinary-bg  text-white p-6 rounded-md mt-0">
         <h2 className="text-2xl font-semibold text-center mb-4">
           Create New Poll
         </h2>
@@ -580,16 +658,30 @@ function CreatePollBody() {
 
         {/* Form Fields */}
         <div className="space-y-4">
-          {/* Token Name & Symbol */}
-          <div className="grid grid-cols-2 gap-4">
+          {address ? (
+            <div className="grid grid-cols-1 gap-4">
+              <input
+                type="text"
+                value={address}
+                disabled
+                placeholder="Creater Address"
+                className="w-full p-3 bg-change-secondary-bg text-xs cursor-not-allowed  text-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          ) : (
+            <ConnectButton />
+          )}
+          <div className="grid grid-cols-1 gap-4">
             <input
               type="text"
               name="pollName"
               value={pollData.pollName}
               onChange={handlePollDataChange}
-              placeholder="Enter Pool Name"
+              placeholder="Enter Pool Creater Name"
               className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <input
               type="datetime-local"
               name="deadline"
@@ -597,39 +689,129 @@ function CreatePollBody() {
               onChange={handlePollDataChange}
               className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-          <textarea
-            placeholder="Put Your Question Here"
-            name="question"
-            value={pollData.question}
-            onChange={(e) =>
-              setPollData({ ...pollData, question: e.target.value })
-            }
-            className="w-full p-3 h-20 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
-          {/* Token Description */}
-          <textarea
-            name="context"
-            value={pollData.context}
-            onChange={(e) =>
-              setPollData({ ...pollData, context: e.target.value })
-            }
-            placeholder="Give Some Context Around Your Question"
-            className="w-full p-3 h-20 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ></textarea>
 
+            <select
+              name="model"
+              value={pollData.model}
+              onChange={(e) => {
+                console.log(e.target.value);
+                setPollData({ ...pollData, model: e.target.value });
+              }}
+              className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option defaultValue="null" disabled>
+                Select an Derivative
+              </option>
+              <option value="twitter">Twitter</option>
+              <option value="instagram">Instagram</option>
+              <option value="sport">Sports</option>
+              <option value="farcaster">Farcaster</option>
+            </select>
+          </div>
           <div>
             <input
               type="url"
               name="link"
               value={pollData.link}
-              onChange={handlePollDataChange}
-              placeholder="Enter social media links"
+              onChange={(e) => {
+                setPollData({ ...pollData, link: e.target.value });
+                handleGenerateKeywords();
+              }}
+              placeholder="Put Your Poll Creation Url"
               className="w-full mt-2 p-3 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          {keywordState.Done ||
+          keywordState["Generating Numerical KeyWords"] ||
+          keywordState["Fetching Data"] ? (
+            <>
+              <div>
+                <span className="text-green-300">
+                  {keywordState.Done
+                    ? "Done"
+                    : keywordState["Generating Numerical KeyWords"]
+                      ? "Generating Numerical KeyWords"
+                      : keywordState["Fetching Data"]
+                        ? "Fetching Data"
+                        : null}{" "}
+                  .....
+                </span>
+              </div>
+            </>
+          ) : null}
+          {pollData.link && pollData.model && keywordState.Done && (
+            <>
+              <div>
+                <select
+                  name="keyword"
+                  value={pollData.keyword}
+                  onChange={(e) => {
+                    setPollData({ ...pollData, keyword: e.target.value });
+                    handleGenerateQuestions();
+                  }}
+                  className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option defaultValue="null" disabled>
+                    Select an Parameter
+                  </option>
+                  <option value="twitter">Followers</option>
+                  <option value="instagram">Retweets</option>
+                  <option value="sport">Shares</option>
+                  <option value="farcaster">Likes</option>
+                  <option value="farcaster">Comments</option>
+                </select>
+              </div>
+            </>
+          )}
+          {questionState.Done ||
+          questionState["Generating Questions"] ||
+          questionState["Fetching Data"] ? (
+            <>
+              <div>
+                <span className="text-green-300">
+                  {questionState.Done
+                    ? "Done"
+                    : questionState["Generating Questions"]
+                      ? "Generating Questions"
+                      : questionState["Fetching Data"]
+                        ? "Fetching Data"
+                        : null}{" "}
+                  .....
+                </span>
+              </div>
+            </>
+          ) : null}
 
-          {/* Create Token Button */}
+          {pollData.link && pollData.model && pollData.keyword && questionState.Done &&  (
+            <>
+              <div>
+                <select 
+                name="question"
+                value={pollData.question} 
+                onChange={(e)=>setPollData({...pollData, question:e.target.value})}
+                className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option defaultValue="null" disabled>
+                    Select a Question
+                    </option>
+                    <option value="Predict the total number of likes (range: 0-5000)">
+                    Predict the total number of likes (range: 0-5000)
+                    </option>
+                    <option value="Predict the number of retweets (range: 0-2000)">
+                    Predict the number of retweets (range: 0-2000)
+                    </option>
+                    <option value="Predict the total number of comments (range: 0-1000)">
+                    Predict the total number of comments (range: 0-1000)
+                    </option>
+                    <option value="Predict the number of shares (range: 0-1500)">
+                    Predict the number of shares (range: 0-1500)
+                    </option>
+                    <option value="Predict the total number of followers (range: 0-20000)">
+                    Predict the total number of followers (range: 0-20000)
+                    </option>
+                </select>
+              </div>
+            </>
+          )}
           <button
             onClick={handleCreatePoll}
             className="w-full py-3 bg-blue-400 text-gray-800 rounded-md"
@@ -642,6 +824,57 @@ function CreatePollBody() {
   );
 }
 
+function HistoryBody() {
+  return (
+    <>
+      <div className="flex justify-center bg-change-trinary-bg rounded-xl p-8 items-center flex-col">
+        <div className="w-full bg-change-secondary-bg rounded-md">
+          {/* Header Row */}
+          <div className="flex bg-change-primary-bg">
+            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Maker</div>
+            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Type</div>
+            <div className="flex-1 px-4 py-2 text-sm text-gray-400">BONE</div>
+            <div className="flex-1 px-4 py-2 text-sm text-gray-400">ETH</div>
+            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Date</div>
+            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Tx</div>
+          </div>
+          {/* Transaction Rows */}
+          <div className="flex flex-col">
+            <div className="flex border-b border-gray-500">
+              <div className="flex-1 px-4 py-2">
+                <a
+                  href="https://shibariumscan.io/address/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-blue-400 text-sm transition-colors"
+                >
+                  abcdffds
+                </a>
+              </div>
+              <div className="flex-1 px-8 py-2 text-sm text-gray-400">
+                Hello
+              </div>
+              <div className="flex-1 px-4 py-2 text-sm text-gray-400">0.69</div>
+              <div className="flex-1 px-4 py-2 text-sm text-gray-400">69</div>
+              <div className="flex-1 px-4 py-2 text-sm text-gray-400">79</div>
+              <div className="flex-1 px-4 py-2">
+                <a
+                  href="https://shibariumscan.io/tx/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400  hover:text-blue-400 text-sm transition-colors"
+                >
+                  89797797290..8080
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export {
   RewardsSection,
   BalanceScore,
@@ -651,4 +884,5 @@ export {
   ExploreBody,
   SelectedPost,
   CreatePollBody,
+  HistoryBody,
 };
