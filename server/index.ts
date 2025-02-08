@@ -1,16 +1,13 @@
 import express from 'express';
-import mainRoutes from './routes/twitterRoute';
+import twitterRoutes from './routes/twitterRoute';
 
 const app = express();
 const PORT = 5001;
 
-// Middleware to parse JSON bodies
 app.use(express.json());
 
-// Register main routes under the '/api' path
-app.use('/api', mainRoutes);
+app.use('/api', twitterRoutes);
 
-// A simple welcome route
 app.get('/', (req, res) => {
   res.send('Welcome to the API');
 });
