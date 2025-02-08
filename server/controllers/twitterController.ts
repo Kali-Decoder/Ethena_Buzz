@@ -62,7 +62,7 @@ export const getPredictionQuestion = async (req: Request, res: Response) => {
         let postData: any;
 
         // Fetch tweet engagement data
-        if (metric === 'followers') {
+        if (metric?.toLowerCase() === 'followers') {
             if (!username) return res.status(400).json({ error: 'Username is required for followers' });
             postData = await getUserByUsername(username);
         } else {
