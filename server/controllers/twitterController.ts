@@ -44,14 +44,14 @@ async function generatePredictionQuestion(
         return data.generated_text || 'Could not generate a question.';
     } catch (error) {
         console.error('Error generating question with Hugging Face:', error);
-        return 'Error generating a prediction question.';
+        throw error;
     }
 }
 
 /**
  * Express Controller: Generates a prediction question based on tweet engagement.
  */
-export const getPredictionQuestion = async (req: Request, res: Response) => {
+export const getPredictionQuestion = async (req: Request, res: Response):Promise<any| undefined> => {
     try {
         const { metric, postId, username, predictionType } = req.body;
 
