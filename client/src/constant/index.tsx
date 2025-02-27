@@ -2141,7 +2141,7 @@ export const superfluidABI = [
 export const features = [
   {
     id: "0",
-    imageUrl: "/images/feature-1.png",
+    icon: "/images/feature-1.png",
     url: "https://www.notion.so/Introduction-40fcce3d85434b7aafaac9567688bbbe?pvs=4",
     caption: "Betting on your favorite creators",
     title: "Bet on your favorite creators",

@@ -22,7 +22,7 @@ export const connectors = connectorsForWallets(
     },
   ],
   {
-    appName: "BuzziFy",
+    appName: "XO-Market",
     projectId: projectId,
   }
 );
