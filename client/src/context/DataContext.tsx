@@ -3,6 +3,7 @@ import { useAccount } from "wagmi";
 import { useEthersSigner } from "@/utils/signer";
 import { ethers, BigNumber, Contract } from "ethers";
 import toast from "react-hot-toast";
+import { api } from "@/config";
 import {
   tokenAbi,
   mainContractABI,
@@ -132,8 +133,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
-
-
   const convertUSDetoBuzz = async (amount: any) => {
     let id = toast.loading("Converting USDe to BUZZ...");
     try {
@@ -147,7 +146,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.usdeAddress,
         tokenAbi
       );
-     
+
       if (tokenContract) {
         const allowance = await tokenContract.allowance(
           address,
@@ -168,13 +167,12 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         return;
       }
     } catch (error) {
-    console.log("Error in converting USDe to BUZZ", error);
+      console.log("Error in converting USDe to BUZZ", error);
       toast.error("Error in converting USDe to BUZZ", { id });
     }
-  }
+  };
 
-
-  const convertBuzztoUSDe = async (amount:any) => {
+  const convertBuzztoUSDe = async (amount: any) => {
     let id = toast.loading("Converting BUZZ to USDe...");
     try {
       amount = ethers.utils.parseEther(amount.toString());
@@ -187,7 +185,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.tokenAddress,
         tokenAbi
       );
-   
+
       if (tokenContract) {
         const allowance = await tokenContract.allowance(
           address,
@@ -211,7 +209,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       console.log("Error in converting BUZZ to USDe", error);
       toast.error("Error in converting BUZZ to USDe", { id });
     }
-  }
+  };
 
   const mintNft = async () => {
     let id = toast.loading("Minting NFT...");
@@ -441,6 +439,24 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  const getQuestionsFromAi = async (
+    metric: string,
+    postId: string,
+    username: string,
+    predictionType: string
+  ) => {
+    try {
+      let data = await api?.post("", {
+        metric,
+        postId,
+        username,
+        predictionType,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const isNftMinted = async () => {
     try {
       const nftContract = await getContractInstance(
@@ -499,7 +515,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         mintNft,
         nftMintedAllReady,
         convertUSDetoBuzz,
-        convertBuzztoUSDe
+        convertBuzztoUSDe,
       }}
     >
       {children}

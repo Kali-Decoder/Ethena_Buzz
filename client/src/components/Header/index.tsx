@@ -2,7 +2,6 @@
 import { Link as LinkScroll } from "react-scroll";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { useAccount } from "wagmi";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
