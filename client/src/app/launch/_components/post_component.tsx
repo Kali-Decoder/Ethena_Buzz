@@ -37,20 +37,24 @@ const PostComponent = ({
     <>
       <div
         onClick={onSelect}
-        className="bg-gray-900 rounded-xl shadow-lg p-5 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-2xl"
+        className="relative bg-gray-900 rounded-xl shadow-lg p-5 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-2xl"
       >
+        {/* Twitter Button - Positioned at Top Left */}
+        <Link
+          href={item?.url || "#"}
+          target="_blank"
+          className="absolute top-3 left-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 transition"
+        >
+          <FaTwitter className="text-xl" />
+        </Link>
+
         {/* Question */}
-        <h2 className="font-semibold text-lg text-white">{item?.question}</h2>
-        {/* Twitter Link */}
-        <div className="mt-2">
-          <Link href={item?.url || "#"} target="_blank">
-            <FaTwitter className="text-blue-400 text-xl hover:text-blue-500 transition" />
-          </Link>
-        </div>
+        <h2 className="font-semibold text-md text-white mt-8">{item?.question}</h2>
+
         {/* Tags Section */}
         <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-black uppercase">
           {item?.category && (
-            <span className=" bg-slate-300 px-2 py-1 rounded-md">
+            <span className="bg-slate-300 px-2 py-1 rounded-md">
               #{item.category}
             </span>
           )}
@@ -87,7 +91,7 @@ const PostComponent = ({
           {/* Status Indicator */}
           <span className="flex items-center gap-2">
             <RiRadioButtonLine
-              className={item?.poolEnded ? "text-red-500" : "text-green-500"}
+              className={item?.poolEnded ? "text-red" : "text-green-500"}
             />
             <span className="uppercase font-bold">
               {item?.poolEnded ? "ENDED" : "ONGOING"}
