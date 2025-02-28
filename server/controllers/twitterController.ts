@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { getTweetById, getUserByUsername } from '../helper/utils';
+import OpenAI from 'openai';
 
 dotenv.config();
 
-const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY || '';
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
- * Generates prediction-style questions using Hugging Face API.
+ * Generates prediction-style questions using OpenAI API.
  * @param postData - Twitter post engagement data.
  * @param predictionType - Binary or Range-Based Prediction.
  * @param metric - The selected engagement metric (likes, shares, etc.).
@@ -18,32 +19,24 @@ async function generatePredictionQuestion(
     metric: string
 ): Promise<string> {
     const prompt = `
-        Generate a ${predictionType.toLowerCase()} prediction-style question based on this Twitter post engagement data:
-        - ${metric}: ${postData[metric]}
-        The question should be engaging and formatted for a prediction market.
+        You are an expert in prediction markets. Based on the given Twitter post engagement data,
+        craft a ${predictionType.toLowerCase()} prediction-style question that is engaging and aligns with prediction market principles.
+        The engagement data suggests that if the current ${metric} is ${postData[metric]},
+        then future engagements (likes, retweets, and shares) will follow a similar pattern.
+        Structure the question so that users can make an informed guess about future engagement trends. give total 5 questions suggestions
     `;
 
     try {
-        const response = await fetch(
-            'https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill',
-            {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ inputs: prompt })
-            }
-        );
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: [{ role: 'system', content: 'You are an expert in crafting prediction questions for engagement metrics.' },
+                       { role: 'user', content: prompt }],
+            max_tokens: 100
+        });
 
-        if (!response.ok) {
-            throw new Error(`Hugging Face API error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data.generated_text || 'Could not generate a question.';
+        return response.choices[0]?.message?.content || 'Could not generate a question.';
     } catch (error) {
-        console.error('Error generating question with Hugging Face:', error);
+        console.error('Error generating question with OpenAI:', error);
         throw error;
     }
 }
@@ -51,7 +44,7 @@ async function generatePredictionQuestion(
 /**
  * Express Controller: Generates a prediction question based on tweet engagement.
  */
-export const getPredictionQuestion = async (req: Request, res: Response):Promise<any| undefined> => {
+export const getPredictionQuestion = async (req: Request, res: Response): Promise<any | undefined> => {
     try {
         const { metric, postId, username, predictionType } = req.body;
 
