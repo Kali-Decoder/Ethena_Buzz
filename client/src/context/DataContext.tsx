@@ -25,7 +25,15 @@ interface DataContextProps {
     contractAbi: any
   ) => Promise<Contract | undefined>;
   getTokenBalance: () => Promise<BigNumber | undefined>;
-  createPool: (name: string, desc: string, endtime: number) => Promise<void>;
+  createPool: (
+    pollName: string,
+    deadline: number,
+    question: string,
+    link: string,
+    parameter: string,
+    keyword: string,
+    type: number
+  ) => Promise<void>;
   placeBet: (
     poolId: number,
     amount: BigNumber,
@@ -49,6 +57,12 @@ interface DataContextProps {
   nftMintedAllReady: boolean;
   convertUSDetoBuzz: (amount: number) => Promise<void>;
   convertBuzztoUSDe: (amount: number) => Promise<void>;
+  getQuestionsFromAi: (
+    metric: string,
+    postId: string,
+    username: string,
+    predictionType: string
+  ) => Promise<void>;
 }
 
 interface DataContextProviderProps {
@@ -236,23 +250,43 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
-  const createPool = async (name: string, desc: string, endtime: number) => {
-    console.log("Creating pool");
+  const createPool = async (
+    pollName: string,
+    deadline: number,
+    question: string,
+    link: string,
+    media: string,
+    metric: string,
+    type: number
+  ) => {
     let id = toast.loading("Creating pool...");
     try {
+      console.log("Creating pool", ethers.utils.formatEther("100"));
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
       );
       if (mainContract) {
-        const tx = await mainContract.createPool(name, desc, endtime);
+        const tx = await mainContract.createPool(
+          question,
+          link,
+          media,
+          metric,
+          type,
+          deadline,
+          {
+            from: address,
+            value: BigNumber.from(ethers.utils.parseUnits("100", "wei")),
+          }
+        );
+
         await tx.wait();
         await getPoolsDetails();
         toast.success("Pool created successfully", { id });
       }
       return;
     } catch (error) {
-      console.log("Error in creating pool");
+      console.log("Error in creating pool", error);
       toast.error("Error in creating pool", { id });
       return;
     }
@@ -393,7 +427,10 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           let poolObj = {
             poolId: i,
             question: pool.question,
-            description: pool.description,
+            url: pool.url,
+            parameter: pool.parameter,
+            category: pool.category,
+            poll_type: pool.poll_type,
             total_amount: +pool.total_amount
               .div(BigNumber.from(10).pow(18))
               .toString(),
@@ -438,21 +475,28 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       return poolDetails;
     }
   };
-
+  function _convertToArray(text: string) {
+    console.log("tesxt", text);
+    return text?.split(/\d+\.\s+/).filter(Boolean);
+  }
   const getQuestionsFromAi = async (
     metric: string,
     postId: string,
     username: string,
     predictionType: string
   ) => {
+    let id = toast.loading("Generating Some Questions Based on Paramters ...");
     try {
-      let data = await api?.post("", {
+      let data = await api?.post("/api/prediction-question", {
         metric,
         postId,
         username,
         predictionType,
       });
+      toast.success("Questions Formed", { id });
+      return _convertToArray(data?.data?.question);
     } catch (error) {
+      toast.error("Failed to Form Questions", { id });
       console.log(error);
     }
   };
@@ -516,6 +560,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         nftMintedAllReady,
         convertUSDetoBuzz,
         convertBuzztoUSDe,
+        getQuestionsFromAi,
       }}
     >
       {children}

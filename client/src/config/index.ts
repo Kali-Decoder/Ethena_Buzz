@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL for the backend (Update with your actual backend URL)
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://xo-data-service-573278035810.us-central1.run.app";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 // Create a default Axios instance for normal JSON requests
 const api = axios.create({
   baseURL: BASE_URL,

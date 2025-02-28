@@ -29,18 +29,20 @@ import {
 import toast from "react-hot-toast";
 
 interface PoolData {
-  id: any;
-  name: string;
-  description: string;
+  poolId: number;
+  question: string;
   category: string;
-  total_amount: any;
-  total_bets: any;
-  finalScore: any;
-  startTime: any;
-  endTime: any;
-  resultDeclareTime: any;
+  parameter: string;
+  pollType: number;
+  totalAmount: number;
+  totalBets: number;
+  finalScore: number;
+  startTime: number;
+  endTime: number;
+  resultDeclareTime: number;
   poolEnded: boolean;
 }
+
 
 const sidebarItems = [
   "Explore",
@@ -57,7 +59,6 @@ const LaunchPage: React.FC = () => {
   const {
     totalPools,
     tokenBalance,
-    userBetsData,
     placeBet,
     mintNft,
     nftMintedAllReady,
@@ -65,10 +66,6 @@ const LaunchPage: React.FC = () => {
     convertBuzztoUSDe,
   } = useDataContext();
 
-  const [transformedPoolsData, setTransformedPoolsData] = useState<PoolData[]>(
-    []
-  );
-  const [isBetted, setIsBetted] = useState(false);
   const [investment, setInvestment] = useState(0);
   const [scorePrediction, setScorePrediction] = useState(0);
   const [selected, setSelected] = useState("Explore");
@@ -160,41 +157,13 @@ const LaunchPage: React.FC = () => {
     await mintNft();
   };
 
-  useEffect(() => {
-    if (totalPools?.length) {
-      setTransformedPoolsData(
-        totalPools.map((pool: any) => ({
-          id: pool?.poolId,
-          name: `#${String(pool?.poolId).padStart(2, "0")}`,
-          question: pool?.question,
-          description: pool?.description,
-          category: "Crypto",
-          total_amount: pool?.total_amount || 0,
-          total_bets: pool?.total_bets || 0,
-          finalScore: pool?.finalScore || null,
-          startTime: pool?.startTime || Math.floor(Date.now() / 1000),
-          endTime: pool?.endTime || 1735689600,
-          resultDeclareTime: pool?.resultDeclareTime || 1735776000,
-          poolEnded: !!pool?.poolEnded,
-        }))
-      );
-    }
-  }, [totalPools]);
+
 
   const handleMax = () => {
     setInvestment(tokenBalance?.buzzBalance);
   };
 
-  useEffect(() => {
-    const val =
-      userBetsData?.length > 0 &&
-      userBetsData?.find((item) => item?.poolId == selectedPost?.id);
-    if (val) {
-      setIsBetted(true);
-    } else {
-      setIsBetted(false);
-    }
-  }, [userBetsData]);
+
 
   return (
     <div className="flex items-center justify-center h-[100vh] bg-change-primary-bg orbitron-launch">
@@ -297,7 +266,7 @@ const LaunchPage: React.FC = () => {
             {selected === "Explore" && !selectedPost && (
               <>
                 <ExploreBody
-                  transformedPoolsData={transformedPoolsData}
+                  transformedPoolsData={totalPools}
                   setSelectedPost={setSelectedPost}
                 />
               </>
@@ -307,7 +276,7 @@ const LaunchPage: React.FC = () => {
               <>
                 <SelectedPost
                   selectedPost={selectedPost}
-                  isBetted={isBetted}
+                
                   investment={investment}
                   setInvestment={setInvestment}
                   scorePrediction={scorePrediction}

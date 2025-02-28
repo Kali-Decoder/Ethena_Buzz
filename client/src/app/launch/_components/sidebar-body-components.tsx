@@ -4,13 +4,16 @@ import { CgDollar } from "react-icons/cg";
 import { FaUserAlt } from "react-icons/fa";
 import { RiRadioButtonLine } from "react-icons/ri";
 import { useDataContext } from "@/context/DataContext";
-import Slider from "react-input-slider";
+import { FaWandMagicSparkles } from "react-icons/fa6";
 import { LuArrowUpDown } from "react-icons/lu";
 import Link from "next/link";
 import { IoInformationCircleOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import toast from "react-hot-toast";
+import { XEmbed } from "react-social-media-embed";
+import { FaTwitter } from "react-icons/fa";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -411,15 +414,26 @@ function SelectedPost({
   investment,
   setInvestment,
   tokenBalance,
-  isBetted,
   handleSubmit,
   handleMax,
 }: any) {
-  const { formatTimestamp } = useDataContext();
-
+  const { formatTimestamp, userBetsData } = useDataContext();
+  const [isBetted, setIsBetted] = useState(false);
+  console.log(selectedPost);
+  useEffect(() => {
+    console.log("userBetsData", userBetsData);
+    const val =
+      userBetsData &&
+      userBetsData?.find((item) => item?.poolId === selectedPost?.poolId);
+    if (val) {
+      setIsBetted(true);
+    } else {
+      setIsBetted(false);
+    }
+  }, [userBetsData]);
   return (
     <>
-      {selectedPost?.name ? (
+      {selectedPost?.question ? (
         <div className="flex w-full gap-x-8 bg-change-secondary-bg  p-6 rounded text-white">
           <div className="w-[55%] overflow-y-scroll scrollbar-thin">
             {/* Header Section */}
@@ -430,9 +444,7 @@ function SelectedPost({
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />
-                <span className="font-semibold text-gray-200">
-                  {selectedPost?.name}
-                </span>
+                <span className="font-semibold text-gray-200">Nikku</span>
                 <span className="text-blue-500">💎</span>
               </div>
               <div className="flex items-center gap-1 text-gray-200">
@@ -463,15 +475,19 @@ function SelectedPost({
               <h2 className="font-bold text-lg text-white">
                 {selectedPost?.question}
               </h2>
-              <p className="text-gray-300 text-sm mt-1">
-                {selectedPost?.description}
-              </p>
+              <div className="text-gray-300 text-sm mt-4">
+                <XEmbed
+                  style={{ borderRadius: "none" }}
+                  url={selectedPost?.url}
+                  width="100%"
+                />
+              </div>
             </div>
 
             {/* Hashtags */}
-            <div className="mt-2 text-blue-500 text-sm font-medium">
-              <span>#Sports</span> <span>#Celebrities</span>{" "}
-              <span>#Pop Culture</span>
+            <div className="mt-2 text-blue-500 text-md font-medium">
+              <span># {selectedPost?.category}</span>{" "}
+              <span># {selectedPost?.parameter}</span>
             </div>
 
             {/* Image */}
@@ -491,16 +507,35 @@ function SelectedPost({
               {/* From Input */}
 
               <div className=" flex px-4 flex-col-reverse bg-change-secondary-bg rounded-sm p-4 items-start gap-2">
-                <label className="text-gray-200 text-xs">
-                  Score Prediction
-                </label>
-                <input
-                  type="number"
-                  value={scorePrediction}
-                  onChange={(e) => setScorePrediction(e.target.value)}
-                  className="w-full bg-transparent text-white outline-none text-sm"
-                  placeholder="Guess the Number"
-                />
+                {selectedPost.poll_type === 0 ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-2 w-full">
+                      <button
+                        className={`bg-[#1B1B1A]  px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        className={`bg-[#1B1B1A] px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <label className="text-gray-200 text-xs">
+                      Score Prediction
+                    </label>
+                    <input
+                      type="number"
+                      value={scorePrediction}
+                      onChange={(e) => setScorePrediction(e.target.value)}
+                      className="w-full bg-transparent text-white outline-none text-sm"
+                      placeholder="Guess the Number"
+                    />
+                  </>
+                )}
               </div>
               <div className="mb-4 mt-4">
                 <div className="flex items-center bg-change-secondary-bg rounded-lg p-3">
@@ -520,14 +555,14 @@ function SelectedPost({
                   <span className="text-white ml-2 text-xs">BUZZ</span>
                 </div>
 
-                <div className="flex justify-between flex-col text-xs mt-4">
+                <div className="flex justify-between flex-col text-xs mt-8">
                   <span className="text-white"></span>
-                  <span className="text-white text-[12px]">
+                  <span className="text-white text-[16px]">
                     Balance:{" "}
                     {tokenBalance?.buzzBalance ? tokenBalance?.buzzBalance : 0}{" "}
                     BUZZ
                   </span>
-                  <span className="text-red text-[12px] mt-2">
+                  <span className="text-red text-[16px] mt-2">
                     PoolEnded : {formatTimestamp(selectedPost?.endTime)}
                   </span>
                 </div>
@@ -565,83 +600,71 @@ function CreatePollBody() {
     pollName: "",
     deadline: "",
     link: "",
-    model: "",
-    keyword: "",
+    media: "",
+    metric: "",
+    type: "",
     question: "",
   });
   const { address } = useAccount();
-  let { createPool } = useDataContext();
-
-  const [keywordState, setKeywordState] = useState({
-    "Fetching Data": false,
-    "Generating Numerical KeyWords": false,
-    Done: false,
-  });
-
-  const [questionState, setQuestionState] = useState({
-    "Fetching Data": false,
-    "Generating Questions": false,
-    Done: false,
-  });
-
-  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-  const handleGenerateKeywords = async () => {
-    setKeywordState({
-      "Fetching Data": true,
-      "Generating Numerical KeyWords": false,
-      Done: false,
-    });
-    await delay(4000);
-    setKeywordState({
-      "Fetching Data": false,
-      "Generating Numerical KeyWords": true,
-      Done: false,
-    });
-    await delay(3000);
-    setKeywordState({
-      "Fetching Data": false,
-      "Generating Numerical KeyWords": false,
-      Done: true,
-    });
-
-
-
-    console.log(pollData);
-  };
-
-  const handleGenerateQuestions = async () => {
-    setQuestionState({
-      "Fetching Data": true,
-      "Generating Questions": false,
-      Done: false,
-    });
-    await delay(2000);
-    setQuestionState({
-      "Fetching Data": false,
-      "Generating Questions": true,
-      Done: false,
-    });
-    await delay(2000);
-    setQuestionState({
-      "Fetching Data": false,
-      "Generating Questions": false,
-      Done: true,
-    });
-
-
-  };
-
+  let { createPool, getQuestionsFromAi } = useDataContext();
+  const [questionsData, setQuestionsData] = useState();
   const handlePollDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const { name, value } = e.target;
     setPollData((prev) => ({ ...prev, [name]: value }));
   };
+
+  function extractTweetInfo(url: string) {
+    const regex = /x\.com\/([^\/]+)\/status\/(\d+)/;
+    const match = url.match(regex);
+
+    if (match) {
+      return {
+        username: match[1],
+        tweetId: match[2],
+      };
+    }
+
+    return null;
+  }
+
+  const generateQuestions = async () => {
+    let { pollName, deadline, link, media, metric, type } = pollData;
+    const tweetInfo = extractTweetInfo(link);
+
+    if (!link || !media || !metric || !deadline || !pollName || !type) {
+      toast.error("Please Provide All Details");
+      return;
+    }
+    if (!tweetInfo?.tweetId || !tweetInfo?.username) {
+      toast.error("Not Valid Url");
+      return;
+    }
+
+    console.log(pollData, tweetInfo);
+    let questions = await getQuestionsFromAi(
+      metric,
+      tweetInfo?.tweetId,
+      tweetInfo?.username,
+      type
+    );
+    setQuestionsData(questions);
+  };
   const handleCreatePoll = async () => {
-    let { pollName, deadline, question, link } = pollData;
+    let { question, link, media, metric, deadline, pollName, type } = pollData;
     const dead = Math.floor(new Date(deadline).getTime() / 1000);
     const currentTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
     const timeRemaining = dead - currentTimestamp;
-    await createPool(question, pollName, timeRemaining);
+    let _type = type === "binary" ? 0 : 1;
+    await createPool(
+      pollName,
+      timeRemaining,
+      question,
+      link,
+      media,
+      metric,
+      _type
+    );
   };
   return (
     <div className="flex justify-center items-center flex-col">
@@ -676,36 +699,42 @@ function CreatePollBody() {
               type="text"
               name="pollName"
               value={pollData.pollName}
-              onChange={handlePollDataChange}
+              onChange={(e) => handlePollDataChange(e)}
               placeholder="Enter Pool Creater Name"
               className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <input
               type="datetime-local"
               name="deadline"
               value={pollData.deadline}
-              onChange={handlePollDataChange}
+              onChange={(e) => handlePollDataChange(e)}
               className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <select
-              name="model"
-              value={pollData.model}
-              onChange={(e) => {
-                console.log(e.target.value);
-                setPollData({ ...pollData, model: e.target.value });
-              }}
+              name="media"
+              value={pollData.media}
+              onChange={(e) => handlePollDataChange(e)}
               className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option defaultValue="null" disabled>
-                Select an Derivative
-              </option>
+              <option value="null">Media</option>
               <option value="twitter">Twitter</option>
               <option value="instagram">Instagram</option>
               <option value="sport">Sports</option>
               <option value="farcaster">Farcaster</option>
+            </select>
+
+            <select
+              name="type"
+              value={pollData.type}
+              onChange={(e) => handlePollDataChange(e)}
+              className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="null">Market Type</option>
+              <option value="binary">Binary</option>
+              <option value="range-based">Range Based</option>
             </select>
           </div>
           <div>
@@ -713,111 +742,70 @@ function CreatePollBody() {
               type="url"
               name="link"
               value={pollData.link}
-              onChange={(e) => {
-                setPollData({ ...pollData, link: e.target.value });
-                handleGenerateKeywords();
-              }}
+              onChange={(e) => handlePollDataChange(e)}
               placeholder="Put Your Poll Creation Url"
               className="w-full mt-2 p-3 bg-change-secondary-bg  text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          {keywordState.Done ||
-          keywordState["Generating Numerical KeyWords"] ||
-          keywordState["Fetching Data"] ? (
-            <>
-              <div>
-                <span className="text-green-300">
-                  {keywordState.Done
-                    ? "Done"
-                    : keywordState["Generating Numerical KeyWords"]
-                      ? "Generating Numerical KeyWords"
-                      : keywordState["Fetching Data"]
-                        ? "Fetching Data"
-                        : null}{" "}
-                  .....
-                </span>
-              </div>
-            </>
-          ) : null}
-          {pollData.link && pollData.model && keywordState.Done && (
+
+          <div>
+            <select
+              name="metric"
+              value={pollData.metric}
+              onChange={(e) => handlePollDataChange(e)}
+              className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="null">Select an Metric</option>
+              <option value="views">Views</option>
+              <option value="retweets">Retweets</option>
+              <option value="shares">Shares</option>
+              <option value="likes">Likes</option>
+              <option value="comments">Comments</option>
+              <option value="bookmark_count">BookMark Count</option>
+              <option value="followers">Followers</option>
+            </select>
+          </div>
+
+          {questionsData?.length > 0 && (
             <>
               <div>
                 <select
-                  name="keyword"
-                  value={pollData.keyword}
-                  onChange={(e) => {
-                    setPollData({ ...pollData, keyword: e.target.value });
-                    handleGenerateQuestions();
-                  }}
+                  name="question"
+                  value={pollData.question}
+                  onChange={(e) =>
+                    setPollData({ ...pollData, question: e.target.value })
+                  }
                   className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option defaultValue="null" disabled>
-                    Select an Parameter
-                  </option>
-                  <option value="twitter">Followers</option>
-                  <option value="instagram">Retweets</option>
-                  <option value="sport">Shares</option>
-                  <option value="farcaster">Likes</option>
-                  <option value="farcaster">Comments</option>
+                  <option value="null">Select a Question</option>
+                  {questionsData &&
+                    questionsData?.map((item: string, index: number) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    ))}
                 </select>
               </div>
             </>
           )}
-          {questionState.Done ||
-          questionState["Generating Questions"] ||
-          questionState["Fetching Data"] ? (
-            <>
-              <div>
-                <span className="text-green-300">
-                  {questionState.Done
-                    ? "Done"
-                    : questionState["Generating Questions"]
-                      ? "Generating Questions"
-                      : questionState["Fetching Data"]
-                        ? "Fetching Data"
-                        : null}{" "}
-                  .....
-                </span>
-              </div>
-            </>
-          ) : null}
 
-          {pollData.link && pollData.model && pollData.keyword && questionState.Done &&  (
-            <>
-              <div>
-                <select 
-                name="question"
-                value={pollData.question} 
-                onChange={(e)=>setPollData({...pollData, question:e.target.value})}
-                className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option defaultValue="null" disabled>
-                    Select a Question
-                    </option>
-                    <option value="Predict the total number of likes (range: 0-5000)">
-                    Predict the total number of likes (range: 0-5000)
-                    </option>
-                    <option value="Predict the number of retweets (range: 0-2000)">
-                    Predict the number of retweets (range: 0-2000)
-                    </option>
-                    <option value="Predict the total number of comments (range: 0-1000)">
-                    Predict the total number of comments (range: 0-1000)
-                    </option>
-                    <option value="Predict the number of shares (range: 0-1500)">
-                    Predict the number of shares (range: 0-1500)
-                    </option>
-                    <option value="Predict the total number of followers (range: 0-20000)">
-                    Predict the total number of followers (range: 0-20000)
-                    </option>
-                </select>
-              </div>
-            </>
+          {!questionsData?.length > 0 && (
+            <button
+              onClick={generateQuestions}
+              className="w-10 h-10 border p-2 flex justify-center items-center rounded-full"
+            >
+              <FaWandMagicSparkles size={20} />
+            </button>
           )}
-          <button
-            onClick={handleCreatePoll}
-            className="w-full py-3 bg-blue-400 text-gray-800 rounded-md"
-          >
-            Create Poll
-          </button>
+
+          {questionsData?.length > 0 && (
+            <button
+              onClick={handleCreatePoll}
+              className="w-full py-3 bg-blue-400 text-gray-800 rounded-md"
+            >
+              Create Poll
+            </button>
+          )}
         </div>
       </div>
     </div>

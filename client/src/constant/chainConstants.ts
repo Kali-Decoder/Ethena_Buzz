@@ -149,7 +149,7 @@ const KopliTestnet = {
 };
 
 
-export const chainArray = [taikoHeklaTestnet,rootstockTestnet,bleTestnetNetwork,KopliTestnet];
+export const chainArray = [taikoHeklaTestnet,rootstockTestnet,bleTestnetNetwork,KopliTestnet,mantleSepoliaTestnet];
 export const transportsObject = {
   [taikoHeklaTestnet.id]: http(),
   [rootstockTestnet.id]: http(),
@@ -160,7 +160,7 @@ export const transportsObject = {
   // [celoAlfajores.id]: http(),
   // [chilizSpicyTestnet.id]: http(),
   // [incoRivestTestnet.id]: http(),
-  // [mantleSepoliaTestnet.id]: http(),
+  [mantleSepoliaTestnet.id]: http(),
   // [scrollSepolia.id]: http(),
   // [neoTestnetNetwork.id]: http(),
   // [morphSepolia.id]: http(),

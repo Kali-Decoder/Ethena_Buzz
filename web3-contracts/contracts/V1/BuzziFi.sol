@@ -2,12 +2,18 @@
 pragma solidity ^0.8.20;
 import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 
-contract BuzziFi {
+contract Buzzify {
     IERC20 public token;
     address public owner;
     uint256 private pool_id;
-    uint256 public constant FEE = 10;
+    uint256 public constant FEE = 100 wei;
     uint256 public REWARD;
+
+    enum POLL_TYPE {
+        BINARY,
+        RANGE
+    }
+
     event DebugClaim(uint256 claimedAmount, bool claimed);
     struct Bet {
         address user;
@@ -18,13 +24,16 @@ contract BuzziFi {
     }
     struct Pool {
         string question;
-        string description;
+        string url;
+        string parameter;
+        string category;
         uint256 total_amount;
         uint256 total_bets;
         uint256 finalScore;
         uint256 startTime;
         uint256 endTime;
         uint256 resultDeclareTime;
+        POLL_TYPE poll_type;
         bool poolEnded;
         mapping(address => Bet) userBet;
     }
@@ -45,23 +54,30 @@ contract BuzziFi {
         owner = msg.sender;
     }
 
-
-
     function createPool(
         string calldata _poolName,
-        string calldata _poolDiscription,
+        string calldata _url,
+        string calldata _parameter,
+        string calldata _category,
+        uint _polltype,
         uint256 _endTime
-    ) external onlyOwner {
+    ) external payable  {
+        require(msg.value>=FEE,"PAY_MINIMAL_FEE");
         // Create a new pool
         pools[pool_id].question = _poolName;
-        pools[pool_id].description = _poolDiscription;
+        pools[pool_id].url = _url;
+        pools[pool_id].parameter = _parameter;
+        pools[pool_id].category = _category;
         pools[pool_id].total_amount = 0;
         pools[pool_id].total_bets = 0;
         pools[pool_id].poolEnded = false;
         pools[pool_id].finalScore = 0;
+        pools[pool_id].poll_type = _polltype== 0 ? POLL_TYPE.BINARY : POLL_TYPE.RANGE;
         pools[pool_id].startTime = block.timestamp;
         pools[pool_id].endTime = block.timestamp + _endTime;
-        pools[pool_id].resultDeclareTime = block.timestamp + (_endTime + 30 minutes);
+        pools[pool_id].resultDeclareTime =
+            block.timestamp +
+            (_endTime + 30 minutes);
         unchecked {
             pool_id += 1;
         }
@@ -186,4 +202,7 @@ contract BuzziFi {
     function getPoolId() external view returns (uint256) {
         return pool_id;
     }
+
+    function receive() external payable {}
+
 }
