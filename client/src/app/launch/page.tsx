@@ -24,7 +24,6 @@ import {
   ExchangeHeader,
   AssetsHeader,
   LeaderboardHeader,
-  MyVotesHeader,
   HistoryHeader,
 } from "./_components/sidebar-header-components";
 import toast from "react-hot-toast";

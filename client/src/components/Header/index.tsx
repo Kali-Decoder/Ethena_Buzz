@@ -2,21 +2,15 @@
 import { Link as LinkScroll } from "react-scroll";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import { ConnectButton2 } from "./ConnectButton";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import ChainDropdown from "../ChainDropdown/index";
 const Header = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false); // Hydration check
-  const { isConnected } = useAccount();
-
   const pathname = usePathname();
-
   useEffect(() => {
     // Set hydration to true when the component is mounted
     setHydrated(true);
