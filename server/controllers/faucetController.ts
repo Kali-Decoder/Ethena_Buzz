@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import dotenv from "dotenv";
-import {ethers} from "ethers";
+import { ethers } from "ethers";
+import User, { IUser } from "../dao/user";
 import { _checkUserFaucetClaimed } from "../services/userService";
 import { TOKEN_ABI } from "../constant";
+import { createUser } from "../services/userService";
 dotenv.config();
 
 export const dripFaucet = async (
@@ -11,12 +13,13 @@ export const dripFaucet = async (
 ): Promise<any | undefined> => {
   const { receiver, rpc_url, tokenAddress } = req.query;
 
-  
   if (!receiver || !tokenAddress || !rpc_url) {
     return res.status(400).json({ message: "Deatils are Missing !!!" });
   }
 
-  console.log(receiver,tokenAddress,rpc_url);
+  console.log(receiver, tokenAddress, rpc_url);
+
+  let existingUser = await User.findOne({ address: receiver });
 
   const isClaimed = await _checkUserFaucetClaimed(receiver as `0xstring`);
   try {
@@ -25,7 +28,9 @@ export const dripFaucet = async (
         message: "You Already Claimed",
       });
     }
-    const provider =  new  ethers.JsonRpcProvider("https://testnet.rpc.ethena.fi/")
+    const provider = new ethers.JsonRpcProvider(
+      "https://testnet.rpc.ethena.fi/"
+    );
     console.log(provider);
     const signer = new ethers.Wallet("0x" + process.env.PRIVATE_KEY, provider);
     if (!signer) {
@@ -41,6 +46,11 @@ export const dripFaucet = async (
       from: signer.address,
     });
     await tx.wait();
+
+    if (existingUser) {
+      existingUser.isFaucetClaimed = true;
+    }
+
     return res.status(200).json({
       message: "Dripped successfully !!!",
       transaction: `https://testnet.explorer.ethena.fi/tx/${tx.hash}`,
