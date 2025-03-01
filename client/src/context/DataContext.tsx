@@ -255,13 +255,13 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   ) => {
     let id = toast.loading("Creating pool...");
     try {
-      console.log("Creating pool", ethers.utils.formatEther("100"));
+
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
       );
       if (mainContract) {
-        console.log(mainContract, activeChain);
+
         const tx = await mainContract.createPool(
           question,
           link,
@@ -303,7 +303,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.tokenAddress,
         tokenAbi
       );
-      console.log("tokenContract", tokenContract);
+
       if (tokenContract) {
         const allowance = await tokenContract.allowance(
           address,
@@ -335,15 +335,15 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   };
 
   const claimBet = async (poolId: number) => {
-    console.log("Claiming bet", poolId);
+
     let id = await toast.loading("Claiming bet...");
     try {
-      console.log("Claiming bet", Addresses[activeChain]?.mainContractAddress);
+
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
       );
-      console.log("mainContract", mainContract);
+
       if (mainContract) {
         const tx = await mainContract.claimBet(poolId);
         await tx.wait();
@@ -373,7 +373,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       }
       return;
     } catch (error) {
-      console.log("Error in setting result");
       toast.error("Error in setting result", { id });
       return;
     }
@@ -413,9 +412,9 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
       );
-      console.log("getPoolDetails", mainContract);
+
       let maxPoolId = await mainContract?.getPoolId();
-      console.log("maxPoolId", maxPoolId);
+
       let userBets = [] as any;
       if (mainContract) {
         for (let i = 0; i < maxPoolId; i++) {
@@ -438,7 +437,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           };
           poolDetails.pool_data.pools.push(poolObj);
           let bets = await mainContract.getBets(i);
-          console.log("bets", bets);
+       
           let poolBets = [];
           for (let y = 0; y < bets.length; y++) {
             let betObj = {
@@ -460,7 +459,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           await setUserBetsData(userBets);
           poolDetails.pool_data.pools[i].bets = poolBets;
         }
-        console.log("poolDetails", poolDetails);
+
         setTotalPools(poolDetails?.pool_data?.pools);
         setLoading(false);
         return poolDetails;
@@ -472,7 +471,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
   function _convertToArray(text: string) {
-    console.log("tesxt", text);
+
     return text?.split(/\d+\.\s+/).filter(Boolean);
   }
   const getQuestionsFromAi = async (
@@ -509,7 +508,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.nftContractAddress,
         nftContractAbi
       );
-      console.log(nftContract, "nftContract");
+
       if (nftContract) {
         let balance = await nftContract.balanceOf(address);
         if (balance.toNumber() >= 1) {

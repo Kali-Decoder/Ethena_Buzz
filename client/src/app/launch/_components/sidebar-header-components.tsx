@@ -50,7 +50,7 @@ function SelectedPostHeader({ selectedPost, setSelectedPost }: any) {
         <IoCaretBackCircleSharp size={25} />
       </button>
       <p className="text-semibold text-xl font-bold">
-        {selectedPost?.question}
+        {selectedPost?.question?.slice(0,70)} ...
       </p>
     </div>
   );

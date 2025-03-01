@@ -51,7 +51,7 @@ const sidebarItems = [
   "Create",
   "History",
   "Assets",
-  "Leaderboard",
+  // "Leaderboard",
   "Rewards",
   "Exchange",
 ];
