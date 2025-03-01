@@ -17,9 +17,7 @@ const bleTestnetNetwork = {
     },
   },
 };
-
-export const chainArray = [bleTestnetNetwork, mantleSepoliaTestnet];
+export const chainArray = [bleTestnetNetwork];
 export const transportsObject = {
   [bleTestnetNetwork.id]: http(),
-  [mantleSepoliaTestnet.id]: http(),
 };

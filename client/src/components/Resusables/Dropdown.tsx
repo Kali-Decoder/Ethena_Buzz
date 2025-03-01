@@ -25,9 +25,9 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
-  const handleSelect = (item: DropdownItem) => {
+const handleSelect = (item: DropdownItem) => {
     onSelect(item);
-    setIsOpen(false);
+    setIsOpen(false);  
   };
 
   const handleClickOutside = (event: MouseEvent) => {
