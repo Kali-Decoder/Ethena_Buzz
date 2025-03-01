@@ -1,11 +1,46 @@
-
-"use client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useChain } from "../../context/ChainContext";
+import { wagmiConfig } from "@/utils/wallet-utils";
+import { switchChain } from "@wagmi/core";
+import { useState, useEffect } from "react";
 
 export const ConnectButton2 = () => {
   const { chainDetail } = useChain();
-  console.log({ chainDetail });
+  const [isPressed, setIsPressed] = useState(false);
+
+  useEffect(() => {
+    // Listen for the chain change event in MetaMask
+    if (window.ethereum) {
+      const handleChainChanged = (chainId: string) => {
+        // Switch to the chainDetail when the network changes in MetaMask
+        if (chainId !== `0x${Number(chainDetail?.id).toString(16)}`) {
+          switchChain(wagmiConfig, {
+            chainId: Number(chainDetail?.id),
+          });
+        }
+      };
+
+      window.ethereum.on('chainChanged', handleChainChanged);
+
+      // Cleanup the event listener when the component unmounts
+      return () => {
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      };
+    }
+  }, [chainDetail]);
+
+  const handleMouseDown = () => {
+    setIsPressed(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsPressed(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsPressed(false);
+  };
+
   return (
     <ConnectButton.Custom>
       {({
@@ -16,6 +51,14 @@ export const ConnectButton2 = () => {
         openConnectModal,
         authenticationStatus,
         mounted,
+      }: {
+        account: any;
+        chain: any;
+        openAccountModal: () => void;
+        openChainModal: () => void;
+        openConnectModal: () => void;
+        authenticationStatus: any;
+        mounted: boolean;
       }) => {
         const ready = mounted && authenticationStatus !== "loading";
         const connected =
@@ -24,22 +67,14 @@ export const ConnectButton2 = () => {
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated");
 
-        const handleConnectClick = async () => {
-          try {
-            openConnectModal();
-          } catch (error) {
-            return null;
-          }
-        };
-
-        // Added check if chainDetail is null/undefined and provide loading state
-        if (!chainDetail) {
-          return (
-            <div className="flex flex-row items-center gap-2">
-              <button className="rounded-lg  border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4">Loading...</button>
-            </div>
-          );
-        }
+        const buttonClass = `
+          flex h-10 px-3 py-1.5 md:p-4 
+          justify-center items-center gap-1 mr-2 md:mr-0 
+          rounded bg-transparent rounded-md w-full 
+          border border-solid border-gray-500 
+          text-white text-2xs md:text-sm 
+          transition-all duration-200 ease-in-out transform font-medium whitespace-nowrap cursor-pointer
+        `;
 
         return (
           <div
@@ -53,35 +88,63 @@ export const ConnectButton2 = () => {
             })}
           >
             {(() => {
-              if (!connected) {
+              if (connected) {
+                return (
+                  <div>
+                    {chain.id !== Number(chainDetail?.id) ? (
+                      <button
+                        onClick={async () => {
+                          if (window.ethereum) {
+                            try {
+                              await switchChain(wagmiConfig, {
+                                chainId: Number(chainDetail?.id),
+                              });
+                            } catch (error) {
+                              console.error("Network switch failed:", error);
+                            }
+                          } else {
+                            alert("MetaMask or compatible wallet is required to switch networks.");
+                          }
+                        }}
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseLeave}
+                        type="button"
+                        className={buttonClass}
+                        id="connect-button"
+                      >
+                        Switch network
+                      </button>
+                    ) : (
+                      <button
+                        onClick={openAccountModal}
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseLeave}
+                        type="button"
+                        className={buttonClass}
+                        id="connect-button"
+                      >
+                        {account.displayName}
+                      </button>
+                    )}
+                  </div>
+                );
+              } else {
                 return (
                   <button
-                    onClick={handleConnectClick}
-                    className="rounded-lg  border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4"
+                    onClick={openConnectModal}
+                    onMouseDown={handleMouseDown}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseLeave}
+                    type="button"
+                    className={buttonClass}
+                    id="connect-button"
                   >
-                    Connect Wallet
+                    Login
                   </button>
                 );
               }
-              // Check if the connected chain is different from the selected chain
-              if (!chain.id) {
-                return (
-                  <button
-                    onClick={openChainModal}
-                    className=" rounded-lg  border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4"
-                  >
-                    Switch network
-                  </button>
-                );
-              }
-              return (
-                <button
-                  onClick={openAccountModal}
-                  className="rounded-lg border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4"
-                >
-                  {account.displayName}
-                </button>
-              );
             })()}
           </div>
         );

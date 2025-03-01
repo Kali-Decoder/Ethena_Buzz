@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import { useDataContext } from "@/context/DataContext";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaFaceSmileWink } from "react-icons/fa6";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   RewardsSection,
   BalanceScore,
@@ -186,8 +187,8 @@ const LaunchPage: React.FC = () => {
             ))}
           </nav>
           {/* User Profile */}
-          <div className="mt-2 flex flex-col p-0 gap-y-2">
-            <div className="flex justify-between mt-2">
+          <div className="mt-2 flex flex-col p-0 gap-y-2 w-full">
+            <div className="flex justify-between mt-2 w-full">
               <ConnectButton2 />
               <button onClick={() => setSelected("Settings")}>
                 <MdOutlineSettings size={25} />

@@ -1,7 +1,5 @@
 import { http } from "viem";
-import {
-  mantleSepoliaTestnet,
-} from "wagmi/chains";
+
 const bleTestnetNetwork = {
   id: 52085143,
   name: "BLE Testnet",
