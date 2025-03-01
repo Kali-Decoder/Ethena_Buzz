@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import twitterRoutes from './routes/twitterRoute';
 import userRoutes from './routes/userRoutes';
 import betRoutes from './routes/betRoutes';
+import faucetRouets from "./routes/faucetRoutes";
 import connectDB from './config/db';
 import marketRoutes from './routes/marketRoute';
 import cors from 'cors';
@@ -13,7 +14,6 @@ connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
 
 app.use(cors());
 app.use(express.json());
@@ -42,6 +42,7 @@ app.use('/api', twitterRoutes);
 app.use('/api/markets', marketRoutes);
 app.use('/api/bets', betRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/faucet', faucetRouets);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

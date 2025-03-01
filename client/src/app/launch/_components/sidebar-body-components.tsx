@@ -33,12 +33,7 @@ interface ExchangeComponentProps {
   handleAction: () => void;
   maxTokenBalances: any;
 }
-interface CreateTokenBodyProps {
-  setShowSocialLinks: (showSocialLinks: boolean) => void;
-  showSocialLinks: boolean;
-  socialLinks: string;
-  setSocialLinks: (socialLinks: string) => void;
-}
+
 const RewardsSection: React.FC<RewardsSectionProps> = ({
   onClick,
   nftMintedAllReady,
