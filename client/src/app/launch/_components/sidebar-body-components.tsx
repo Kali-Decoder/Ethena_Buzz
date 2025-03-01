@@ -17,7 +17,6 @@ interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
 }
-
 interface Token {
   amount: number;
   symbol: string;
@@ -42,59 +41,67 @@ interface CreateTokenBodyProps {
 const RewardsSection: React.FC<RewardsSectionProps> = ({
   onClick,
   nftMintedAllReady,
-}) => (
-  <div className="flex w-full flex-col items-center bg-change-secondary-bg  p-6 rounded text-white">
-    <div className="w-1/2 p-2 rounded flex flex-col">
-      <ol className="relative border-s border-gray-500 dark:border-gray-700">
-        <li className="mb-10 ms-4">
-          <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+}) => {
 
-          <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
-            {nftMintedAllReady ? "Your NFT is minted" : "Mint Your NFT"}
-          </h3>
-          {nftMintedAllReady ? (
-            <div className="mt-3">
-              <img
-                src="https://gateway.pinata.cloud/ipfs/bafybeidubittp6kbuu2cc2yfnhrspqke23gec5jvczzjjs23dhtpvpj3tm/"
-                alt="Kendrick Lamar Performance"
-                className="w-full rounded-lg object-cover"
-              />
-            </div>
-          ) : (
-            <button
-              onClick={onClick}
-              className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md"
-            >
-              <span>Mint</span>
-              <span>Buzzify NFT</span>
+  const {dripTokens} = useDataContext();
+  const handleDrip = async ()=>{
+    await dripTokens();
+  }
+  return  (
+    <div className="flex w-full flex-col items-center bg-change-secondary-bg  p-6 rounded text-white">
+      <div className="w-1/2 p-2 rounded flex flex-col">
+        <ol className="relative border-s border-gray-500 dark:border-gray-700">
+          <li className="mb-10 ms-4">
+            <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+  
+            <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
+              {nftMintedAllReady ? "Your NFT is minted" : "Mint Your NFT"}
+            </h3>
+            {nftMintedAllReady ? (
+              <div className="mt-3">
+                <img
+                  src="https://gateway.pinata.cloud/ipfs/bafybeidubittp6kbuu2cc2yfnhrspqke23gec5jvczzjjs23dhtpvpj3tm/"
+                  alt="Kendrick Lamar Performance"
+                  className="w-full rounded-lg object-cover"
+                />
+              </div>
+            ) : (
+              <button
+                onClick={onClick}
+                className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md"
+              >
+                <span>Mint</span>
+                <span>Buzzify NFT</span>
+              </button>
+            )}
+          </li>
+          <li className="mb-10 ms-4">
+            <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+  
+            <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
+              Make one prediction claim 100 BUZZ Tokens
+            </h3>
+            <button onClick={handleDrip} className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
+              <span>Claim</span>
+              <span>100 BUZZ</span>
             </button>
-          )}
-        </li>
-        <li className="mb-10 ms-4">
-          <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-
-          <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
-            Make one prediction claim 100 BUZZ Tokens
-          </h3>
-          <button className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
-            <span>Claim</span>
-            <span>100 BUZZ</span>
-          </button>
-        </li>
-        <li className="ms-4">
-          <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-          <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
-            Create one prediction claim 100 BUZZ Tokens
-          </h3>
-          <button className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
-            <span>Claim</span>
-            <span>100 BUZZ</span>
-          </button>
-        </li>
-      </ol>
+          </li>
+          {/* <li className="ms-4">
+            <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+            <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
+              Create one prediction claim 100 BUZZ Tokens
+            </h3>
+            <button className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
+              <span>Claim</span>
+              <span>100 BUZZ</span>
+            </button>
+          </li> */}
+        </ol>
+      </div>
     </div>
-  </div>
-);
+  );
+}
+ 
 
 interface BalanceScoreProps {
   setSelected: (selected: string) => void;
@@ -812,7 +819,7 @@ function CreatePollBody() {
 }
 
 function HistoryBody() {
-  const { userBetsData, totalPools,claimBet } = useDataContext();
+  const { userBetsData, totalPools, claimBet } = useDataContext();
   const handleClaimBet = async (id: number) => {
     await claimBet(id);
   };
@@ -829,7 +836,7 @@ function HistoryBody() {
               Predict Score
             </div>
             <div className="flex-1 px-4 py-2">Claimable Amount</div>
-            <div className="flex-1 px-4 py-2">Claimed?</div>
+
             <div className="flex-1 px-4 py-2">Pool Status</div>
             <div className="flex-1 px-4 py-2">Actions</div>
           </div>
@@ -853,14 +860,12 @@ function HistoryBody() {
                       ? bet.claimedAmount / 1e18 + " Buzz"
                       : "---"}
                   </div>
-                  <div className="flex-1 px-4 text-xs">
-                    {bet.claimed ? "Yes" : "No"}
-                  </div>
+
                   <div className="flex-1 px-4 text-xs">
                     {bet.status ? "Completed" : "Ongoing"}
                   </div>
                   <div className="flex-1 px-4 text-xs">
-                    {!bet.claimed && (
+                    {bet.status && (bet.claimedAmount / 1e18 > 0)  && (
                       <button
                         onClick={() => handleClaimBet(bet?.poolId)}
                         className="text-white bg-green-500 px-3 py-1 rounded-md"

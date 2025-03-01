@@ -63,6 +63,7 @@ interface DataContextProps {
     username: string,
     predictionType: string
   ) => Promise<void>;
+  dripTokens: () => Promise<void>;
 }
 
 interface DataContextProviderProps {
@@ -405,6 +406,39 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  const dripTokens = async () => {
+    const id = toast.loading("Dripping Tokens ...");
+    try {
+      if (!activeChain) {
+        console.log("Chain not found");
+        return;
+      }
+      const provider = new ethers.providers.JsonRpcProvider({
+        url: Addresses[activeChain].rpc_url,
+        skipFetchSetup: true,
+      });
+      const wallet = new ethers.Wallet(
+        process.env.NEXT_PUBLIC_PRIVATE_KEY!,
+        provider
+      );
+      const signer = wallet.connect(provider);
+
+      const contract = new ethers.Contract(
+        Addresses[activeChain].tokenAddress,
+        tokenAbi,
+        signer
+      );
+
+      if (contract) {
+        await contract.transfer(address, ethers.utils.parseEther("100"));
+        toast.success("Dripped ✅", { id });
+      }
+    } catch (error) {
+      console.log("Error", error);
+      toast.error("Error in dripping", { id });
+    }
+  };
+
   const getPoolsDetails = async () => {
     let poolDetails = {
       pool_data: {
@@ -561,6 +595,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         convertUSDetoBuzz,
         convertBuzztoUSDe,
         getQuestionsFromAi,
+        dripTokens,
       }}
     >
       {children}
