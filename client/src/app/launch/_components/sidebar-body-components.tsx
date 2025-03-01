@@ -14,6 +14,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import toast from "react-hot-toast";
 import { XEmbed } from "react-social-media-embed";
 import BetsGraph from "@/components/explore/BetsGraph";
+import { FaCoins } from "react-icons/fa";
+import { MdAccessTime } from "react-icons/md";
+import numeral from "numeral";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -38,18 +41,17 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
   onClick,
   nftMintedAllReady,
 }) => {
-
-  const {dripTokens} = useDataContext();
-  const handleDrip = async ()=>{
+  const { dripTokens } = useDataContext();
+  const handleDrip = async () => {
     await dripTokens();
-  }
-  return  (
+  };
+  return (
     <div className="flex w-full flex-col items-center bg-change-secondary-bg  p-6 rounded text-white">
       <div className="w-1/2 p-2 rounded flex flex-col">
         <ol className="relative border-s border-gray-500 dark:border-gray-700">
           <li className="mb-10 ms-4">
             <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-  
+
             <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
               {nftMintedAllReady ? "Your NFT is minted" : "Mint Your NFT"}
             </h3>
@@ -73,11 +75,14 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
           </li>
           <li className="mb-10 ms-4">
             <div className="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-  
+
             <h3 className="text-lg font-semibold text-gray-200 dark:text-white">
               Make one prediction claim 100 BUZZ Tokens
             </h3>
-            <button onClick={handleDrip} className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md">
+            <button
+              onClick={handleDrip}
+              className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md"
+            >
               <span>Claim</span>
               <span>100 BUZZ</span>
             </button>
@@ -96,8 +101,7 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
       </div>
     </div>
   );
-}
- 
+};
 
 interface BalanceScoreProps {
   setSelected: (selected: string) => void;
@@ -419,11 +423,11 @@ function SelectedPost({
   handleSubmit,
   handleMax,
 }: any) {
-  const { formatTimestamp, userBetsData,totalPools } = useDataContext();
+  const { formatTimestamp, userBetsData, totalPools } = useDataContext();
   const [isBetted, setIsBetted] = useState(false);
+  const { address } = useAccount();
   console.log(selectedPost);
   useEffect(() => {
-    console.log("userBetsData", userBetsData);
     const val =
       userBetsData &&
       userBetsData?.find((item) => item?.poolId === selectedPost?.poolId);
@@ -442,11 +446,11 @@ function SelectedPost({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <img
-                  src="https://pbs.twimg.com/profile_images/1884937424364851200/VSrPwZa4_400x400.jpg"
+                  src={`https://effigy.im/a/${address}.svg`}
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />
-                <span className="font-semibold text-gray-200">Nikku</span>
+                <span className="font-semibold text-gray-200">Annonymous</span>
                 <span className="text-blue-500">💎</span>
               </div>
               <div className="flex items-center gap-1 text-gray-200">
@@ -491,103 +495,136 @@ function SelectedPost({
               <span># {selectedPost?.category}</span>{" "}
               <span># {selectedPost?.parameter}</span>
             </div>
-           
           </div>
           <div className="bg-change-trinary-bg w-[45%] flex flex-col rounded py-6 px-2 h-1/2 mt-3">
-          <div className="bg-change-trinary-bg w-full rounded py-6 px-2 h-1/2 mt-3">
-            <h2 className="text-sm font-semibold mb-0 px-4 text-white">
-              Place Your Bet
-            </h2>
-            <div className="rounded-lg p-4">
-              {/* From Input */}
+            <div className="bg-change-trinary-bg w-full rounded py-6 px-2 h-1/2 mt-3">
+              <h2 className="text-sm font-semibold mb-0 px-4 text-white">
+                Place Your Bet
+              </h2>
+              <div className="rounded-lg p-4">
+                {/* From Input */}
 
-              <div className=" flex px-4 flex-col-reverse bg-change-secondary-bg rounded-sm p-4 items-start gap-2">
-                {selectedPost.poll_type === 0 ? (
-                  <>
-                    <div className="grid grid-cols-2 gap-2 w-full">
-                      <button
-                        className={`bg-[#1B1B1A]  px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
-                      >
-                        Yes
-                      </button>
-                      <button
-                        className={`bg-[#1B1B1A] px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
-                      >
-                        No
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <label className="text-gray-200 text-xs">
-                      Score Prediction
-                    </label>
+                <div className=" flex px-4 flex-col-reverse bg-change-secondary-bg rounded-sm p-4 items-start gap-2">
+                  {selectedPost.poll_type === 0 ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-2 w-full">
+                        <button
+                          className={`bg-[#1B1B1A]  px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
+                        >
+                          Yes
+                        </button>
+                        <button
+                          className={`bg-[#1B1B1A] px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
+                        >
+                          No
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <label className="text-gray-200 text-xs">
+                        Score Prediction
+                      </label>
+                      <input
+                        type="number"
+                        value={scorePrediction}
+                        onChange={(e) => setScorePrediction(e.target.value)}
+                        className="w-full bg-transparent text-white outline-none text-sm"
+                        placeholder="Guess the Number"
+                      />
+                    </>
+                  )}
+                </div>
+                <div className="mb-4 mt-4">
+                  <div className="flex items-center bg-change-secondary-bg rounded-lg p-3">
                     <input
                       type="number"
-                      value={scorePrediction}
-                      onChange={(e) => setScorePrediction(e.target.value)}
+                      value={investment}
+                      onChange={(e) => setInvestment(e.target.value)}
                       className="w-full bg-transparent text-white outline-none text-sm"
-                      placeholder="Guess the Number"
+                      placeholder="0.00"
                     />
-                  </>
+                    <button
+                      onClick={handleMax}
+                      className="text-xs hover:text-blue-400 font-medium px-2 text-white py-1 rounded transition-colors"
+                    >
+                      MAX
+                    </button>
+                    <span className="text-white ml-2 text-xs">BUZZ</span>
+                  </div>
+
+                  <div className="bg-transparent rounded-xl p-5 shadow-lg w-full max-w-md">
+      <h2 className="text-md font-semibold text-white mb-3">Wallet Overview</h2>
+
+      <div className="space-y-3 text-xs">
+        {/* USDe Balance */}
+        <div className="flex items-center  justify-between text-white">
+          <div className="flex items-center gap-2">
+            <FaCoins className="text-yellow-400 text-xl" />
+            <span className="text-sm">USDe Balance</span>
+          </div>
+          <span className="text-xs font-medium">
+            {tokenBalance?.usdeBalance
+              ? numeral(tokenBalance?.usdeBalance).format("0.0a")
+              : "0"}{" "}
+            USDe
+          </span>
+        </div>
+
+        {/* BUZZ Balance */}
+        <div className="flex items-center justify-between text-white">
+          <div className="flex items-center gap-2">
+            <FaCoins className="text-blue-400 text-xs" />
+            <span className="text-sm">BUZZ Balance</span>
+          </div>
+          <span className="text-xs font-medium">
+            {tokenBalance?.buzzBalance
+              ? numeral(tokenBalance?.buzzBalance).format("0.0a")
+              : "0"}{" "}
+            BUZZ
+          </span>
+        </div>
+
+        {/* Pool End Time */}
+        <div className="flex items-center justify-between text-red-400 mt-4">
+          <div className="flex items-center gap-2">
+            <MdAccessTime className="text-red-500 text-xs" />
+            <span className="text-sm">Pool Ends</span>
+          </div>
+          <span className="text-xs font-medium">
+            {formatTimestamp(selectedPost?.endTime)}
+          </span>
+        </div>
+      </div>
+    </div>
+                </div>
+                {/* Action Button */}
+                {isBetted ? (
+                  <button
+                    disabled
+                    className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
+        transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                  >
+                    Already Place Bet
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
+        transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                  >
+                    Place Bet
+                  </button>
                 )}
               </div>
-              <div className="mb-4 mt-4">
-                <div className="flex items-center bg-change-secondary-bg rounded-lg p-3">
-                  <input
-                    type="number"
-                    value={investment}
-                    onChange={(e) => setInvestment(e.target.value)}
-                    className="w-full bg-transparent text-white outline-none text-sm"
-                    placeholder="0.00"
-                  />
-                  <button
-                    onClick={handleMax}
-                    className="text-xs hover:text-blue-400 font-medium px-2 text-white py-1 rounded transition-colors"
-                  >
-                    MAX
-                  </button>
-                  <span className="text-white ml-2 text-xs">BUZZ</span>
-                </div>
+            </div>
 
-                <div className="flex justify-between flex-col text-xs mt-8">
-                  <span className="text-white"></span>
-                  <span className="text-white text-[16px]">
-                    Balance:{" "}
-                    {tokenBalance?.buzzBalance ? tokenBalance?.buzzBalance : 0}{" "}
-                    BUZZ
-                  </span>
-                  <span className="text-red text-[16px] mt-2">
-                    PoolEnded : {formatTimestamp(selectedPost?.endTime)}
-                  </span>
-                </div>
-              </div>
-              {/* Action Button */}
-              {isBetted ? (
-                <button
-                  disabled
-                  className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
-        transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
-                >
-                  Already Place Bet
-                </button>
-              ) : (
-                <button
-                  onClick={handleSubmit}
-                  className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
-        transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
-                >
-                  Place Bet
-                </button>
-              )}
+            <div className="mt-3">
+              <BetsGraph
+                betsData={totalPools[selectedPost?.poolId as number]?.bets}
+              />
             </div>
           </div>
-
-          <div className="mt-3">
-            <BetsGraph betsData={totalPools[selectedPost?.poolId as number]?.bets} />
-          </div>
-          </div>
-          
         </div>
       ) : (
         <LoadingBar />
@@ -860,7 +897,7 @@ function HistoryBody() {
                     {bet.status ? "Completed" : "Ongoing"}
                   </div>
                   <div className="flex-1 px-4 text-xs">
-                    {bet.status && (bet.claimedAmount / 1e18 > 0)  && (
+                    {bet.status && bet.claimedAmount / 1e18 > 0 && (
                       <button
                         onClick={() => handleClaimBet(bet?.poolId)}
                         className="text-white bg-green-500 px-3 py-1 rounded-md"

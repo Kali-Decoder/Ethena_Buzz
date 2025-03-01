@@ -1,36 +1,36 @@
 "use client";
 import { useChain } from "@/context/ChainContext";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Dropdown from "../Resusables/Dropdown";
+import { chainArray } from "@/constant/chainConstants";
+
 const ChainDropdown = () => {
   const { setChainDetail, chainDetail } = useChain();
-  const chains = [
-    {
-      name: "Citrea Testnet",
-      url: "https://testnet.bitfinity.network/",
-      id: "5115",
-    },
-    {
-      name: "Rootstock Testnet",
-      url: "https://testnet.bitfinity.network/",
-      id: "31",
-    },
-  ];
+  const chains = chainArray;
+  const [savedChainId, setSavedChainId] = useState<string | null>(null);
 
-  const savedChainId = localStorage.getItem("selectedChainId");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedChainId = localStorage?.getItem("selectedChainId");
+      setSavedChainId(storedChainId);
+    }
+  }, []);
+
   useEffect(() => {
     if (savedChainId) {
       const savedChain = chains.find(
-        (chain) => chain.id === savedChainId
+        (chain) => chain.id?.toString() === savedChainId
       );
       if (savedChain) {
         setChainDetail(savedChain);
       }
     }
-  }, [savedChainId,setChainDetail]);
+  }, [savedChainId, setChainDetail]);
 
-  const handleSelectChain = (chain : any) => {
-    localStorage.setItem("selectedChainId", chain.id);
+  const handleSelectChain = (chain: any) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedChainId", chain?.id);
+    }
   };
 
   return (

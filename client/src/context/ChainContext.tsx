@@ -1,21 +1,46 @@
 // context/ChainContext.tsx
 import React, { createContext, useState, useContext, ReactNode } from "react";
 
-interface ChainDetail {
+interface Network {
+  id: number;
   name: string;
-  url: string;
-  id: string; // Added id here
+  iconUrl: string;
+  nativeCurrency: NativeCurrency;
+  rpcUrls: RpcUrls;
+  blockExplorers: BlockExplorers;
 }
 
+interface NativeCurrency {
+  name: string;
+  symbol: string;
+  decimals: number;
+}
+
+interface RpcUrls {
+  default: DefaultRpcUrls;
+}
+
+interface DefaultRpcUrls {
+  http: string[];
+}
+
+interface BlockExplorers {
+  default: DefaultBlockExplorer;
+}
+
+interface DefaultBlockExplorer {
+  name: string;
+  url: string;
+}
 interface ChainContextProps {
-  chainDetail: ChainDetail | null;
-  setChainDetail: (chain: ChainDetail) => void;
+  chainDetail: Network | null;
+  setChainDetail: (chain: Network) => void;
 }
 
 const ChainContext = createContext<ChainContextProps | undefined>(undefined);
 
 export const ChainProvider = ({ children }: { children: ReactNode }) => {
-  const [chainDetail, setChainDetail] = useState<ChainDetail | null>(null);
+  const [chainDetail, setChainDetail] = useState<Network | null>(null);
 
   return (
     <ChainContext.Provider value={{ chainDetail, setChainDetail }}>
