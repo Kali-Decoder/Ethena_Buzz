@@ -5,6 +5,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import Button from "@/components/Resusables/Button";
 const Header = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -76,6 +77,9 @@ const Header = () => {
             </Link>
           </div>
         </div>
+        <Button icon="/images/zap.svg">
+          <Link href="/launch">Launch</Link>
+        </Button>
 
         <button
           className="lg:hidden z-2 size-10 border-2 border-s4/25 rounded-full flex justify-center items-center"

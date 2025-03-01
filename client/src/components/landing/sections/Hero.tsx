@@ -1,6 +1,5 @@
 import Button from "@/components/Resusables/Button";
 import Link from "next/link";
-import { Element, Link as LinkScroll } from "react-scroll";
 
 const Hero = () => {
   return (

@@ -13,6 +13,7 @@ import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import toast from "react-hot-toast";
 import { XEmbed } from "react-social-media-embed";
+import BetsGraph from "@/components/explore/BetsGraph";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
@@ -423,7 +424,7 @@ function SelectedPost({
   handleSubmit,
   handleMax,
 }: any) {
-  const { formatTimestamp, userBetsData } = useDataContext();
+  const { formatTimestamp, userBetsData,totalPools } = useDataContext();
   const [isBetted, setIsBetted] = useState(false);
   console.log(selectedPost);
   useEffect(() => {
@@ -495,17 +496,10 @@ function SelectedPost({
               <span># {selectedPost?.category}</span>{" "}
               <span># {selectedPost?.parameter}</span>
             </div>
-
-            {/* Image */}
-            <div className="mt-3">
-              <img
-                src="https://images.pond5.com/green-line-graph-white-background-footage-083223115_iconl.jpeg"
-                alt="Kendrick Lamar Performance"
-                className="w-full rounded-sm object-cover"
-              />
-            </div>
+           
           </div>
-          <div className="bg-change-trinary-bg w-[45%] rounded py-6 px-2 h-1/2 mt-3">
+          <div className="bg-change-trinary-bg w-[45%] flex flex-col rounded py-6 px-2 h-1/2 mt-3">
+          <div className="bg-change-trinary-bg w-full rounded py-6 px-2 h-1/2 mt-3">
             <h2 className="text-sm font-semibold mb-0 px-4 text-white">
               Place Your Bet
             </h2>
@@ -593,6 +587,12 @@ function SelectedPost({
               )}
             </div>
           </div>
+
+          <div className="mt-3">
+            <BetsGraph betsData={totalPools[selectedPost?.poolId as number]?.bets} />
+          </div>
+          </div>
+          
         </div>
       ) : (
         <LoadingBar />
