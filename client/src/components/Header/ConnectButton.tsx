@@ -1,13 +1,11 @@
-// components/ConnectButton2.tsx
+
 "use client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useChain } from "../../context/ChainContext";
-import Button from "../Resusables/Button";
 
 export const ConnectButton2 = () => {
   const { chainDetail } = useChain();
   console.log({ chainDetail });
-
   return (
     <ConnectButton.Custom>
       {({
@@ -38,7 +36,7 @@ export const ConnectButton2 = () => {
         if (!chainDetail) {
           return (
             <div className="flex flex-row items-center gap-2">
-              <Button containerClassName="flex items-center">Loading...</Button>
+              <button className="rounded-lg  border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4">Loading...</button>
             </div>
           );
         }
@@ -57,34 +55,32 @@ export const ConnectButton2 = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <Button
+                  <button
                     onClick={handleConnectClick}
-                    containerClassName="flex items-center justify-center w-full"
-                    icon="/images/Wallet.svg"
+                    className="rounded-lg  border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4"
                   >
-                    Connect
-                  </Button>
+                    Connect Wallet
+                  </button>
                 );
               }
               // Check if the connected chain is different from the selected chain
               if (!chain.id) {
                 return (
-                  <Button
+                  <button
                     onClick={openChainModal}
-                    containerClassName="flex flex-row items-center gap-2 w-full"
+                    className=" rounded-lg  border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4"
                   >
                     Switch network
-                  </Button>
+                  </button>
                 );
               }
               return (
-                <Button
+                <button
                   onClick={openAccountModal}
-                  containerClassName="flex flex-row items-center justify-center w-full"
-                  icon="/images/Wallet.svg"
+                  className="rounded-lg border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4"
                 >
                   {account.displayName}
-                </Button>
+                </button>
               );
             })()}
           </div>

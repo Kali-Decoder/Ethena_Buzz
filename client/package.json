@@ -26,6 +26,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.2",
     "next": "14.2.5",
+    "numeral": "^2.0.6",
     "pino-pretty": "^11.2.2",
     "prettier": "^3.3.3",
     "react": "^18",
@@ -41,9 +42,9 @@
     "react-modal": "^3.16.1",
     "react-scroll": "^1.9.0",
     "react-slidedown": "^2.4.7",
+    "react-social-media-embed": "^2.5.17",
     "react-web-share": "^1.1.6",
     "styled-components": "^6.0.0-rc.2",
-    "react-social-media-embed": "^2.5.17",
     "viem": "^2.7.15",
     "wagmi": "^2.5.7"
   },
