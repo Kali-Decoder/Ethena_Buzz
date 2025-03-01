@@ -41,5 +41,17 @@ const postWithHeaders = async (
   return api.post(url, data, config);
 };
 
+const getWithHeaders = async (
+  url: string,
+  headers: Record<string, string> = {}
+) => {
+  const config: AxiosRequestConfig = {
+    headers: {
+      ...api.defaults.headers.common,
+      ...headers,
+    },
+  };
+  return api.get(url, config);
+};
 
-export { api, apiMultipart,postWithHeaders,addHeaders };
+export { api, apiMultipart,postWithHeaders,addHeaders,getWithHeaders };

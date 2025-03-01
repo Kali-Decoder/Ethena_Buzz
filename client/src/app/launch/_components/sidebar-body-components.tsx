@@ -84,7 +84,7 @@ const RewardsSection: React.FC<RewardsSectionProps> = ({
               className="w-full mt-4 flex items-center justify-center gap-2 bg-black text-white font-medium py-2 rounded-md"
             >
               <span>Claim</span>
-              <span>100 BUZZ</span>
+              <span>200 BUZZ</span>
             </button>
           </li>
           {/* <li className="ms-4">

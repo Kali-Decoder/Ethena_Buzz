@@ -3,7 +3,7 @@ import { useAccount } from "wagmi";
 import { useEthersSigner } from "@/utils/signer";
 import { ethers, BigNumber, Contract } from "ethers";
 import toast from "react-hot-toast";
-import { api, postWithHeaders } from "@/config";
+import { api, postWithHeaders, getWithHeaders } from "@/config";
 import {
   tokenAbi,
   mainContractABI,
@@ -82,11 +82,12 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   const [totalPools, setTotalPools] = useState<{}>({});
   const [userBetsData, setUserBetsData] = useState(null);
   const [nftMintedAllReady, setNftMintedAllReady] = useState(false);
-  const {chainDetail} = useChain();
-  const [activeChain, setActiveChainId] = useState<number | undefined>(chainDetail?.id);
+  const { chainDetail } = useChain();
+  const [activeChain, setActiveChainId] = useState<number | undefined>(
+    chainDetail?.id
+  );
   const [loading, setLoading] = useState(false);
   const [activePoolId, setActivePoolId] = useState(0);
-
 
   useEffect(() => {
     setActiveChainId(chainDetail?.id);
@@ -120,17 +121,20 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       const usdeTokenContract = await getContractInstance(
         Addresses[activeChain]?.usdeAddress,
         tokenAbi
-      ); 
+      );
       if (buzzTokenContract || usdeTokenContract) {
         let buzzTokenBalance = await buzzTokenContract?.balanceOf(address);
         let usdeTokenBalance = await usdeTokenContract?.balanceOf(address);
         setTokenBalance({
-          usdeBalance: +usdeTokenBalance.div(BigNumber.from(10).pow(18)).toString(),
-          buzzBalance: +buzzTokenBalance.div(BigNumber.from(10).pow(18)).toString(),
+          usdeBalance: +usdeTokenBalance
+            .div(BigNumber.from(10).pow(18))
+            .toString(),
+          buzzBalance: +buzzTokenBalance
+            .div(BigNumber.from(10).pow(18))
+            .toString(),
         });
-        return tokenBalance ;
+        return tokenBalance;
       }
- 
     } catch (error) {
       console.log("Error in getting token balance");
       return BigNumber.from(0);
@@ -257,7 +261,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         mainContractABI
       );
       if (mainContract) {
-        console.log(mainContract,activeChain);
+        console.log(mainContract, activeChain);
         const tx = await mainContract.createPool(
           question,
           link,
@@ -375,35 +379,21 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
-
-
   const dripTokens = async () => {
     const id = toast.loading("Dripping Tokens ...");
     try {
       if (!activeChain) {
-        console.log("Chain not found");
         return;
       }
-      const provider = new ethers.providers.JsonRpcProvider({
-        url: Addresses[activeChain].rpc_url,
-        skipFetchSetup: true,
-      });
-      const wallet = new ethers.Wallet(
-        process.env.NEXT_PUBLIC_PRIVATE_KEY!,
-        provider
+      let data = await getWithHeaders(
+        `/api/faucet/drip-Tokens?receiver=${address}&rpc_url=${Addresses[activeChain]?.rpc_url}&tokenAddress=${Addresses[activeChain]?.tokenAddress}`,
+        {
+          "x-user-address": address,
+        }
       );
-      const signer = wallet.connect(provider);
-
-      const contract = new ethers.Contract(
-        Addresses[activeChain].tokenAddress,
-        tokenAbi,
-        signer
-      );
-
-      if (contract) {
-        await contract.transfer(address, ethers.utils.parseEther("100"));
-        toast.success("Dripped ✅", { id });
-      }
+      await getTokenBalance();
+      toast.success(data?.data?.message, { id });
+      return data?.data?.message;
     } catch (error) {
       console.log("Error", error);
       toast.error("Error in dripping", { id });
@@ -419,7 +409,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     setLoading(true);
 
     try {
-
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
@@ -520,7 +509,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.nftContractAddress,
         nftContractAbi
       );
-      console.log(nftContract,"nftContract")
+      console.log(nftContract, "nftContract");
       if (nftContract) {
         let balance = await nftContract.balanceOf(address);
         if (balance.toNumber() >= 1) {
