@@ -19,8 +19,7 @@ export const dripFaucet = async (
 
   console.log(receiver, tokenAddress, rpc_url);
 
-  let existingUser = await User.findOne({ address: receiver });
-
+ 
   const isClaimed = await _checkUserFaucetClaimed(receiver as `0xstring`);
   try {
     if (isClaimed) {
@@ -46,9 +45,10 @@ export const dripFaucet = async (
       from: signer.address,
     });
     await tx.wait();
-
+    let existingUser = await User.findOne({ address: receiver });
     if (existingUser) {
       existingUser.isFaucetClaimed = true;
+      await existingUser.save();
     }
 
     return res.status(200).json({
