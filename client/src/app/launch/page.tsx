@@ -272,6 +272,7 @@ const LaunchPage: React.FC = () => {
                   setScorePrediction={setScorePrediction}
                   handleSubmit={handleSubmit}
                   handleMax={handleMax}
+                  tokenBalance={tokenBalance}
                 />
               </>
             )}

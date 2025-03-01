@@ -1,12 +1,21 @@
 "use client";
 import { useChain } from "@/context/ChainContext";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Dropdown from "../Resusables/Dropdown";
-import {chainArray} from "@/constant/chainConstants";
+import { chainArray } from "@/constant/chainConstants";
+
 const ChainDropdown = () => {
   const { setChainDetail, chainDetail } = useChain();
   const chains = chainArray;
-  const savedChainId = localStorage.getItem("selectedChainId");
+  const [savedChainId, setSavedChainId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedChainId = localStorage?.getItem("selectedChainId");
+      setSavedChainId(storedChainId);
+    }
+  }, []);
+
   useEffect(() => {
     if (savedChainId) {
       const savedChain = chains.find(
@@ -16,10 +25,12 @@ const ChainDropdown = () => {
         setChainDetail(savedChain);
       }
     }
-  }, [savedChainId,setChainDetail]);
+  }, [savedChainId, setChainDetail]);
 
-  const handleSelectChain = (chain : any) => {
-    localStorage.setItem("selectedChainId", chain?.id);
+  const handleSelectChain = (chain: any) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedChainId", chain?.id);
+    }
   };
 
   return (

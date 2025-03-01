@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 // Base URL for the backend (Update with your actual backend URL)
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://ethena-buzz-backend.vercel.app";
@@ -20,4 +20,26 @@ const apiMultipart = axios.create({
   },
 });
 
-export { api, apiMultipart };
+const addHeaders = (headers: Record<string, string>) => {
+  if (api && api.defaults && api.defaults.headers && api.defaults.headers.common) {
+    Object.assign(api.defaults.headers.common, headers);
+  }
+};
+
+// Function to make a post request with dynamically added headers.
+const postWithHeaders = async (
+  url: string,
+  data: any,
+  headers: Record<string, string> = {}
+) => {
+  const config: AxiosRequestConfig = {
+    headers: {
+      ...api.defaults.headers.common,
+      ...headers,
+    },
+  };
+  return api.post(url, data, config);
+};
+
+
+export { api, apiMultipart,postWithHeaders,addHeaders };

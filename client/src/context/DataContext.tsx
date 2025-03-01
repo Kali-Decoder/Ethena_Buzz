@@ -3,16 +3,15 @@ import { useAccount } from "wagmi";
 import { useEthersSigner } from "@/utils/signer";
 import { ethers, BigNumber, Contract } from "ethers";
 import toast from "react-hot-toast";
-import { api } from "@/config";
+import { api, postWithHeaders } from "@/config";
 import {
   tokenAbi,
   mainContractABI,
-  oracleAbi,
-  oracleAddress,
   Addresses,
   nftContractAbi,
   conversionContractAbi,
 } from "@/constant/index";
+import { useChain } from "./ChainContext";
 
 // Context types
 interface DataContextProps {
@@ -45,11 +44,6 @@ interface DataContextProps {
   userBetsData: [] | undefined;
   loading: boolean;
   setResultScore: (poolId: number, score: number) => Promise<void>;
-  btcUsdPrice: number;
-  ethUsdPrice: number;
-  isOpen: boolean;
-  openSideBar: () => void;
-  closeSideBar: () => void;
   activePoolId: number;
   setActivePoolId: (id: number) => void;
   formatTimestamp: (timestamp: number) => string;
@@ -84,29 +78,19 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     usdeBalance: 0,
     buzzBalance: 0,
   });
-  const { address, chain } = useAccount();
+  const { address } = useAccount();
   const [totalPools, setTotalPools] = useState<{}>({});
   const [userBetsData, setUserBetsData] = useState(null);
   const [nftMintedAllReady, setNftMintedAllReady] = useState(false);
-  const [activeChain, setActiveChainId] = useState<number | undefined>(
-    chain?.id
-  );
-
+  const {chainDetail} = useChain();
+  const [activeChain, setActiveChainId] = useState<number | undefined>(chainDetail?.id);
   const [loading, setLoading] = useState(false);
-  const [btcUsdPrice, setBtcUsdPrice] = useState(0);
-  const [ethUsdPrice, setEthUsdPrice] = useState(0);
-  const [isOpen, setIsOpen] = useState(false);
   const [activePoolId, setActivePoolId] = useState(0);
-  const openSideBar = () => {
-    setIsOpen(!isOpen);
-  };
-  const closeSideBar = () => {
-    setIsOpen(false);
-  };
+
 
   useEffect(() => {
-    setActiveChainId(chain?.id);
-  }, [chain?.id]);
+    setActiveChainId(chainDetail?.id);
+  }, [chainDetail?.id]);
 
   const signer = useEthersSigner({ chainId: activeChain });
 
@@ -129,20 +113,24 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
 
   const getTokenBalance = async () => {
     try {
-      const tokenContract = await getContractInstance(
-        Addresses[activeChain]?.conversionAddress,
-        conversionContractAbi
+      const buzzTokenContract = await getContractInstance(
+        Addresses[activeChain]?.tokenAddress,
+        tokenAbi
       );
-      if (tokenContract) {
-        console.log("Token contract", tokenContract);
-        let balance = await tokenContract.getUserBalances();
+      const usdeTokenContract = await getContractInstance(
+        Addresses[activeChain]?.usdeAddress,
+        tokenAbi
+      ); 
+      if (buzzTokenContract || usdeTokenContract) {
+        let buzzTokenBalance = await buzzTokenContract?.balanceOf(address);
+        let usdeTokenBalance = await usdeTokenContract?.balanceOf(address);
         setTokenBalance({
-          usdeBalance: +balance[0].div(BigNumber.from(10).pow(18)).toString(),
-          buzzBalance: +balance[1].div(BigNumber.from(10).pow(18)).toString(),
+          usdeBalance: +usdeTokenBalance.div(BigNumber.from(10).pow(18)).toString(),
+          buzzBalance: +buzzTokenBalance.div(BigNumber.from(10).pow(18)).toString(),
         });
-        console.log("Token balance", balance);
-        return balance;
+        return tokenBalance ;
       }
+ 
     } catch (error) {
       console.log("Error in getting token balance");
       return BigNumber.from(0);
@@ -269,6 +257,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         mainContractABI
       );
       if (mainContract) {
+        console.log(mainContract,activeChain);
         const tx = await mainContract.createPool(
           question,
           link,
@@ -328,7 +317,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       if (mainContract) {
         const tx = await mainContract.placeBet(amount, predictScore, poolId);
         await tx.wait();
-
         await getPoolsDetails();
       }
 
@@ -387,25 +375,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
-  const getOracleData = async () => {
-    try {
-      let oracleContract = await getContractInstance(oracleAddress, oracleAbi);
-      console.log("oracleContract", oracleContract);
-      console.log(signer);
-      if (oracleContract) {
-        let data1 = await oracleContract.read("BTC/USD");
-        let data2 = await oracleContract.read("ETH/USD");
 
-        console.log("Oracle data", (+data1.toString() / 10 ** 18).toFixed(2));
-        console.log("Oracle data", (+data2.toString() / 10 ** 18).toFixed(2));
-
-        setBtcUsdPrice((+data1.toString() / 10 ** 18).toFixed(2));
-        setEthUsdPrice((+data2.toString() / 10 ** 18).toFixed(2));
-      }
-    } catch (error) {
-      console.log("Error in getting oracle data", error);
-    }
-  };
 
   const dripTokens = async () => {
     const id = toast.loading("Dripping Tokens ...");
@@ -447,12 +417,14 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       } as any,
     };
     setLoading(true);
+
     try {
+
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
       );
-      console.log("mainContract", mainContract);
+      console.log("getPoolDetails", mainContract);
       let maxPoolId = await mainContract?.getPoolId();
       console.log("maxPoolId", maxPoolId);
       let userBets = [] as any;
@@ -520,15 +492,21 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     username: string,
     predictionType: string
   ) => {
-    let id = toast.loading("Generating Some Questions Based on Paramters ...");
+    let id = toast.loading("Hey I'm Trix Generating Questions For You  ...");
     try {
-      let data = await api?.post("/api/prediction-question", {
-        metric,
-        postId,
-        username,
-        predictionType,
-      });
-      toast.success("Questions Formed", { id });
+      let data = await postWithHeaders(
+        "/api/prediction-question",
+        {
+          metric,
+          postId,
+          username,
+          predictionType,
+        },
+        {
+          "x-user-address": address,
+        }
+      );
+      toast.success("Here are your questions ", { id });
       return _convertToArray(data?.data?.question);
     } catch (error) {
       toast.error("Failed to Form Questions", { id });
@@ -542,6 +520,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         Addresses[activeChain]?.nftContractAddress,
         nftContractAbi
       );
+      console.log(nftContract,"nftContract")
       if (nftContract) {
         let balance = await nftContract.balanceOf(address);
         if (balance.toNumber() >= 1) {
@@ -556,7 +535,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     if (!signer) return;
     getTokenBalance();
     getPoolsDetails();
-    getOracleData();
     isNftMinted();
   }, [signer]);
 
@@ -583,11 +561,6 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         userBetsData,
         loading,
         setResultScore,
-        btcUsdPrice,
-        ethUsdPrice,
-        isOpen,
-        openSideBar,
-        closeSideBar,
         activePoolId,
         setActivePoolId,
         formatTimestamp,

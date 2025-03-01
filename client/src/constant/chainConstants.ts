@@ -4,7 +4,7 @@ import {
 } from "wagmi/chains";
 const bleTestnetNetwork = {
   id: 52085143,
-  name: "Ethena Testnet",
+  name: "BLE Testnet",
   iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/4584.png", // Placeholder icon URL for ETH
   nativeCurrency: { name: "BLE", symbol: "ETH", decimals: 18 },
   rpcUrls: {
