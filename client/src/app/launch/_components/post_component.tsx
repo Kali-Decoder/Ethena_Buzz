@@ -49,7 +49,7 @@ const PostComponent = ({
         </Link>
 
         {/* Question */}
-        <h2 className="font-semibold text-md text-white mt-8">{item?.question}</h2>
+        <h2 className="font-semibold text-md text-white mt-10">{item?.question}</h2>
 
         {/* Tags Section */}
         <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-black uppercase">
