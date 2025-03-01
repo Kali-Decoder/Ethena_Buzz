@@ -524,7 +524,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     getTokenBalance();
     getPoolsDetails();
     isNftMinted();
-  }, [signer]);
+  }, [signer,activeChain]);
 
   function formatTimestamp(timestamp: number) {
     const date = new Date(timestamp * 1000); // Convert to milliseconds
