@@ -7,14 +7,12 @@ contract Buzzify {
     address public owner;
     uint256 private pool_id;
     uint256 public constant FEE = 100 wei;
-    uint256 public REWARD;
+
 
     enum POLL_TYPE {
         BINARY,
         RANGE
     }
-
-    event DebugClaim(uint256 claimedAmount, bool claimed);
     struct Bet {
         address user;
         uint256 amount;
@@ -181,7 +179,6 @@ contract Buzzify {
         Pool storage pool = pools[_pool_id];
         Bet storage userBet = pool.userBet[msg.sender];
         uint256 reward = userBet.claimedAmount;
-        REWARD = userBet.claimedAmount;
         require(reward > 0, "No reward to claim");
         require(!userBet.claimed, "Bet already claimed");
         require(pool.poolEnded, "Pool not ended yet");

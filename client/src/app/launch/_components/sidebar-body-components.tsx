@@ -13,7 +13,6 @@ import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import toast from "react-hot-toast";
 import { XEmbed } from "react-social-media-embed";
-import { FaTwitter } from "react-icons/fa";
 interface RewardsSectionProps {
   onClick: () => void;
   nftMintedAllReady: boolean;
