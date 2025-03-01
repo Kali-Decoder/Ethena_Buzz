@@ -813,49 +813,70 @@ function CreatePollBody() {
 }
 
 function HistoryBody() {
+  const { userBetsData, totalPools,claimBet } = useDataContext();
+  const handleClaimBet = async (id: number) => {
+    await claimBet(id);
+  };
   return (
     <>
-      <div className="flex justify-center bg-change-trinary-bg rounded-xl p-8 items-center flex-col">
+      <div className="flex justify-center bg-change-trinary-bg rounded-xl p-0 overflow-hidden items-center flex-col">
         <div className="w-full bg-change-secondary-bg rounded-md">
           {/* Header Row */}
-          <div className="flex bg-change-primary-bg">
-            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Maker</div>
-            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Type</div>
-            <div className="flex-1 px-4 py-2 text-sm text-gray-400">BONE</div>
-            <div className="flex-1 px-4 py-2 text-sm text-gray-400">ETH</div>
-            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Date</div>
-            <div className="flex-1 px-4 py-2 text-sm text-gray-400">Tx</div>
-          </div>
-          {/* Transaction Rows */}
-          <div className="flex flex-col">
-            <div className="flex border-b border-gray-500">
-              <div className="flex-1 px-4 py-2">
-                <a
-                  href="https://shibariumscan.io/address/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-blue-400 text-sm transition-colors"
-                >
-                  abcdffds
-                </a>
-              </div>
-              <div className="flex-1 px-8 py-2 text-sm text-gray-400">
-                Hello
-              </div>
-              <div className="flex-1 px-4 py-2 text-sm text-gray-400">0.69</div>
-              <div className="flex-1 px-4 py-2 text-sm text-gray-400">69</div>
-              <div className="flex-1 px-4 py-2 text-sm text-gray-400">79</div>
-              <div className="flex-1 px-4 py-2">
-                <a
-                  href="https://shibariumscan.io/tx/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400  hover:text-blue-400 text-sm transition-colors"
-                >
-                  89797797290..8080
-                </a>
-              </div>
+          <div className="flex bg-change-primary-bg text-gray-400 uppercase text-xs">
+            <div className="flex-1 px-4 py-2">PoolId</div>
+            <div className="flex-1 px-4 py-2">Bet Amount</div>
+            <div className="flex-1 px-4 py-2">Final Score</div>
+            <div className="flex-1 px-4 py-2 hidden md:block">
+              Predict Score
             </div>
+            <div className="flex-1 px-4 py-2">Claimable Amount</div>
+            <div className="flex-1 px-4 py-2">Claimed?</div>
+            <div className="flex-1 px-4 py-2">Pool Status</div>
+            <div className="flex-1 px-4 py-2">Actions</div>
+          </div>
+          {/* Data Rows */}
+          <div className="flex flex-col text-white">
+            {userBetsData?.length > 0 ? (
+              userBetsData.map((bet, index) => (
+                <div key={index} className="flex border-b border-gray-500 py-2">
+                  <div className="flex-1 px-4 text-xs">{bet.poolId}</div>
+                  <div className="flex-1 px-4 text-xs">{bet.amount}</div>
+                  <div className="flex-1 px-4 text-xs">
+                    {totalPools[bet.poolId]?.finalScore
+                      ? totalPools[bet.poolId]?.finalScore
+                      : "Not Resolve"}
+                  </div>
+                  <div className="flex-1 px-4 text-xs hidden md:block text-blue-500">
+                    {bet.targetScore}
+                  </div>
+                  <div className="flex-1 px-4 text-xs text-green-500">
+                    {bet.claimedAmount
+                      ? bet.claimedAmount / 1e18 + " Buzz"
+                      : "---"}
+                  </div>
+                  <div className="flex-1 px-4 text-xs">
+                    {bet.claimed ? "Yes" : "No"}
+                  </div>
+                  <div className="flex-1 px-4 text-xs">
+                    {bet.status ? "Completed" : "Ongoing"}
+                  </div>
+                  <div className="flex-1 px-4 text-xs">
+                    {!bet.claimed && (
+                      <button
+                        onClick={() => handleClaimBet(bet?.poolId)}
+                        className="text-white bg-green-500 px-3 py-1 rounded-md"
+                      >
+                        Claim
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="px-4 py-3 text-gray-400 text-center">
+                No bets found.
+              </div>
+            )}
           </div>
         </div>
       </div>

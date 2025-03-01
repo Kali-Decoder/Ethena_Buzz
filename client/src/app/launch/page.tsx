@@ -88,8 +88,8 @@ const LaunchPage: React.FC = () => {
   const [isTransacting, setIsTransacting] = useState(false);
 
   const handleSubmit = async () => {
-    console.log(selectedPost?.id, scorePrediction, investment);
-    await placeBet(+selectedPost?.id, +investment.toString(), scorePrediction);
+    console.log(selectedPost?.poolId, scorePrediction, investment);
+    await placeBet(+selectedPost?.poolId, +investment.toString(), scorePrediction);
   };
 
   const handleSwap = () => {

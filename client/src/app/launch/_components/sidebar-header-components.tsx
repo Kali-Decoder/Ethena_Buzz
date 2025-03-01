@@ -20,17 +20,22 @@ function ExploreHeader(props: any) {
         ⚡️ All
       </button>
       <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
-        ⚡️ Featured
+        ⚡️ OnGoing
       </button>
 
       <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
-        💥 New
+        💥 Ended
       </button>
-
+      {/* 
       <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
-        ⏱️ Ending Soon
+        ⏱ Twitter
       </button>
-
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
+        ⏱️ Instagram
+      </button>
+      <button className=" text-white text-md p-2 border border-white font-bold rounded-40 focus:bg-black focus:text-white">
+        ⏱️ Farcaster
+      </button> */}
     </div>
   );
 }
@@ -99,10 +104,10 @@ function LeaderboardHeader() {
   );
 }
 
-function HistoryHeader(){
+function HistoryHeader() {
   return (
     <div className="flex gap-x-4 text-white justify-center w-full">
-      <p className="text-semibold text-xl font-bold">History</p>
+      <p className="text-semibold text-xl font-bold">Bet History</p>
     </div>
   );
 }
@@ -116,6 +121,5 @@ export {
   ExchangeHeader,
   AssetsHeader,
   LeaderboardHeader,
-
-  HistoryHeader
+  HistoryHeader,
 };
