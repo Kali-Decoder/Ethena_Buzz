@@ -49,7 +49,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         <button
           type="button"
           onClick={toggleDropdown}
-          className="inline-flex w-full justify-between rounded-lg bg-s1 border border-s5 px-4 py-2 text-light-1 shadow-sm  hover:bg-dark-s4"
+          className="inline-flex w-full justify-between  rounded-lg  border border-s5 px-4 py-2 text-xs text-light-1 shadow-sm  hover:bg-dark-s4"
           id="menu-button"
           aria-expanded={isOpen}
           aria-haspopup="true"

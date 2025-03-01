@@ -91,6 +91,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   const [activeChain, setActiveChainId] = useState<number | undefined>(
     chain?.id
   );
+
   const [loading, setLoading] = useState(false);
   const [btcUsdPrice, setBtcUsdPrice] = useState(0);
   const [ethUsdPrice, setEthUsdPrice] = useState(0);

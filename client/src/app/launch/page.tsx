@@ -27,6 +27,8 @@ import {
   HistoryHeader,
 } from "./_components/sidebar-header-components";
 import toast from "react-hot-toast";
+import { ConnectButton2 } from "@/components/Header/ConnectButton";
+import ChainDropdown from "@/components/ChainDropdown";
 
 interface PoolData {
   poolId: number;
@@ -42,7 +44,6 @@ interface PoolData {
   resultDeclareTime: number;
   poolEnded: boolean;
 }
-
 
 const sidebarItems = [
   "Explore",
@@ -89,7 +90,11 @@ const LaunchPage: React.FC = () => {
 
   const handleSubmit = async () => {
     console.log(selectedPost?.poolId, scorePrediction, investment);
-    await placeBet(+selectedPost?.poolId, +investment.toString(), scorePrediction);
+    await placeBet(
+      +selectedPost?.poolId,
+      +investment.toString(),
+      scorePrediction
+    );
   };
 
   const handleSwap = () => {
@@ -157,13 +162,9 @@ const LaunchPage: React.FC = () => {
     await mintNft();
   };
 
-
-
   const handleMax = () => {
     setInvestment(tokenBalance?.buzzBalance);
   };
-
-
 
   return (
     <div className="flex items-center justify-center h-[100vh] bg-change-primary-bg orbitron-launch">
@@ -185,25 +186,14 @@ const LaunchPage: React.FC = () => {
             ))}
           </nav>
           {/* User Profile */}
-          <div className="mt-auto flex items-center p-3 border-t">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-md">
-              <FaFaceSmileWink size={20} />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-semibold text-white">
-                {address
-                  ? `${address.slice(0, 8)}...${address.slice(-5)}`
-                  : "Guest"}
-              </p>
-              <p className="text-xs text-gray-500">
-                {chain?.name || "Ethereum"}
-              </p>
-            </div>
-            <div className="ml-3">
+          <div className="mt-2 flex flex-col p-0 gap-y-2">
+            <div className="flex justify-between mt-2">
+              <ConnectButton2 />
               <button onClick={() => setSelected("Settings")}>
                 <MdOutlineSettings size={25} />
               </button>
             </div>
+            <ChainDropdown />
           </div>
         </aside>
 
@@ -276,7 +266,6 @@ const LaunchPage: React.FC = () => {
               <>
                 <SelectedPost
                   selectedPost={selectedPost}
-                
                   investment={investment}
                   setInvestment={setInvestment}
                   scorePrediction={scorePrediction}
