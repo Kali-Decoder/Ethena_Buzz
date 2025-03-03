@@ -303,7 +303,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           }
         );
 
-        console.log(data)
+        console.log(data);
 
         await getPoolsDetails();
         toast.success("Pool created successfully", { id });
@@ -316,6 +316,17 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  const fetchAllMarkets = async () => {
+    try {
+      console.log("helo");
+      let data = await getWithHeaders("/api/markets", {
+        "x-user-address": address,
+      });
+      console.log(data, "markets");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const placeBet = async (
     poolId: number,
     amount: BigNumber,
@@ -548,6 +559,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     getTokenBalance();
     getPoolsDetails();
     isNftMinted();
+    fetchAllMarkets();
   }, [signer, activeChain]);
 
   function formatTimestamp(timestamp: number) {
