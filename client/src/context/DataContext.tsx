@@ -3,7 +3,7 @@ import { useAccount } from "wagmi";
 import { useEthersSigner } from "@/utils/signer";
 import { ethers, BigNumber, Contract } from "ethers";
 import toast from "react-hot-toast";
-import { api, postWithHeaders, getWithHeaders } from "@/config";
+import { postWithHeaders, getWithHeaders } from "@/config";
 import {
   tokenAbi,
   mainContractABI,
@@ -31,7 +31,11 @@ interface DataContextProps {
     link: string,
     parameter: string,
     keyword: string,
-    type: number
+    type: number,
+    startDate: string,
+    endDate: string,
+    minRange: number,
+    maxRange: number
   ) => Promise<void>;
   placeBet: (
     poolId: number,
@@ -83,7 +87,9 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   const [userBetsData, setUserBetsData] = useState(null);
   const [nftMintedAllReady, setNftMintedAllReady] = useState(false);
   const { chainDetail } = useChain();
-  const [activeChain, setActiveChainId] = useState<number | undefined>(52085143);
+  const [activeChain, setActiveChainId] = useState<number | undefined>(
+    52085143
+  );
   const [loading, setLoading] = useState(false);
   const [activePoolId, setActivePoolId] = useState(0);
 
@@ -249,17 +255,19 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     link: string,
     media: string,
     metric: string,
-    type: number
+    type: number,
+    startTime: string,
+    endTime: string,
+    minRange: number,
+    maxRange: number
   ) => {
     let id = toast.loading("Creating pool...");
     try {
-
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
       );
       if (mainContract) {
-
         const tx = await mainContract.createPool(
           question,
           link,
@@ -274,6 +282,29 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         );
 
         await tx.wait();
+
+        let data = await postWithHeaders(
+          "/api/markets",
+          {
+            marketName: pollName,
+            link,
+            media,
+            metric,
+            question,
+            type,
+            minRange,
+            maxRange,
+            startTime,
+            endTime,
+            txHash: tx?.hash,
+          },
+          {
+            "x-user-address": address,
+          }
+        );
+
+        console.log(data)
+
         await getPoolsDetails();
         toast.success("Pool created successfully", { id });
       }
@@ -333,10 +364,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   };
 
   const claimBet = async (poolId: number) => {
-
     let id = await toast.loading("Claiming bet...");
     try {
-
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
@@ -435,7 +464,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           };
           poolDetails.pool_data.pools.push(poolObj);
           let bets = await mainContract.getBets(i);
-       
+
           let poolBets = [];
           for (let y = 0; y < bets.length; y++) {
             let betObj = {
@@ -468,10 +497,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       return poolDetails;
     }
   };
-  function _convertToArray(text: string) {
 
-    return text?.split(/\d+\.\s+/).filter(Boolean);
-  }
   const getQuestionsFromAi = async (
     metric: string,
     postId: string,
@@ -493,7 +519,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         }
       );
       toast.success("Here are your questions ", { id });
-      return _convertToArray(data?.data?.question);
+      return data?.data;
     } catch (error) {
       toast.error("Failed to Form Questions", { id });
       console.log(error);
@@ -522,7 +548,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     getTokenBalance();
     getPoolsDetails();
     isNftMinted();
-  }, [signer,activeChain]);
+  }, [signer, activeChain]);
 
   function formatTimestamp(timestamp: number) {
     const date = new Date(timestamp * 1000); // Convert to milliseconds

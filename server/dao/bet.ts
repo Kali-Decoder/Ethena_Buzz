@@ -13,7 +13,7 @@ export enum BetStatus {
 export enum BetPosition {
   YES = 'yes',
   NO = 'no',
-  RANGE = 'range',
+  RANGE = 'range-based',
 }
 
 export interface IBet extends Document {

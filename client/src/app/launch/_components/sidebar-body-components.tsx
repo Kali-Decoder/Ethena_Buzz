@@ -450,7 +450,9 @@ function SelectedPost({
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />
-                <span className="font-semibold text-gray-200">Annonymous #{selectedPost?.poolId}</span>
+                <span className="font-semibold text-gray-200">
+                  Annonymous #{selectedPost?.poolId}
+                </span>
                 <span className="text-blue-500">💎</span>
               </div>
               <div className="flex items-center gap-1 text-gray-200">
@@ -554,49 +556,51 @@ function SelectedPost({
                   </div>
 
                   <div className="bg-transparent rounded-xl p-5 shadow-lg w-full max-w-md">
-      <h2 className="text-md font-semibold text-white mb-3">Wallet Overview</h2>
+                    <h2 className="text-md font-semibold text-white mb-3">
+                      Wallet Overview
+                    </h2>
 
-      <div className="space-y-3 text-xs">
-        {/* USDe Balance */}
-        <div className="flex items-center  justify-between text-white">
-          <div className="flex items-center gap-2">
-            <FaCoins className="text-yellow-400 text-xl" />
-            <span className="text-sm">USDe Balance</span>
-          </div>
-          <span className="text-xs font-medium">
-            {tokenBalance?.usdeBalance
-              ? numeral(tokenBalance?.usdeBalance).format("0.0a")
-              : "0"}{" "}
-            USDe
-          </span>
-        </div>
+                    <div className="space-y-3 text-xs">
+                      {/* USDe Balance */}
+                      <div className="flex items-center  justify-between text-white">
+                        <div className="flex items-center gap-2">
+                          <FaCoins className="text-yellow-400 text-xl" />
+                          <span className="text-sm">USDe Balance</span>
+                        </div>
+                        <span className="text-xs font-medium">
+                          {tokenBalance?.usdeBalance
+                            ? numeral(tokenBalance?.usdeBalance).format("0.0a")
+                            : "0"}{" "}
+                          USDe
+                        </span>
+                      </div>
 
-        {/* BUZZ Balance */}
-        <div className="flex items-center justify-between text-white">
-          <div className="flex items-center gap-2">
-            <FaCoins className="text-blue-400 text-xs" />
-            <span className="text-sm">BUZZ Balance</span>
-          </div>
-          <span className="text-xs font-medium">
-            {tokenBalance?.buzzBalance
-              ? numeral(tokenBalance?.buzzBalance).format("0.0a")
-              : "0"}{" "}
-            BUZZ
-          </span>
-        </div>
+                      {/* BUZZ Balance */}
+                      <div className="flex items-center justify-between text-white">
+                        <div className="flex items-center gap-2">
+                          <FaCoins className="text-blue-400 text-xs" />
+                          <span className="text-sm">BUZZ Balance</span>
+                        </div>
+                        <span className="text-xs font-medium">
+                          {tokenBalance?.buzzBalance
+                            ? numeral(tokenBalance?.buzzBalance).format("0.0a")
+                            : "0"}{" "}
+                          BUZZ
+                        </span>
+                      </div>
 
-        {/* Pool End Time */}
-        <div className="flex items-center justify-between text-red-400 mt-4">
-          <div className="flex items-center gap-2">
-            <MdAccessTime className="text-red-500 text-xs" />
-            <span className="text-sm">Pool Ends</span>
-          </div>
-          <span className="text-xs font-medium">
-            {formatTimestamp(selectedPost?.endTime)}
-          </span>
-        </div>
-      </div>
-    </div>
+                      {/* Pool End Time */}
+                      <div className="flex items-center justify-between text-red-400 mt-4">
+                        <div className="flex items-center gap-2">
+                          <MdAccessTime className="text-red-500 text-xs" />
+                          <span className="text-sm">Pool Ends</span>
+                        </div>
+                        <span className="text-xs font-medium">
+                          {formatTimestamp(selectedPost?.endTime)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 {/* Action Button */}
                 {isBetted ? (
@@ -636,16 +640,18 @@ function SelectedPost({
 function CreatePollBody() {
   const [pollData, setPollData] = useState({
     pollName: "",
-    deadline: "",
+    endDate: "",
     link: "",
     media: "",
     metric: "",
     type: "",
-    question: "",
+    question: "Hello My name is Neeraj",
+    startDate: "",
   });
   const { address } = useAccount();
   let { createPool, getQuestionsFromAi } = useDataContext();
   const [questionsData, setQuestionsData] = useState();
+  const [minValue, setMinValue] = useState(0);
   const handlePollDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const { name, value } = e.target;
@@ -666,11 +672,14 @@ function CreatePollBody() {
     return null;
   }
 
+  function _convertToArray(text: string) {
+    return text?.split(/\d+\.\s+/).filter(Boolean);
+  }
   const generateQuestions = async () => {
-    let { pollName, deadline, link, media, metric, type } = pollData;
+    let { pollName, endDate, link, media, metric, type } = pollData;
     const tweetInfo = extractTweetInfo(link);
 
-    if (!link || !media || !metric || !deadline || !pollName || !type) {
+    if (!link || !media || !metric || !endDate || !pollName || !type) {
       toast.error("Please Provide All Details");
       return;
     }
@@ -679,21 +688,25 @@ function CreatePollBody() {
       return;
     }
 
-    console.log(pollData, tweetInfo);
-    let questions = await getQuestionsFromAi(
+    let data = await getQuestionsFromAi(
       metric,
       tweetInfo?.tweetId,
       tweetInfo?.username,
       type
     );
-    setQuestionsData(questions);
+    let _questions = _convertToArray(data?.question);
+    let _minValue = data?.postData[pollData?.metric];
+    setMinValue(_minValue);
+    setQuestionsData(_questions);
   };
   const handleCreatePoll = async () => {
-    let { question, link, media, metric, deadline, pollName, type } = pollData;
-    const dead = Math.floor(new Date(deadline).getTime() / 1000);
+    let { startDate, question, link, media, metric, endDate, pollName, type } =
+      pollData;
+    const dead = Math.floor(new Date(endDate).getTime() / 1000);
     const currentTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
     const timeRemaining = dead - currentTimestamp;
     let _type = type === "binary" ? 0 : 1;
+    let maxRange = 40;
     await createPool(
       pollName,
       timeRemaining,
@@ -701,7 +714,11 @@ function CreatePollBody() {
       link,
       media,
       metric,
-      _type
+      _type,
+      startDate,
+      endDate,
+      minValue,
+      maxRange
     );
   };
   return (
@@ -733,48 +750,83 @@ function CreatePollBody() {
             <ConnectButton />
           )}
           <div className="grid grid-cols-1 gap-4">
-            <input
-              type="text"
-              name="pollName"
-              value={pollData.pollName}
-              onChange={(e) => handlePollDataChange(e)}
-              placeholder="Enter Pool Creater Name"
-              className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div>
+              <input
+                type="text"
+                name="pollName"
+                value={pollData.pollName}
+                onChange={(e) => handlePollDataChange(e)}
+                placeholder="Enter Pool Creater Name"
+                className="w-full p-3 bg-change-secondary-bg  text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            <input
-              type="datetime-local"
-              name="deadline"
-              value={pollData.deadline}
-              onChange={(e) => handlePollDataChange(e)}
-              className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-
-            <select
-              name="media"
-              value={pollData.media}
-              onChange={(e) => handlePollDataChange(e)}
-              className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="null">Media</option>
-              <option value="twitter">Twitter</option>
-              <option value="instagram">Instagram</option>
-              <option value="sport">Sports</option>
-              <option value="farcaster">Farcaster</option>
-            </select>
-
-            <select
-              name="type"
-              value={pollData.type}
-              onChange={(e) => handlePollDataChange(e)}
-              className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="null">Market Type</option>
-              <option value="binary">Binary</option>
-              <option value="range-based">Range Based</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="deadline" className="block text-blue-400 mb-1">
+                Start Date
+              </label>
+              <input
+                type="datetime-local"
+                id="startDate"
+                name="startDate"
+                value={pollData.startDate}
+                onChange={(e) => handlePollDataChange(e)}
+                className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label htmlFor="deadline" className="block text-blue-400 mb-1">
+                End Date
+              </label>
+              <input
+                type="datetime-local"
+                id="endDate"
+                name="endDate"
+                value={pollData.endDate}
+                onChange={(e) => handlePollDataChange(e)}
+                className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="media" className="block text-blue-400 mb-1">
+                Media
+              </label>
+              <select
+                id="media"
+                name="media"
+                value={pollData.media}
+                onChange={(e) => handlePollDataChange(e)}
+                className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="null">Media</option>
+                <option value="twitter">Twitter</option>
+                <option value="instagram">Instagram</option>
+                <option value="sport">Sports</option>
+                <option value="farcaster">Farcaster</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="type" className="block text-blue-400 mb-1">
+                Market Type
+              </label>
+              <select
+                id="type"
+                name="type"
+                value={pollData.type}
+                onChange={(e) => handlePollDataChange(e)}
+                className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="null">Market Type</option>
+                <option value="binary">Binary</option>
+                <option value="range-based">Range Based</option>
+              </select>
+            </div>
+          </div>
+
           <div>
             <input
               type="url"
@@ -836,7 +888,7 @@ function CreatePollBody() {
             </button>
           )}
 
-          {questionsData?.length > 0 && (
+          {true && (
             <button
               onClick={handleCreatePoll}
               className="w-full py-3 bg-blue-400 text-gray-800 rounded-md"

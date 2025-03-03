@@ -1,22 +1,24 @@
 // models/Market.ts
-import mongoose, { Schema, Document, Mongoose } from 'mongoose';
+import mongoose, { Schema, Document, Mongoose } from "mongoose";
 
 export enum MarketType {
-  BINARY = 'binary',
-  RANGE = 'range',
+  BINARY = "binary",
+  RANGE = "range-based",
 }
 
 export enum MarketStatus {
-  PENDING = 'pending',
-  ACTIVE = 'active',
-  RESOLVED = 'resolved',
-  CANCELLED = 'cancelled',
+  PENDING = "pending",
+  ACTIVE = "active",
+  RESOLVED = "resolved",
+  CANCELLED = "cancelled",
 }
-
 export interface IMarket extends Document {
-    _id: Schema.Types.ObjectId;
-  title: string;
-  description: string;
+  _id: Schema.Types.ObjectId;
+  question: string;
+  marketName:string;
+  media:string;
+  metric:string;
+  link:string;
   creator: string; // User address
   type: MarketType;
   // For binary markets
@@ -41,13 +43,16 @@ export interface IMarket extends Document {
 
 const MarketSchema: Schema = new Schema(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    creator: { type: String, required: true, ref: 'User' },
-    type: { 
-      type: String, 
-      enum: Object.values(MarketType), 
-      required: true 
+    marketName:{ type: String, required: true },
+    question: { type: String, required: true },
+    media: { type: String, required: true },
+    metric: { type: String, required: true },
+    link: { type: String, required: true },
+    creator: { type: String, required: true, ref: "User" },
+    type: {
+      type: String,
+      enum: Object.values(MarketType),
+      required: true,
     },
     // Binary market fields
     yesPool: { type: Number, default: 0 },
@@ -55,26 +60,28 @@ const MarketSchema: Schema = new Schema(
     // Range market fields
     minRange: { type: Number },
     maxRange: { type: Number },
-    ranges: [{ 
-      min: { type: Number },
-      max: { type: Number },
-      pool: { type: Number, default: 0 }
-    }],
+    ranges: [
+      {
+        min: { type: Number },
+        max: { type: Number },
+        pool: { type: Number, default: 0 },
+      },
+    ],
     // Common fields
     totalLiquidity: { type: Number, default: 0 },
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
-    status: { 
-      type: String, 
-      enum: Object.values(MarketStatus), 
-      default: MarketStatus.PENDING 
+    status: {
+      type: String,
+      enum: Object.values(MarketStatus),
+      default: MarketStatus.PENDING,
     },
     outcome: { type: String },
     outcomeValue: { type: Number },
-    resolvedBy: { type: String, ref: 'User' },
+    resolvedBy: { type: String, ref: "User" },
     resolvedAt: { type: Date },
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IMarket>('Market', MarketSchema);
+export default mongoose.model<IMarket>("Market", MarketSchema);
