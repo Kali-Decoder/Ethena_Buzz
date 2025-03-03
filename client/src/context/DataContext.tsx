@@ -83,9 +83,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   const [userBetsData, setUserBetsData] = useState(null);
   const [nftMintedAllReady, setNftMintedAllReady] = useState(false);
   const { chainDetail } = useChain();
-  const [activeChain, setActiveChainId] = useState<number | undefined>(
-    chainDetail?.id
-  );
+  const [activeChain, setActiveChainId] = useState<number | undefined>(52085143);
   const [loading, setLoading] = useState(false);
   const [activePoolId, setActivePoolId] = useState(0);
 
