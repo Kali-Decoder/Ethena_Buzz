@@ -77,9 +77,9 @@ const PostComponent = ({
             </span>
 
             {/* Start Time */}
-            <span className="flex items-center gap-1 text-blue-500 bg-blue-100 px-2 py-1 rounded-md">
-              <FaRegClock className="text-blue-600" />
-              <span className="ml-2">{formatTimestamp(item?.startTime)}</span>
+            <span className="flex items-center gap-1 text-red bg-orange-100 px-2 py-1 rounded-md">
+              <FaRegClock className="text-red" />
+              <span className="ml-2">{formatTimestamp(item?.endTime)}</span>
             </span>
 
             {/* Total Bets */}

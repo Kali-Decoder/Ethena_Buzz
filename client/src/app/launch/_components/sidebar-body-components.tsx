@@ -450,7 +450,7 @@ function SelectedPost({
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />
-                <span className="font-semibold text-gray-200">Annonymous</span>
+                <span className="font-semibold text-gray-200">Annonymous #{selectedPost?.poolId}</span>
                 <span className="text-blue-500">💎</span>
               </div>
               <div className="flex items-center gap-1 text-gray-200">
