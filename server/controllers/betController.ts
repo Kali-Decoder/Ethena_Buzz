@@ -3,21 +3,20 @@ import { Request, Response } from 'express';
 import * as betService from '../services/betService';
 import * as transactionService from '../services/transactionService';
 import { TransactionType } from '../dao/transaction';
-
+import User from "../dao/user";
 export const placeBet = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { marketId, position, amount, rangeMin, rangeMax, txHash } = req.body;
+    const { marketId, amount, txHash, targetScore } = req.body;
     const user = req.body.userAddress; // From auth middleware
-    
+
+    // Place the bet
     const bet = await betService.placeBet({
       market: marketId,
       user,
-      position,
       amount,
-      rangeMin,
-      rangeMax,
+      targetScore
     });
-    
+
     // Record transaction
     await transactionService.createTransaction(
       user,
@@ -25,14 +24,19 @@ export const placeBet = async (req: Request, res: Response): Promise<void> => {
       amount,
       txHash,
       marketId,
-      bet._id.toString(),
+      bet._id.toString()
     );
-    
+
+    const userRecord = await User.findOne({ address: user });
+    userRecord?.points += 15;
+    await userRecord.save();
+
     res.status(201).json(bet);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 export const getUserBets = async (req: Request, res: Response): Promise<void> => {
   try {

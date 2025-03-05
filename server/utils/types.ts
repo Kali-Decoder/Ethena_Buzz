@@ -14,12 +14,10 @@ export interface MarketCreateParams {
 }
 
 export interface BetCreateParams {
-  market: string;
-  user: string;
-  position: string;
-  amount: number;
-  rangeMin?: number;
-  rangeMax?: number;
+  market: string; // Market ID
+  user: string; // User address
+  amount: number; // Bet amount
+  targetScore: number; // Predicted score for the bet
 }
 
 export interface MarketFilters {

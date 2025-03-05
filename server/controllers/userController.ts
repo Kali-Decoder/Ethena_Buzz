@@ -32,34 +32,34 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-export const getLeaderboard = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+// export const getLeaderboard = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
     
-    const leaderboard = await userService.getLeaderboard(limit);
+//     const leaderboard = await userService.getLeaderboard(limit);
     
-    res.status(200).json(leaderboard);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-};
+//     res.status(200).json(leaderboard);
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
 
-export const getUserActivity = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { address } = req.params;
+// export const getUserActivity = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const { address } = req.params;
     
-    const activity = await userService.getUserActivity(address);
+//     const activity = await userService.getUserActivity(address);
     
-    if (!activity) {
-      res.status(404).json({ error: 'User not found' });
-      return;
-    }
+//     if (!activity) {
+//       res.status(404).json({ error: 'User not found' });
+//       return;
+//     }
     
-    res.status(200).json(activity);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-};
+//     res.status(200).json(activity);
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
 
 export const getUserPortfolio = async (req: Request, res: Response): Promise<void> => {
   try {

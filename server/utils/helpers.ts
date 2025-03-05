@@ -1,41 +1,41 @@
 // utils/helpers.ts
 import { MarketType, IMarket } from '../dao/market';
-import { BetPosition, IBet } from '../dao/bet';
+import {  IBet } from '../dao/bet';
 
-export const calculatePotentialPayout = (
-  market: IMarket,
-  bet: { position: string; amount: number; rangeMin?: number; rangeMax?: number }
-): number => {
-  if (market.type === MarketType.BINARY) {
-    // For binary markets
-    const { position, amount } = bet;
-    const yesPool = market.yesPool;
-    const noPool = market.noPool;
-    const totalPool = yesPool + noPool + amount;
+// export const calculatePotentialPayout = (
+//   market: IMarket,
+//   bet: { position: string; amount: number; rangeMin?: number; rangeMax?: number }
+// ): number => {
+//   if (market.type === MarketType.BINARY) {
+//     // For binary markets
+//     const { position, amount } = bet;
+//     const yesPool = market.yesPool;
+//     const noPool = market.noPool;
+//     const totalPool = yesPool + noPool + amount;
 
-    if (position === BetPosition.YES) {
-      // Calculate potential payout for YES position
-      return (amount / (yesPool + amount)) * totalPool;
-    } else {
-      // Calculate potential payout for NO position
-      return (amount / (noPool + amount)) * totalPool;
-    }
-  } else {
-    // For range markets
-    const { rangeMin, rangeMax, amount } = bet;
-    const targetRange = market.ranges?.find(
-      (r) => r.min === rangeMin && r.max === rangeMax
-    );
+//     if (position === BetPosition.YES) {
+//       // Calculate potential payout for YES position
+//       return (amount / (yesPool + amount)) * totalPool;
+//     } else {
+//       // Calculate potential payout for NO position
+//       return (amount / (noPool + amount)) * totalPool;
+//     }
+//   } else {
+//     // For range markets
+//     const { rangeMin, rangeMax, amount } = bet;
+//     const targetRange = market.ranges?.find(
+//       (r) => r.min === rangeMin && r.max === rangeMax
+//     );
 
-    if (!targetRange) return 0;
+//     if (!targetRange) return 0;
 
-    const totalPool = market.totalLiquidity + amount;
-    const rangePool = targetRange.pool + amount;
+//     const totalPool = market.totalLiquidity + amount;
+//     const rangePool = targetRange.pool + amount;
     
-    // Calculate potential payout for this range
-    return (amount / rangePool) * totalPool;
-  }
-};
+//     // Calculate potential payout for this range
+//     return (amount / rangePool) * totalPool;
+//   }
+// };
 
 export const calculateMarketPercentages = (market: IMarket) => {
   if (market.type === MarketType.BINARY) {

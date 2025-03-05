@@ -66,10 +66,11 @@ export const getPredictionQuestion = async (req: Request, res: Response): Promis
             return res.status(500).json({ error: 'Failed to fetch Twitter data' });
         }
 
+        console.log(postData,"postData");
         // Generate prediction-style question
         const question = await generatePredictionQuestion(postData, predictionType, metric);
 
-        res.json({
+        res.status(200).json({
             message: 'Prediction question generated successfully',
             postData,
             question

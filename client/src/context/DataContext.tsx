@@ -280,9 +280,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
             value: BigNumber.from(ethers.utils.parseUnits("100", "wei")),
           }
         );
-
-        await tx.wait();
-
+        let result = await tx.wait();
+        console.log(result);
         let data = await postWithHeaders(
           "/api/markets",
           {
@@ -296,7 +295,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
             maxRange,
             startTime,
             endTime,
-            txHash: tx?.hash,
+            txHash: result?.transactionHash,
           },
           {
             "x-user-address": address,
@@ -322,7 +321,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       let data = await getWithHeaders("/api/markets", {
         "x-user-address": address,
       });
-      console.log(data, "markets");
+      console.log(data?.data);
+      return data?.data;
     } catch (error) {
       console.log(error);
     }
@@ -499,6 +499,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
         }
 
         setTotalPools(poolDetails?.pool_data?.pools);
+        console.log(poolDetails?.pool_data?.pools);
         setLoading(false);
         return poolDetails;
       }
@@ -529,6 +530,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           "x-user-address": address,
         }
       );
+      console.log(data);
       toast.success("Here are your questions ", { id });
       return data?.data;
     } catch (error) {

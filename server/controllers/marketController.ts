@@ -5,6 +5,17 @@ import * as transactionService from "../services/transactionService";
 import { TransactionType } from "../dao/transaction";
 import { calculateMarketPercentages } from "../utils/helpers";
 
+import Bet, { IBet } from '../dao/bet';
+
+const _getBetsByMarketId = async (marketId: string): Promise<IBet[]> => {
+  try {
+    const bets = await Bet.find({ market: marketId }).populate('user').exec();
+    return bets;
+  } catch (error) {
+    console.error('Error fetching bets:', error);
+    throw error;
+  }
+};
 export const createMarket = async (
   req: Request,
   res: Response
@@ -77,7 +88,6 @@ export const getAllMarkets = async (
         percentages,
       };
     });
-
     res.status(200).json(marketsWithPercentages);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -90,6 +100,7 @@ export const getMarketById = async (
 ): Promise<void> => {
   try {
     const { id } = req.params;
+    let bets = _getBetsByMarketId(id);
     const market = await marketService.getMarketById(id);
 
     if (!market) {
@@ -102,6 +113,7 @@ export const getMarketById = async (
     res.status(200).json({
       ...market.toObject(),
       percentages,
+      bets
     });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -150,9 +162,7 @@ export const getUserMarkets = async (
 ): Promise<void> => {
   try {
     const { userAddress } = req.params;
-
     const markets = await marketService.getAllMarkets({ creator: userAddress });
-
     res.status(200).json(markets);
   } catch (error: any) {
     res.status(400).json({ error: error.message });

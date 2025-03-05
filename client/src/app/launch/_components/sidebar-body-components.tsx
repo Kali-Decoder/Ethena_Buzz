@@ -645,7 +645,7 @@ function CreatePollBody() {
     media: "",
     metric: "",
     type: "",
-    question: "Hello My name is Neeraj",
+    question: "",
     startDate: "",
   });
   const { address } = useAccount();
@@ -687,7 +687,6 @@ function CreatePollBody() {
       toast.error("Not Valid Url");
       return;
     }
-
     let data = await getQuestionsFromAi(
       metric,
       tweetInfo?.tweetId,
@@ -696,6 +695,7 @@ function CreatePollBody() {
     );
     let _questions = _convertToArray(data?.question);
     let _minValue = data?.postData[pollData?.metric];
+    console.log(_questions,_minValue);
     setMinValue(_minValue);
     setQuestionsData(_questions);
   };
@@ -706,7 +706,7 @@ function CreatePollBody() {
     const currentTimestamp = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
     const timeRemaining = dead - currentTimestamp;
     let _type = type === "binary" ? 0 : 1;
-    let maxRange = 40;
+    let maxRange = 400;
     await createPool(
       pollName,
       timeRemaining,
