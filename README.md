@@ -59,8 +59,55 @@
   
   - If you don't have our Buzz tokens but hold USDE tokens and want to participate in pool predictions, you can easily do so by using our conversion rate contract deployed on the BSC Testnet. With a 1:12 conversion ratio, you can swap your USDE tokens for Buzz tokens and join the pool predictions seamlessly.
 
-- **4. Best Use Of Layer Zero O-App:** <br/>
-  - Develop a cross-chain application that eliminates the limitation of being restricted to a single blockchain in the prediction market. The pool  operates on the BSC Testnet (BLE), but users can place bets from other chains like Sepolia or Base. This is enabled through our adapter and the BUZZ token deployed on the source chain (BLE), with BUZZ OFT (Omnichain Fungible Token) deployed on the destination chains (Sepolia and Base). This setup allows seamless participation across multiple chains.
+
+
+# 🚀 Project Setup Guide  
+
+## 🖥️ Frontend Setup  
+
+### 1️⃣ Clone the Repository  
+```sh
+git clone `https://github.com/Kali-Decoder/Monad-Buzz`
+cd client
+```
+
+### 2️⃣ Install Dependencies  
+```sh
+pnpm install
+```
+
+### 3️⃣ Create Environment File  
+Copy `.env.example` to `.env` and update the necessary variables.  
+
+### 4️⃣ Start the Development Server  
+```sh
+pnpm run dev
+```
+The frontend should now be running at `http://localhost:3000`.  
+
+---
+
+## 🖥️ Backend Setup  
+
+### 1️⃣ Clone the Repository  
+```sh
+git clone `https://github.com/Kali-Decoder/Monad-Buzz`
+cd server
+```
+
+### 2️⃣ Install Dependencies  
+```sh
+npm install
+```
+
+### 3️⃣ Set Up Environment Variables  
+Copy `.env.example` to `.env` and configure the required values.  
+
+### 4️⃣ Start the Server  
+```sh
+npm start
+```
+The backend should now be running at `http://localhost:8080` (or your configured port).  
 
 ## Contract Overview : 
 
