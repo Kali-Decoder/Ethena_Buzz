@@ -43,19 +43,12 @@
     - Users spend significant time and effort creating and engaging with content but often feel that their contributions are undervalued.
 
 
-## Bounty Tracks:
-- **1. Pyth Contract:** <br/>
-  https://testnet.explorer.ethena.fi/tx/0x395422a2f7fc10ec53c4345f751d58a52ecb2eae09f7f2e1181b8dc080321a09
+1. Ethena Testnet:
 
-- **2. Best Overall Application Ethena (BLE)Testnet:** <br/>
-  - BuzziFy Buzz Token(Contract Address ): 0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87) :
-    https://testnet.explorer.ethena.fi/address/0xBFff78BB02925E4D8671D0d90B2a6330fcAedd87
-  - BuzziFy (Contract Address ): 0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12):
-    https://testnet.explorer.ethena.fi/address/0xDD0570Edb234A1753e5aD3f8Be8fa7515cdA1C12
-
-- **3. Most Innovative Used of sUSDe:** <br/>
-  - Conversion Contract: 0x371907DA46F9771189C068864115a4e84a227469) :
-    https://testnet.explorer.ethena.fi/tx/0x5d083a981a225fbfe0285de56eb95e8ba9747d002d47dfa9a35e855b264fe1b7
+BuzziFy Buzz Token(Contract Address ): 0x4d3cF8661B9B66e0D05d717Db7BF41a0c6767Fcd) : https://testnet.explorer.ethena.fi/address/0x4d3cF8661B9B66e0D05d717Db7BF41a0c6767Fcd
+BuzziFy (Contract Address ): 0x7701C0ec27fd20f234c54D2f23cd28959E589Ee3): https://testnet.explorer.ethena.fi/address/0x7701C0ec27fd20f234c54D2f23cd28959E589Ee3
+NFT (Contract Address ): 0x9457124Db1aDAe247A450eb5aBE1b63d5a3656f1): https://testnet.explorer.ethena.fi/address/0x9457124Db1aDAe247A450eb5aBE1b63d5a3656f1
+Conversion Contract (Contract Address ): 0x7990300697D8514a84E5B9e5dFA39d58F48D4F19): https://testnet.explorer.ethena.fi/address/0x7990300697D8514a84E5B9e5dFA39d58F48D4F19
   
   - If you don't have our Buzz tokens but hold USDE tokens and want to participate in pool predictions, you can easily do so by using our conversion rate contract deployed on the BSC Testnet. With a 1:12 conversion ratio, you can swap your USDE tokens for Buzz tokens and join the pool predictions seamlessly.
 
