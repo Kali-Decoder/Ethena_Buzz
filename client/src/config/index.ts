@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 // Base URL for the backend (Update with your actual backend URL)
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://ethena-buzz-backend.vercel.app";
+const BASE_URL = "https://ethena-buzz-backend.vercel.app";
 // Create a default Axios instance for normal JSON requests
 const api = axios.create({
   baseURL: BASE_URL,

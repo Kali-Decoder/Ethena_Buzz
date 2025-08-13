@@ -2,9 +2,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { useDataContext } from "@/context/DataContext";
+import { ethers } from "ethers";
 import { MdOutlineSettings } from "react-icons/md";
-import { FaFaceSmileWink } from "react-icons/fa6";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   RewardsSection,
   BalanceScore,
@@ -30,6 +29,7 @@ import {
 import toast from "react-hot-toast";
 import { ConnectButton2 } from "@/components/Header/ConnectButton";
 import ChainDropdown from "@/components/ChainDropdown";
+import LoadingBar from "@/components/LoadingBar";
 
 interface PoolData {
   poolId: number;
@@ -44,6 +44,7 @@ interface PoolData {
   endTime: number;
   resultDeclareTime: number;
   poolEnded: boolean;
+  bettingOpen: boolean;
 }
 
 const sidebarItems = [
@@ -75,25 +76,27 @@ const LaunchPage: React.FC = () => {
 
   const [fromToken, setFromToken] = useState({
     symbol: "USDe",
-    amount: tokenBalance.usdeBalance,
+    amount: 0, // Default value instead of tokenBalance.usdeBalance
   });
   const [toToken, setToToken] = useState({
     symbol: "BUZZ",
-    amount: tokenBalance.buzzBalance,
+    amount: 0, // Default value instead of tokenBalance.buzzBalance
   });
   const [maxTokenBalances, setMaxTokenBalances] = useState({
-    fromBalance: tokenBalance.usdeBalance,
-    toBalance: tokenBalance.buzzBalance,
+    fromBalance: 0, // Default value instead of tokenBalance.usdeBalance
+    toBalance: 0, // Default value instead of tokenBalance.buzzBalance
   });
   const [isCalculating, setIsCalculating] = useState(false);
   const [actionButtonText, setActionButtonText] = useState("Exchange");
   const [isTransacting, setIsTransacting] = useState(false);
 
   const handleSubmit = async () => {
-    console.log(selectedPost?.poolId, scorePrediction, investment);
+    console.log(selectedPost, "selectedPost");
+    if (selectedPost?.poolId === null || selectedPost?.poolId === undefined) return; //pool id can be zero 
+    console.log(selectedPost.poolId, scorePrediction, investment);
     await placeBet(
-      +selectedPost?.poolId,
-      +investment.toString(),
+      selectedPost.poolId,
+      ethers.utils.parseEther(investment.toString()),
       scorePrediction
     );
   };
@@ -108,15 +111,19 @@ const LaunchPage: React.FC = () => {
       amount: 0,
     }));
 
+    // Safely access tokenBalance values
+    const safeUsdeBalance = tokenBalance?.usdeBalance || 0;
+    const safeBuzzBalance = tokenBalance?.buzzBalance || 0;
+
     if (fromToken.symbol === "USDe") {
       setMaxTokenBalances({
-        fromBalance: tokenBalance.buzzBalance,
-        toBalance: tokenBalance.usdeBalance,
+        fromBalance: safeBuzzBalance,
+        toBalance: safeUsdeBalance,
       });
     } else {
       setMaxTokenBalances({
-        fromBalance: tokenBalance.usdeBalance,
-        toBalance: tokenBalance.buzzBalance,
+        fromBalance: safeUsdeBalance,
+        toBalance: safeBuzzBalance,
       });
     }
   };
@@ -164,7 +171,8 @@ const LaunchPage: React.FC = () => {
   };
 
   const handleMax = () => {
-    setInvestment(tokenBalance?.buzzBalance);
+    const safeBuzzBalance = tokenBalance?.buzzBalance || 0;
+    setInvestment(safeBuzzBalance);
   };
 
   return (
@@ -259,6 +267,7 @@ const LaunchPage: React.FC = () => {
                 <ExploreBody
                   transformedPoolsData={totalPools}
                   setSelectedPost={setSelectedPost}
+                  setSelected={setSelected}
                 />
               </>
             )}

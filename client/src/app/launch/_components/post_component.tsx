@@ -8,6 +8,7 @@ import { FaRegClock } from "react-icons/fa6";
 import { FaUserSecret } from "react-icons/fa";
 interface Post {
   id: number;
+  poolId: number;
   url: string;
   question: string;
   category: string;
@@ -20,6 +21,7 @@ interface Post {
   endTime: number;
   resultDeclareTime: number;
   poolEnded: boolean;
+  bettingOpen: boolean;
 }
 const PostComponent = ({
   item,
@@ -29,9 +31,16 @@ const PostComponent = ({
   onSelect: () => void;
 }) => {
   const { formatTimestamp } = useDataContext();
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount: number | string | undefined) => {
     return amount ? `${Number(amount).toLocaleString()}` : "0";
   };
+  
+  // Debug logging
+  console.log(`PostComponent ${item?.poolId}:`, {
+    poolEnded: item?.poolEnded,
+    bettingOpen: item?.bettingOpen,
+    question: item?.question?.substring(0, 50) + "..."
+  });
 
   return (
     <>
@@ -89,14 +98,23 @@ const PostComponent = ({
             </span>
           </div>
           {/* Status Indicator */}
-          <span className="flex items-center gap-2">
-            <RiRadioButtonLine
-              className={item?.poolEnded ? "text-red" : "text-green-500"}
-            />
-            <span className="uppercase font-bold">
-              {item?.poolEnded ? "ENDED" : "ONGOING"}
+          <div className="flex flex-col gap-1 items-end">
+            <span className="flex items-center gap-2">
+              <RiRadioButtonLine
+                className={item?.poolEnded ? "text-red" : "text-green-500"}
+              />
+              <span className="uppercase font-bold">
+                {item?.poolEnded ? "ENDED" : "ONGOING"}
+              </span>
             </span>
-          </span>
+            {/* Betting Status Tag */}
+            {!item?.bettingOpen && (
+              <span className="flex items-center gap-1 text-xs bg-red-500 text-white px-2 py-1 rounded-md">
+                <span className="w-2 h-2 bg-white rounded-full"></span>
+                BETTING CLOSED
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </>

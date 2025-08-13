@@ -3,6 +3,24 @@ import { useAccount } from "wagmi";
 import { useEthersSigner } from "@/utils/signer";
 import { ethers, BigNumber, Contract } from "ethers";
 import toast from "react-hot-toast";
+
+/**
+ * CONTRACT-ONLY REFACTORING COMPLETED:
+ * 
+ * ✅ REPLACED WITH CONTRACT CALLS:
+ * - Market creation: No more API call after contract interaction
+ * - Fetch all markets: Now fetches directly from smart contract
+ * - Pool details: Already was contract-based
+ * - User bets: Already was contract-based
+ * 
+ * ❌ STILL NEED API CALLS (cannot be replaced):
+ * - AI question generation: External AI service
+ * - Faucet service: Centralized token minting service
+ * 
+ * This makes the dApp more decentralized and reduces API dependencies.
+ */
+// Only keeping postWithHeaders for AI questions and getWithHeaders for faucet
+// These cannot be replaced with contract calls as they are external services
 import { postWithHeaders, getWithHeaders } from "@/config";
 import {
   tokenAbi,
@@ -43,7 +61,7 @@ interface DataContextProps {
     targetScore: number
   ) => Promise<void>;
   claimBet: (poolId: number) => Promise<void>;
-  getPoolsDetails: (poolId: number) => Promise<any>;
+  getPoolsDetails: (forceRefresh?: boolean) => Promise<any>;
   totalPools: [] | undefined;
   userBetsData: [] | undefined;
   loading: boolean;
@@ -60,7 +78,7 @@ interface DataContextProps {
     postId: string,
     username: string,
     predictionType: string
-  ) => Promise<void>;
+  ) => Promise<any | undefined>;
   dripTokens: () => Promise<void>;
 }
 
@@ -92,6 +110,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   );
   const [loading, setLoading] = useState(false);
   const [activePoolId, setActivePoolId] = useState(0);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   useEffect(() => {
     setActiveChainId(chainDetail?.id);
@@ -248,6 +267,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  // CONTRACT-ONLY: Creates pool directly on smart contract
   const createPool = async (
     pollName: string,
     deadline: number,
@@ -269,12 +289,12 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       );
       if (mainContract) {
         const tx = await mainContract.createPool(
-          question,
-          link,
-          media,
-          metric,
-          type,
-          deadline,
+          pollName,        // _poolName
+          link,            // _url  
+          media,           // _parameter
+          metric,          // _category
+          type,            // _polltype
+          deadline,        // _endTime
           {
             from: address,
             value: BigNumber.from(ethers.utils.parseUnits("100", "wei")),
@@ -283,27 +303,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
 
         await tx.wait();
 
-        let data = await postWithHeaders(
-          "/api/markets",
-          {
-            marketName: pollName,
-            link,
-            media,
-            metric,
-            question,
-            type,
-            minRange,
-            maxRange,
-            startTime,
-            endTime,
-            txHash: tx?.hash,
-          },
-          {
-            "x-user-address": address,
-          }
-        );
-
-        console.log(data);
+        // Pool created successfully on contract - no need for API call
+        console.log("Pool created on contract with hash:", tx?.hash);
 
         await getPoolsDetails();
         toast.success("Pool created successfully", { id });
@@ -316,15 +317,14 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  // CONTRACT-ONLY: Fetches all markets from smart contract
   const fetchAllMarkets = async () => {
     try {
-      console.log("helo");
-      let data = await getWithHeaders("/api/markets", {
-        "x-user-address": address,
-      });
-      console.log(data, "markets");
+      console.log("Fetching markets from contract...");
+      // This function now just calls getPoolsDetails which fetches from contract
+      await getPoolsDetails();
     } catch (error) {
-      console.log(error);
+      console.log("Error fetching markets from contract:", error);
     }
   };
   const placeBet = async (
@@ -334,11 +334,32 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
   ) => {
     let id = await toast.loading("Placing bet...");
     try {
+      console.log("Placing bet with params:", { poolId, amount, predictScore, activeChain });
+      console.log("Contract address:", Addresses[activeChain]?.mainContractAddress);
+      console.log("Token balance:", tokenBalance?.buzzBalance);
+      console.log("Amount to bet:", amount.toString());
+      console.log("Amount in BUZZ:", ethers.utils.formatEther(amount));
+      console.log("Balance check:", tokenBalance?.buzzBalance < parseFloat(ethers.utils.formatEther(amount)));
+      
+      // Check if user has sufficient balance
+      if (!tokenBalance?.buzzBalance || tokenBalance.buzzBalance < parseFloat(ethers.utils.formatEther(amount))) {
+        throw new Error("Insufficient BUZZ balance");
+      }
+      
       const mainContract = await getContractInstance(
         Addresses[activeChain]?.mainContractAddress,
         mainContractABI
       );
-      amount = ethers.utils.parseEther(amount.toString());
+      
+      if (!mainContract) {
+        throw new Error("Failed to get main contract instance");
+      }
+      
+      console.log("Main contract instance:", mainContract);
+      
+      const parsedAmount =amount;
+      console.log("Parsed amount:", parsedAmount.toString());
+      
       const tokenContract = await getContractInstance(
         Addresses[activeChain]?.tokenAddress,
         tokenAbi
@@ -349,27 +370,36 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           address,
           Addresses[activeChain]?.mainContractAddress
         );
-        if (allowance.lt(amount)) {
+        console.log("Current allowance:", allowance.toString());
+        console.log("Required amount:", parsedAmount.toString());
+        
+        if (allowance.lt(parsedAmount)) {
+          console.log("Approving tokens...");
           const tx = await tokenContract.approve(
             Addresses[activeChain]?.mainContractAddress,
-            amount
+            parsedAmount
           );
           await tx.wait();
+          console.log("Approval successful");
+        } else {
+          console.log("Sufficient allowance already exists");
         }
       }
 
-      if (mainContract) {
-        const tx = await mainContract.placeBet(amount, predictScore, poolId);
-        await tx.wait();
-        await getPoolsDetails();
-      }
-
-      toast.success("Bet placed successfully", {
-        id,
-      });
+      console.log("Calling placeBet on contract...");
+      const tx = await mainContract.placeBet(parsedAmount, predictScore, poolId);
+      console.log("Transaction sent:", tx.hash);
+      
+      await tx.wait();
+      console.log("Transaction confirmed");
+      
+      await getPoolsDetails();
+      await getTokenBalance(); // Refresh token balance after bet
+      toast.success("Bet placed successfully", { id });
       return;
     } catch (error) {
-      toast.error("Error in placing bet", { id });
+      console.error("Error in placing bet:", error);
+      toast.error(`Error in placing bet: ${error.message}`, { id });
       return;
     }
   };
@@ -416,6 +446,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  // API-REQUIRED: Faucet service - cannot be replaced with contract call
+  // This is a centralized service that mints tokens to users
   const dripTokens = async () => {
     const id = toast.loading("Dripping Tokens ...");
     try {
@@ -437,7 +469,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
-  const getPoolsDetails = async () => {
+  const getPoolsDetails = async (forceRefresh?: boolean) => {
     let poolDetails = {
       pool_data: {
         pools: [] as any,
@@ -454,9 +486,22 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
       let maxPoolId = await mainContract?.getPoolId();
 
       let userBets = [] as any;
-      if (mainContract) {
-        for (let i = 0; i < maxPoolId; i++) {
-          const pool = await mainContract.pools(i);
+              if (mainContract) {
+          for (let i = 0; i < maxPoolId; i++) {
+            const pool = await mainContract.pools(i);
+            const poolStatus = await mainContract.getPoolStatus(i);
+            console.log("Pool status:", poolStatus,i);
+          
+          // Debug logging
+          console.log(`Pool ${i} status:`, {
+            poolEnded: pool.poolEnded,
+            poolStatusPoolEnded: poolStatus.poolEnded,
+            bettingOpen: poolStatus.bettingOpen,
+            endTime: +pool.endTime.toString(),
+            currentTime: +poolStatus.currentTime.toString(),
+            timeUntilEnd: +poolStatus.timeUntilEnd.toString()
+          });
+          
           let poolObj = {
             poolId: i,
             question: pool.question,
@@ -471,13 +516,24 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
             finalScore: +pool.finalScore.toString(),
             startTime: +pool.startTime.toString(),
             endTime: +pool.endTime.toString(),
-            poolEnded: pool.poolEnded,
+            poolEnded: poolStatus.poolEnded, // Use updated status from getPoolStatus
+            bettingOpen: poolStatus.bettingOpen,
           };
+          
+          console.log(`Pool ${i} object:`, {
+            poolId: poolObj.poolId,
+            poolEnded: poolObj.poolEnded,
+            bettingOpen: poolObj.bettingOpen
+          });
           poolDetails.pool_data.pools.push(poolObj);
           let bets = await mainContract.getBets(i);
+          console.log("Bets:", bets);
 
           let poolBets = [];
           for (let y = 0; y < bets.length; y++) {
+            // Get the actual claim status from getUserBetStatus (the correct source)
+            const userBetStatus = await mainContract.getUserBetStatus(i, bets[y].user);
+            
             let betObj = {
               poolId: i,
               user: bets[y].user,
@@ -485,9 +541,9 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
                 .div(BigNumber.from(10).pow(18))
                 .toString(),
               targetScore: +bets[y].targetScore.toString(),
-              claimedAmount: +bets[y].claimedAmount.toString(),
-              claimed: bets[y].claimed,
-              status: pool.poolEnded,
+              claimedAmount: +userBetStatus.claimedAmount.toString(), // Use from getUserBetStatus
+              claimed: userBetStatus.claimed, // Use from getUserBetStatus
+              status: poolStatus.poolEnded,
             };
             if (bets[y].user == address) {
               userBets.push(betObj);
@@ -498,8 +554,14 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           poolDetails.pool_data.pools[i].bets = poolBets;
         }
 
+        console.log("Setting total pools:", poolDetails?.pool_data?.pools);
+        console.log("Final pool data to be set:", poolDetails?.pool_data?.pools.map(p => ({ poolId: p.poolId, poolEnded: p.poolEnded, bettingOpen: p.bettingOpen })));
         setTotalPools(poolDetails?.pool_data?.pools);
         setLoading(false);
+        
+        // Force a re-render by updating a timestamp
+        setLastUpdate(Date.now());
+        
         return poolDetails;
       }
     } catch (error) {
@@ -509,6 +571,8 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
     }
   };
 
+  // API-REQUIRED: AI question generation - cannot be replaced with contract call
+  // This is an external AI service that generates prediction questions
   const getQuestionsFromAi = async (
     metric: string,
     postId: string,
@@ -529,6 +593,7 @@ const DataContextProvider: React.FC<DataContextProviderProps> = ({
           "x-user-address": address,
         }
       );
+      console.log(data, "data");
       toast.success("Here are your questions ", { id });
       return data?.data;
     } catch (error) {

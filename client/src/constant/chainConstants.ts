@@ -1,21 +1,27 @@
 import { http } from "viem";
 
-const bleTestnetNetwork = {
-  id: 52085143,
-  name: "BLE Testnet",
-  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/4584.png", // Placeholder icon URL for ETH
-  nativeCurrency: { name: "BLE", symbol: "ETH", decimals: 18 },
+const morphSepolia = {
+  id: 2810,
+  name: 'Morph Sepolia',
+  network: "",
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
-    default: { http: ["https://testnet.rpc.ethena.fi/"] },
+    default: {
+      http: ['https://rpc-quicknode-holesky.morphl2.io'],
+    }, public: {
+      http: ['https://rpc-quicknode-holesky.morphl2.io'],
+    }
   },
   blockExplorers: {
     default: {
-      name: "BLE Testnet",
-      url: "https://testnet.explorer.ethena.fi/",
+      name: 'Morph Testnet Explorer',
+      url: 'https://explorer-holesky.morphl2.io',
+      apiUrl: 'https://explorer-api-testnet.morphl2.io/api',
     },
   },
+  testnet: true,
 };
-export const chainArray = [bleTestnetNetwork];
+export const chainArray = [morphSepolia];
 export const transportsObject = {
-  [bleTestnetNetwork.id]: http(),
+  [morphSepolia.id]: http(),
 };

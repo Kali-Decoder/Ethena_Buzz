@@ -140,6 +140,15 @@ export const Addresses = {
     conversionAddress: "",
     rpc_url: "https://endpoints.omniatech.io/v1/mantle/sepolia/public",
   },
+  "2810": {
+    name: "Morph Sepolia",
+    tokenAddress: "0x5654FCfBdE831C6263de36f120605dAc2187879f",
+    mainContractAddress: "0x208Ea39fDaB5c46b6B1Af25867AcC62B0Cf63B6C",
+    nftContractAddress: "0x9457124Db1aDAe247A450eb5aBE1b63d5a3656f1",
+    usdeAddress: "0xa3823ef745DD8Df93222C4dA74665E9Ce515dAeF",
+    conversionAddress: "0x5a9825E0F656789E4d36be509a7455Aa02E3D27E",
+    rpc_url: "https://rpc-quicknode-holesky.morphl2.io",
+  },
 };
 export const conversionContractAbi = [
   {
@@ -1583,92 +1592,16 @@ export const mainContractABI = [
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "claimedAmount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "bool",
-				"name": "claimed",
-				"type": "bool"
-			}
-		],
-		"name": "DebugClaim",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "FEE",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "REWARD",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
+				"name": "_pool_id",
 				"type": "uint256"
 			}
 		],
-		"name": "bets",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "targetScore",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "claimedAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "claimed",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
+		"name": "checkAndEndPool",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1720,6 +1653,148 @@ export const mainContractABI = [
 		"name": "createPool",
 		"outputs": [],
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_targetScore",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_pool_id",
+				"type": "uint256"
+			}
+		],
+		"name": "placeBet",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "poolId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "endTime",
+				"type": "uint256"
+			}
+		],
+		"name": "PoolEnded",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "receive",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pool_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_finalScore",
+				"type": "uint256"
+			}
+		],
+		"name": "setResult",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_receiver",
+				"type": "address"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "bets",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "targetScore",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "claimedAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "claimed",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "FEE",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -1782,6 +1857,98 @@ export const mainContractABI = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pool_id",
+				"type": "uint256"
+			}
+		],
+		"name": "getPoolStatus",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "poolEnded",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "bettingOpen",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timeUntilEnd",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "currentTime",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pool_id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getUserBetStatus",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "targetScore",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "claimedAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "claimed",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_pool_id",
+				"type": "uint256"
+			}
+		],
+		"name": "isPoolActive",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "owner",
 		"outputs": [
@@ -1792,29 +1959,6 @@ export const mainContractABI = [
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_targetScore",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_pool_id",
-				"type": "uint256"
-			}
-		],
-		"name": "placeBet",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1892,24 +2036,6 @@ export const mainContractABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_pool_id",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_finalScore",
-				"type": "uint256"
-			}
-		],
-		"name": "setResult",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "token",
 		"outputs": [
@@ -1921,30 +2047,8 @@ export const mainContractABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_receiver",
-				"type": "address"
-			}
-		],
-		"name": "withdraw",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"stateMutability": "payable",
-		"type": "receive"
 	}
-];
+]
 
 export const features = [
   {

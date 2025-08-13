@@ -392,10 +392,25 @@ transition-colors "
   );
 }
 
-function ExploreBody({ transformedPoolsData, setSelectedPost }: any) {
+function ExploreBody({ transformedPoolsData, setSelectedPost, setSelected }: any) {
+  const { getPoolsDetails } = useDataContext();
+  
+  const handleRefresh = async () => {
+    await getPoolsDetails(true);
+  };
+  
   return (
     <>
-      {" "}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-white">Prediction Pools</h2>
+        <button
+          onClick={handleRefresh}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm"
+        >
+          🔄 Refresh Pools
+        </button>
+      </div>
+      
       {transformedPoolsData.length ? (
         <div className="grid grid-cols-2 gap-4">
           {transformedPoolsData.map((item: any, i: any) => (
@@ -407,7 +422,13 @@ function ExploreBody({ transformedPoolsData, setSelectedPost }: any) {
           ))}
         </div>
       ) : (
-        <LoadingBar />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="text-6xl mb-4">🏆</div>
+          <h3 className="text-xl font-semibold text-white mb-2">No Pools Available</h3>
+          <p className="text-gray-400 mb-6 max-w-md">
+            There are currently no prediction pools available. Be the first to create one!
+          </p>
+        </div>
       )}
     </>
   );
@@ -425,6 +446,7 @@ function SelectedPost({
 }: any) {
   const { formatTimestamp, userBetsData, totalPools } = useDataContext();
   const [isBetted, setIsBetted] = useState(false);
+  const [betPosition, setBetPosition] = useState<'yes' | 'no' | null>(null);
   const { address } = useAccount();
   console.log(selectedPost);
   useEffect(() => {
@@ -437,6 +459,20 @@ function SelectedPost({
       setIsBetted(false);
     }
   }, [userBetsData]);
+
+  // Reset bet position when switching between polls
+  useEffect(() => {
+    setBetPosition(null);
+  }, [selectedPost?.poolId]);
+
+  const handleBetPositionSelect = (position: 'yes' | 'no') => {
+    setBetPosition(position);
+    // For binary polls, set the score prediction based on position
+    if (selectedPost.poll_type === 0) {
+      setScorePrediction(position === 'yes' ? 1 : 0);
+    }
+  };
+
   return (
     <>
       {selectedPost?.question ? (
@@ -500,27 +536,52 @@ function SelectedPost({
           </div>
           <div className="bg-change-trinary-bg w-[45%] flex flex-col rounded py-6 px-2 h-1/2 mt-3">
             <div className="bg-change-trinary-bg w-full rounded py-6 px-2 h-1/2 mt-3">
-              <h2 className="text-sm font-semibold mb-0 px-4 text-white">
-                Place Your Bet
-              </h2>
+              <div className="flex items-center justify-between px-4 mb-2">
+                <h2 className="text-sm font-semibold text-white">
+                  Place Your Bet
+                </h2>
+                {!selectedPost?.bettingOpen && (
+                  <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-md">
+                    BETTING CLOSED
+                  </span>
+                )}
+              </div>
               <div className="rounded-lg p-4">
                 {/* From Input */}
 
                 <div className=" flex px-4 flex-col-reverse bg-change-secondary-bg rounded-sm p-4 items-start gap-2">
                   {selectedPost.poll_type === 0 ? (
                     <>
+                      <label className="text-gray-200 text-xs mb-2">
+                        Select Your Prediction
+                      </label>
                       <div className="grid grid-cols-2 gap-2 w-full">
                         <button
-                          className={`bg-[#1B1B1A]  px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
+                          className={`px-4 py-2 rounded-md transition-colors ${
+                            betPosition === 'yes' 
+                              ? 'bg-blue-500 text-white' 
+                              : 'bg-[#1B1B1A] hover:bg-blue-400 text-white'
+                          }`}
+                          onClick={() => handleBetPositionSelect('yes')}
                         >
                           Yes
                         </button>
                         <button
-                          className={`bg-[#1B1B1A] px-4 py-2 rounded-md hover:bg-blue-400 transition-colors`}
+                          className={`px-4 py-2 rounded-md transition-colors ${
+                            betPosition === 'no' 
+                              ? 'bg-blue-500 text-white' 
+                              : 'bg-[#1B1B1A] hover:bg-blue-400 text-white'
+                          }`}
+                          onClick={() => handleBetPositionSelect('no')}
                         >
                           No
                         </button>
                       </div>
+                      {!betPosition && (
+                        <p className="text-red-400 text-xs mt-2">
+                          Please select Yes or No to place your bet
+                        </p>
+                      )}
                     </>
                   ) : (
                     <>
@@ -538,6 +599,9 @@ function SelectedPost({
                   )}
                 </div>
                 <div className="mb-4 mt-4">
+                  <label className="text-gray-200 text-xs mb-2">
+                    Bet Amount (BUZZ)
+                  </label>
                   <div className="flex items-center bg-change-secondary-bg rounded-lg p-3">
                     <input
                       type="number"
@@ -545,6 +609,8 @@ function SelectedPost({
                       onChange={(e) => setInvestment(e.target.value)}
                       className="w-full bg-transparent text-white outline-none text-sm"
                       placeholder="0.00"
+                      min="0"
+                      step="0.01"
                     />
                     <button
                       onClick={handleMax}
@@ -554,6 +620,11 @@ function SelectedPost({
                     </button>
                     <span className="text-white ml-2 text-xs">BUZZ</span>
                   </div>
+                  {(!investment || investment <= 0) && (
+                    <p className="text-red-400 text-xs mt-2">
+                      Please enter a valid bet amount
+                    </p>
+                  )}
 
                   <div className="bg-transparent rounded-xl p-5 shadow-lg w-full max-w-md">
                     <h2 className="text-md font-semibold text-white mb-3">
@@ -611,14 +682,42 @@ function SelectedPost({
                   >
                     Already Place Bet
                   </button>
+                ) : !selectedPost?.bettingOpen ? (
+                  <div className="w-full py-3 bg-red-500 text-white rounded-lg font-medium text-center text-xs">
+                    🚫 BETTING CLOSED
+                  </div>
                 ) : (
                   <button
                     onClick={handleSubmit}
+                    disabled={
+                      !investment || 
+                      investment <= 0 || 
+                      (selectedPost.poll_type === 0 && !betPosition) ||
+                      (selectedPost.poll_type === 1 && !scorePrediction)
+                    }
                     className="w-full py-3 bg-white text-black rounded-lg font-medium hover:bg-blue-300 
         transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
                   >
-                    Place Bet
+                    {selectedPost.poll_type === 0 
+                      ? `Place ${betPosition ? betPosition.toUpperCase() : ''} Bet`
+                      : 'Place Bet'
+                    }
                   </button>
+                )}
+                
+                {/* Validation Messages */}
+                {!isBetted && (
+                  <div className="mt-2 text-xs">
+                    {selectedPost.poll_type === 0 && !betPosition && (
+                      <p className="text-red-400">Please select Yes or No</p>
+                    )}
+                    {(!investment || investment <= 0) && (
+                      <p className="text-red-400">Please enter a valid bet amount</p>
+                    )}
+                    {selectedPost.poll_type === 1 && !scorePrediction && (
+                      <p className="text-red-400">Please enter a score prediction</p>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
@@ -650,9 +749,9 @@ function CreatePollBody() {
   });
   const { address } = useAccount();
   let { createPool, getQuestionsFromAi } = useDataContext();
-  const [questionsData, setQuestionsData] = useState();
+  const [questionsData, setQuestionsData] = useState<string[]>([]);
   const [minValue, setMinValue] = useState(0);
-  const handlePollDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePollDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     e.preventDefault();
     const { name, value } = e.target;
     setPollData((prev) => ({ ...prev, [name]: value }));
@@ -673,7 +772,28 @@ function CreatePollBody() {
   }
 
   function _convertToArray(text: string) {
-    return text?.split(/\d+\.\s+/).filter(Boolean);
+    // Extract only the first question from the AI response
+    if (!text) return [];
+    
+    // Look for the first question pattern: "**Question 1:** ..."
+    const firstQuestionMatch = text.match(/\*\*Question 1:\*\*([^*]+?)(?=\*\*Question 2:\*\*|\*\*$|$)/);
+    if (firstQuestionMatch) {
+      // Clean up the extracted text by removing any remaining markdown
+      let cleanQuestion = firstQuestionMatch[1].trim();
+      // Remove any leading ** or trailing **
+      cleanQuestion = cleanQuestion.replace(/^\*\*\s*/, '').replace(/\s*\*\*$/, '');
+      return [cleanQuestion];
+    }
+    
+    // Alternative pattern: look for "Question 1:" without markdown
+    const altPattern = text.match(/Question 1:\s*([^?]+\?)/);
+    if (altPattern) {
+      return [altPattern[1].trim()];
+    }
+    
+    // Fallback: if the pattern doesn't match, try to extract the first numbered question
+    const questions = text?.split(/\d+\.\s+/).filter(Boolean);
+    return questions.length > 0 ? [questions[0]] : [];
   }
   const generateQuestions = async () => {
     let { pollName, endDate, link, media, metric, type } = pollData;
@@ -694,7 +814,17 @@ function CreatePollBody() {
       tweetInfo?.username,
       type
     );
+    console.log("Raw AI response:", data);
     let _questions = _convertToArray(data?.question);
+    console.log("Parsed questions:", _questions);
+    
+    // If no questions were parsed, show an error
+    if (!_questions || _questions.length === 0) {
+      toast.error("Failed to parse questions from AI response");
+      console.error("Failed to parse questions from:", data?.question);
+      return;
+    }
+    
     let _minValue = data?.postData[pollData?.metric];
     setMinValue(_minValue);
     setQuestionsData(_questions);
@@ -708,9 +838,9 @@ function CreatePollBody() {
     let _type = type === "binary" ? 0 : 1;
     let maxRange = 40;
     await createPool(
-      pollName,
+      question,        // Pass question as first parameter (will be stored as question in contract)
       timeRemaining,
-      question,
+      pollName,       // Pass pollName as third parameter (will be stored as parameter in contract)
       link,
       media,
       metric,
@@ -859,7 +989,11 @@ function CreatePollBody() {
           {questionsData?.length > 0 && (
             <>
               <div>
+                <label htmlFor="question" className="block text-blue-400 mb-1">
+                  AI Generated Question
+                </label>
                 <select
+                  id="question"
                   name="question"
                   value={pollData.question}
                   onChange={(e) =>
@@ -867,7 +1001,7 @@ function CreatePollBody() {
                   }
                   className="w-full p-3 bg-change-secondary-bg text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="null">Select a Question</option>
+                  <option value="null">Select the generated question</option>
                   {questionsData &&
                     questionsData?.map((item: string, index: number) => (
                       <option key={index} value={item}>
@@ -907,6 +1041,7 @@ function HistoryBody() {
   const handleClaimBet = async (id: number) => {
     await claimBet(id);
   };
+
   return (
     <>
       <div className="flex justify-center bg-change-trinary-bg rounded-xl p-0 overflow-hidden items-center flex-col">
@@ -949,13 +1084,16 @@ function HistoryBody() {
                     {bet.status ? "Completed" : "Ongoing"}
                   </div>
                   <div className="flex-1 px-4 text-xs">
-                    {bet.status && bet.claimedAmount / 1e18 > 0 && (
+                    {bet.status && bet.claimedAmount / 1e18 > 0 && !bet.claimed && (
                       <button
                         onClick={() => handleClaimBet(bet?.poolId)}
                         className="text-white bg-green-500 px-3 py-1 rounded-md"
                       >
                         Claim
                       </button>
+                    )}
+                    {bet.status && bet.claimedAmount / 1e18 > 0 && bet.claimed && (
+                      <span className="text-green-400 font-medium">✓ Claimed</span>
                     )}
                   </div>
                 </div>
